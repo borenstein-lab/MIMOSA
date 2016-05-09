@@ -5,17 +5,17 @@ A pipeline for joint metabolic model-based analysis of metabolomics measurements
 
 **Contents**
 
-- core_functions.R: generate community-specific metabolic network model, use to make metabolite predictions and identify consistent and contrasting metabolites
+- core_functions.R: generate community-specific metabolic network model, use the model to make metabolite predictions and identify consistent and contrasting metabolite variation
 
 - singleSpec_contributions.R: identify potential taxonomic contributors to metabolite variation
 
 - runMimosa.R: wrapper script for running main analysis
 
-- run_all.sh: example script for re-generating all results from the 4 datasets described in Noecker et al, 2016.
+- run_all.sh: example script for re-generating all results from the 4 datasets described in Noecker et al, 2016
 
 - shuffle_network.R: shuffle the community metabolic network to generate a null model
 
-- network_generation.R: initial generation from community metabolic network template from KEGG database (Kanehisa and Goto, 2000)
+- network_generation.R: initial generation of community metabolic network template from KEGG database (Kanehisa and Goto, 2000)
 
 **Citation**
 
