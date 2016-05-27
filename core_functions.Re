@@ -29,6 +29,13 @@ read_files = function(genefile, metfile){
   genes = fread(genefile, header=T, sep="\t")
   setkey(genes,KO)
   mets = fread(metfile, header=T, sep="\t")
+  if("KEGG" %in% names(mets)){
+	 mets = mets[,c(subjects,"KEGG"), with=F]
+  } else mets = mets[,c("Mass", subjects), with=F]
+   #Set NAs to 0
+  for(j in names(mets)){
+     set(mets,which(is.na(mets[[j]])),j,0)
+  }
   if("KEGG" %in% names(mets)) setkey(mets,KEGG) #2 possibilities for metabolite file format
   #save only samples that have both kinds of data and put datasets in the same order of subjects/samples
   subjects = sort(intersect(names(genes), names(mets)))
@@ -255,7 +262,7 @@ get_prmt_scores = function(emm, norm_kos){
   norm_kos_sub = norm_kos[KO %in% names(emm)]
   subjects = names(norm_kos)[names(norm_kos)!="KO"]
   prmt = matrix(rep(NA),nrow = metlen,ncol = nsamp) 
-  emm = emm[,match(names(emm), norm_kos_sub[,KO])]
+  emm = emm[,match(norm_kos_sub[,KO], names(emm))]
   if(all(names(emm)==norm_kos_sub[,KO])){
     for(m in 1:nsamp){
       prmt[,m] =  as.matrix(emm) %*% unlist(norm_kos_sub[,subjects[m],with=F])
@@ -486,7 +493,7 @@ run_all_metabolites = function(genes, mets, file_prefix = 'net1', correction = "
   #do all comparisons
   all_comparisons = vector("list",length(shared_mets))
   for(j in 1:length(shared_mets)){
-    good_subs = names(mets)[which(!is.na(unlist(mets[shared_mets[j],subjects,with=F])))]
+    good_subs = intersect(names(mets)[which(!is.na(unlist(mets[shared_mets[j],subjects,with=F])))], names(prmt_mat)[which(!is.na(unlist(prmt_mat[shared_mets[j],subjects,with=F])))])
     prmt_vector = unlist(prmt_mat[shared_mets[j],good_subs,with=F])
     met_vector = unlist(mets[shared_mets[j],good_subs,with=F])
     #check for too many 0s
