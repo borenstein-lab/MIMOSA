@@ -5,9 +5,6 @@
 #library(qvalue)
 #options(stringsAsFactors = FALSE)
 
-<<<<<<< HEAD
-=======
->>>>>>> origin/master
 #source(paste0(homedir, "PRMT_functions_clean.R"))
 
 ##Function to randomize a network
