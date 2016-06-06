@@ -40,9 +40,9 @@ read_files = function(genefile, metfile){
   } else mets = mets[,c("Mass", subjects), with=F]
    #Set NAs to 0
   for(j in names(mets)){
-     set(mets,which(is.na(mets[[j]])),j,0)
+    data.table::set(mets,which(is.na(mets[[j]])),j,0)
   }
-  if("KEGG" %in% names(mets)) setkey(mets,KEGG) #2 possibilities for metabolite file format
+  if("KEGG" %in% names(mets)) data.table::setkey(mets,KEGG) #2 possibilities for metabolite file format
   #save only samples that have both kinds of data and put datasets in the same order of subjects/samples
   subjects = sort(intersect(names(genes), names(mets)))
   genes = genes[,c("KO", subjects), with=F]
@@ -66,7 +66,7 @@ generate_genomic_network = function(kos, keggSource = "labKegg", degree_filter =
     #rxn_table[,rxn_id:=rxn_ids2]
     if(minpath_file!=''){
       minpaths = data.table::fread(minpath_file, colClasses="character")
-      setnames(minpaths,"Path")
+      data.table::setnames(minpaths,"Path")
       #for reactions in the minpath set we are only saving the info from those minimal pathways,
       #but we are also saving the reactions not in the minpath set
       rxn_table2 = rxn_table[Path %in% minpaths[,Path]]
@@ -135,7 +135,7 @@ generate_genomic_network = function(kos, keggSource = "labKegg", degree_filter =
     klinks = metacyc_rxns[Category=="DBLINKS" & grepl("LIGAND-RXN", Value)]
     klinks[,RID:=regmatches(Value, regexpr("R[0-9]+", Value))]
     klinks = klinks[RID %in% rxn_ids]
-    metacyc_rxns = merge(metacyc_rxns, klinks[,list(`UNIQUE-ID`, RID)], by="UNIQUE-ID")
+    metacyc_rxns = data.table::merge(metacyc_rxns, klinks[,list(`UNIQUE-ID`, RID)], by="UNIQUE-ID")
     setkey(metacyc_rxns, NULL)
     metacyc_rxns = metacyc_rxns[!duplicated(metacyc_rxns[,list(Category, Value, RID)])]
     #only save rxns with assoc metacyc info
@@ -167,7 +167,7 @@ generate_genomic_network = function(kos, keggSource = "labKegg", degree_filter =
       rxn = rxn_ids[j]
       meta_info = metacyc_rxns[RID==rxn_ids[j]]
       meta_compounds = meta_info[Category %in% c("LEFT","RIGHT")]
-      meta_compounds = merge(meta_compounds, compound_key, all.x=T, all.y=F, by="Value")[!is.na(CID)]
+      meta_compounds = data.table::merge(meta_compounds, compound_key, all.x=T, all.y=F, by="Value")[!is.na(CID)]
       #get reactants and products
       kos_involved = names(rxn_info[[j]]$ORTHOLOGY)
       kos_involved = kos_involved[kos_involved %in% good_kos]
@@ -227,7 +227,7 @@ generate_genomic_network = function(kos, keggSource = "labKegg", degree_filter =
         }
       }
     }
-    network_table = data.table(Rxn = net_rxns, KO = net_kos, Reac = net_reacs, Prod = net_prods, Direction = net_dir)
+    network_table = data.table::data.table(Rxn = net_rxns, KO = net_kos, Reac = net_reacs, Prod = net_prods, Direction = net_dir)
     network_table = network_table[Prod != Reac]
     degree = apply(stoich_mat, 1, function(x){ length(x[!is.na(x)])})
     compounds = compounds[degree != 0]
@@ -406,8 +406,8 @@ select_best_id2 = function(met_table, met_data, net_compounds, final_method = "f
   }
   #for(k in 1:length(unique_ids))
   #  new_mets = rbind(new_mets, lapply(met_data[which(single_final == unique_ids[k]),],sum))
-  new_mets = data.table(new_mets, KEGG = good_mets)
-  setkey(new_mets, KEGG)
+  new_mets = data.table::data.table(new_mets, KEGG = good_mets)
+  data.table::setkey(new_mets, KEGG)
   return(new_mets)
 }
 
@@ -454,7 +454,7 @@ select_best_id = function(met_table, met_data, net_compounds, final_method = "fi
   #add together matching ions
   #for(k in 1:length(unique_ids))
   #  new_mets = rbind(new_mets, lapply(met_data[which(single_final == unique_ids[k]),],sum))
-  new_mets = data.table(new_mets, KEGG = good_mets)
+  new_mets = data.table::data.table(new_mets, KEGG = good_mets)
   setkey(new_mets, KEGG)
   return(new_mets)
 }
@@ -508,7 +508,7 @@ run_all_metabolites = function(genes, mets, file_prefix = 'net1', correction = "
     }else{
       met_mat = make_pairwise_met_matrix(shared_mets[j], prmt_mat[,c(good_subs, "compound"),with=F])
       metabol_mat = make_pairwise_met_matrix(shared_mets[j], mets[,c(good_subs,"KEGG"),with=F])
-      test = mantel(met_mat,metabol_mat,method=cor_method,permutations = nperm)
+      test = vegan::mantel(met_mat,metabol_mat,method=cor_method,permutations = nperm)
       test_n = mantel_2sided(met_mat,metabol_mat,method=cor_method,permutations = nperm,
                              direction = "neg")
       all_comparisons[[j]] = list(ID = shared_mets[j], PRMT = met_mat, Mets = metabol_mat, Mantel = list(test,test_n))
@@ -528,9 +528,9 @@ run_all_metabolites = function(genes, mets, file_prefix = 'net1', correction = "
   pvals_n = sapply(all_comparisons,function(x){return(x$Mantel[[2]]$signif)})
   pvals2_n = correct(pvals_n, method = correction)
 
-  node_data = data.table(compound = shared_mets, CorrS = cors_s, PValS = pvals_s, QValS = pvals2_s,
+  node_data = data.table::data.table(compound = shared_mets, CorrS = cors_s, PValS = pvals_s, QValS = pvals2_s,
                          CorrN = cors_n, PValN = pvals_n, QValN = pvals2_n)
-  setkey(node_data,compound)
+  data.table::setkey(node_data,compound)
 
   #save everything
   #write edge file
@@ -598,10 +598,10 @@ run_all_metabolites2 = function(genes, mets, file_prefix = 'net1', correction = 
       #need to clarify - this is different from not having any information
       if(plot_rank){
         preds = data.frame(Prediction = factor(higher_pred), Prmt = prmts, Value = met1, Rank = rank(met1))
-        ggplot(preds, aes(x=Rank,y=Value, col = Prediction)) + geom_point(size=3) + xlim(c(0,max(preds$Rank)))+theme_bw() + scale_color_manual(values=c("purple","orange")) +
-          annotate("text",x=0.3*max(preds$Rank), y=0.8*max(preds$Value),label=met_names(shared_mets[j]))+
-          annotate("text",x=0.3*max(preds$Rank), y=0.6*max(preds$Value), label=paste(length(preds$Value[preds$Value==min(preds$Value) & preds$Prediction==0]), length(preds$Value[preds$Value==min(preds$Value) & preds$Prediction==1]), sep = "  "))
-        ggsave(file=paste0(file_prefix,"_",shared_mets[j],".png"))
+        ggplot2::ggplot(preds, ggplot2::aes(x=Rank,y=Value, col = Prediction)) + ggplot2::geom_point(size=3) + ggplot2::xlim(c(0,max(preds$Rank)))+ ggplot2::theme_bw() + ggplot2::scale_color_manual(values=c("purple","orange")) +
+          ggplot2::annotate("text",x=0.3*max(preds$Rank), y=0.8*max(preds$Value),label=met_names(shared_mets[j]))+
+          ggplot2::annotate("text",x=0.3*max(preds$Rank), y=0.6*max(preds$Value), label=paste(length(preds$Value[preds$Value==min(preds$Value) & preds$Prediction==0]), length(preds$Value[preds$Value==min(preds$Value) & preds$Prediction==1]), sep = "  "))
+        ggplot2::ggsave(file=paste0(file_prefix,"_",shared_mets[j],".png"))
       }
       if(plot_continuous){
         if(any(prmts!=0)){
@@ -641,10 +641,10 @@ run_all_metabolites2 = function(genes, mets, file_prefix = 'net1', correction = 
   pvals_nc = correct(pvals_n, method = correction)
   accuracy = 1 - sapply(all_comparisons, function(x){ return(x$Error)})
 
-  node_data = data.table(compound = shared_mets, PValS = pvals, QValS = pvals_c,
+  node_data = data.table::data.table(compound = shared_mets, PValS = pvals, QValS = pvals_c,
                          #CorrP = cors_p, PValP = pvals_p, QValP = pvals2_p,
                          PValN = pvals_n, QValN = pvals_nc, Accuracy = accuracy, Sensitivity = sensitivity, Specificity = specificity, Precision = precision)
-  setkey(node_data,compound)
+  data.table::setkey(node_data,compound)
   #write to network file
   write.table(ko_net_table,file=paste(file_prefix,'_edges.txt',sep=''),sep="\t",quote=F,row.names=F)
   #write node attribute file
@@ -667,7 +667,7 @@ correct = function(pvals, method = "fdr"){
     pvalsAdj = p.adjust(pvals[!is.na(pvals)], method="bonferroni")
     pvals2 = sapply(1:length(pvals), function(x){ if(is.na(pvals[x])) return(NA) else return(pvalsAdj[which(foo==x)])})
   }else{
-    qvals = qvalue(pvals[foo])$qvalues
+    qvals = qvalue::qvalue(pvals[foo])$qvalues
     pvals2 = sapply(1:length(pvals), function(x){ if(is.na(pvals[x])) return(NA) else return(qvals[which(foo==x)])})
   }
 }
@@ -736,7 +736,7 @@ calculate_net_dist=function(compound1,compound2, netmat){
 #need to load the file KeggCompoundNames.rda for this to work - get names that go with KEGG metabolite IDs
 met_names = function(met_ids){
   path_key = data.table::fread("metaboliteCategories_compoundNames.txt")
-  setkey(path_key, "compound")
+  data.table::setkey(path_key, "compound")
   return(path_key[met_ids, CompoundName])
 #   load("KeggCompoundNames.rda")
 #   return(sapply(met_ids, function(x){ return(all_met_names[match(x,names(all_met_names))][[1]][1])}))
@@ -751,7 +751,7 @@ plot_ref_mets_by_prmts = function(met, prmts, id, file_prefix){
   higher_pred = ifelse(prmts > med_prmt,1,0)
   higher_obs = ifelse(met > med_met, 1, 0)
   plot_data = data.frame(PRMT=ref_prmt, Met=ref_met, HigherPred=factor(higher_pred),HigherObs=factor(higher_obs))
-  x0=ggplot(plot_data,aes(x=PRMT,y=Met))+geom_point(size=4)+xlab("Score reference difference")+ ylab("Metabolite reference difference") + theme_bw() + geom_vline(xintercept=med_prmt, linetype=2) + geom_hline(ylintercept=med_met, linetype=2)#+
+  x0=ggplot2::ggplot(plot_data,ggplot2::aes(x=PRMT,y=Met))+ggplot2::geom_point(size=4)+ggplot2::xlab("Score reference difference")+ ggplot2::ylab("Metabolite reference difference") + ggplot2::theme_bw() + ggplot2::geom_vline(xintercept=med_prmt, linetype=2) + ggplot2::geom_hline(ylintercept=med_met, linetype=2)#+
   print(med_met)
   print(med_prmt)
     #annotate("text",x=0.3*max(plot_data$PRMT), y=0.8*max(plot_data$Met),label=met_names(id))
@@ -761,7 +761,7 @@ plot_ref_mets_by_prmts = function(met, prmts, id, file_prefix){
 
 
 ggMMplot <- function(var1, var2, prop=T, fontsize=7, text_location="bottom"){
-  require(ggplot2)
+  #require(ggplot2)
   levVar1 <- length(levels(var1))
   levVar2 <- length(levels(var2))
   y = ifelse(text_location=="bottom",-0.1,1.1)
@@ -774,22 +774,22 @@ ggMMplot <- function(var1, var2, prop=T, fontsize=7, text_location="bottom"){
 
   tab1 = data.frame(table(var1))
   plotData$labels = ifelse(tab1[match(plotData$var1,plotData$var1),2]==0, "", paste0(plotData$var1, "\n(n=",tab1[match(plotData$var1,plotData$var1),2],")"))
-  ggplot(plotData, aes(var1Center, var2Height)) +
-    geom_bar(stat = "identity", aes(width = marginVar1, fill = var2), col = "Black") +
-    annotate("text", label = plotData$labels, x = plotData$var1Center,y=y, size=fontsize) + scale_x_continuous(expand=c(0,0)) + ylim(ylims[1], ylims[2])
+  ggplot2::ggplot(plotData, ggplot2::aes(var1Center, var2Height)) +
+    ggplot2::geom_bar(stat = "identity", ggplot2::aes(width = marginVar1, fill = var2), col = "Black") +
+    ggplot2::annotate("text", label = plotData$labels, x = plotData$var1Center,y=y, size=fontsize) + ggplot2::scale_x_continuous(expand=c(0,0)) + ylim(ylims[1], ylims[2])
 }
 
 
 get_non_rev_rxns = function(rxn_table, all_rxns=T){ #whether to return all reactions or only 1/2 of each reversible reaction since info is redundant
   if(dim(rxn_table)[1]>0){
-    all_sorted= data.table(t(apply(rxn_table[,list(KO,Reac,Prod,stoichReac,stoichProd)],1,function(y){ sort(unlist(y))})))
+    all_sorted= data.table::data.table(t(apply(rxn_table[,list(KO,Reac,Prod,stoichReac,stoichProd)],1,function(y){ sort(unlist(y))})))
     all_sorted[,Count:=.N,by=names(all_sorted)]
     all_sorted[,Reversible:=ifelse(Count==2,1,0)]
     rxn_table[,Reversible:=ifelse(all_sorted[,Count]==2,1,0)] #order is the same
     if("V1" %in% names(all_sorted)){
       all_sorted = unique(all_sorted)
       all_sorted = all_sorted[,list(V5, V4, V3, V2, V1, Reversible)]
-      setnames(all_sorted, c("KO","Reac", "Prod", "stoichReac", "stoichProd", "Reversible"))
+      data.table::setnames(all_sorted, c("KO","Reac", "Prod", "stoichReac", "stoichProd", "Reversible"))
     }
     if(all_rxns) return(rxn_table) else return(all_sorted)
   } else return(NULL)
@@ -807,7 +807,7 @@ prmt_contributions = function(j, prmts_sub_good, all_rxns, subjects, norm_kos, k
       prmt_without = data.matrix(ko_net[[1]][compound,vals_without[,KO]])%*%data.matrix(vals_without[,subjects,with=F])
       return(cor(as.vector(unlist(prmts_sub_good[compound,subjects,with=F])),as.vector(prmt_without), method="spearman"))
     })
-    ko_cors = data.table(KO=kos_involved, Cor=ko_prmt_cors)
+    ko_cors = data.table::data.table(KO=kos_involved, Cor=ko_prmt_cors)
     #save KOs that have a major effect
     ko_good = ko_cors[is.na(Cor)|(Cor < 0.5),KO]
     net_primary = all_rxns[[j]][KO %in% ko_good & Reversible==0]
@@ -836,7 +836,7 @@ compare_met = function(met_met, met_prmt, met_all, prmt_all, posneg="pos", cor_m
   good_subs = names(met_all)[which(!is.na(unlist(met_all[met_met])) & names(met_all)!="KEGG")]
   met_mat = make_pairwise_met_matrix(met_prmt, prmt_all[,c(good_subs,"compound"),with=F])
   metabol_mat = make_pairwise_met_matrix(met_met, met_all[,c(good_subs,"KEGG"),with=F])
-  if(posneg=="pos") test = mantel(met_mat,metabol_mat,method=cor_method,permutations = nperm)
+  if(posneg=="pos") test = vegan::mantel(met_mat,metabol_mat,method=cor_method,permutations = nperm)
   else test = mantel_2sided(met_mat,metabol_mat,method=cor_method,permutations = nperm, direction = "neg")
   return(test$signif)
 }
@@ -861,7 +861,7 @@ kos_from_species = function(qpcr, ref_kos){
     }
   }
   BV_kos = kolist[,sum(Abund),by=list(KO,Sample)]
-  BV_kos = dcast.data.table(BV_kos,KO~Sample, value.var="V1")
+  BV_kos = data.table::dcast.data.table(BV_kos,KO~Sample, value.var="V1")
   return(BV_kos)
 }
 
@@ -997,7 +997,7 @@ make_unnormalized_single_spec = function(contribs, otu_id = "all", out_dir){
   contribs[,RelAbundSample:=CountContributedByOTU/sum(CountContributedByOTU),by=Sample] #relative abundance of this gene from this taxon in all the genes
   if(otu_id!="all"){
     contribs = contribs[OTU==otu_id]
-    contribs = dcast.data.table(contribs, Gene~Sample, value.var = "RelAbundSample")
+    contribs = data.table::dcast.data.table(contribs, Gene~Sample, value.var = "RelAbundSample")
     #contribs = dcast.data.table(contribs, Gene~Sample, value.var = "ContributionPercentOfSample")
     for(j in 1:length(all_samps)){
       if(!(all_samps[j] %in% names(contribs))){
@@ -1014,11 +1014,11 @@ make_unnormalized_single_spec = function(contribs, otu_id = "all", out_dir){
 sum_to_genus = function(contribs, valueVar){ #Value var is relAbundSample or singleMusicc
   taxonomy = data.table::fread("97_otu_taxonomy.txt")
   taxonomy[,Genus:=gsub("; s__.*", "", V2)]
-  setnames(taxonomy, c("OTU", "Taxonomy", "Genus"))
+  data.table::setnames(taxonomy, c("OTU", "Taxonomy", "Genus"))
   contribs = merge(contribs, taxonomy, by="OTU", all.x=T, all.y=F)
   contribs = contribs[,sum(get(valueVar)), by=list(Gene, Sample, Genus)]
-  setnames(contribs, "Genus", "OTU") #now just treat genera like otus
-  setnames(contribs, "V1", valueVar)
+  data.table::setnames(contribs, "Genus", "OTU") #now just treat genera like otus
+  data.table::setnames(contribs, "V1", valueVar)
 }
 
 save_contribs_by_species = function(contribs, valueVar, out_dir){
@@ -1029,14 +1029,14 @@ save_contribs_by_species = function(contribs, valueVar, out_dir){
   all_koAbunds_byOTU = vector("list", length(all_otus))
   for(k in 1:length(all_otus)){
     contribs_sub = contribs[OTU==all_otus[k]]
-    contribs_sub = dcast.data.table(contribs_sub, Gene~Sample, value.var = valueVar)
+    contribs_sub = data.table::dcast.data.table(contribs_sub, Gene~Sample, value.var = valueVar)
     #contribs_sub = dcast.data.table(contribs_sub, Gene~Sample, value.var = "ContributionPercentOfSample")
     for(j in 1:length(all_samps)){
       if(!(all_samps[j] %in% names(contribs_sub))){
         contribs_sub[,(as.character(all_samps[j])):=rep(0)]
       }
     }
-    setnames(contribs_sub, "Gene","KO")
+    data.table::setnames(contribs_sub, "Gene","KO")
     all_koAbunds_byOTU[[k]] = contribs_sub[,c("KO",sort(all_samps)),with=F]
   }
   save(all_koAbunds_byOTU, file = paste0(out_dir,"all_koAbunds_byOTU_",valueVar,".rda"))
@@ -1048,7 +1048,7 @@ single_spec_musicc = function(contribs, otu_file){
   if("OTU_ID" %in% names(otus)) setnames(otus, "OTU_ID", "OTU")
   otus_rel_abund = otus[,lapply(.SD, function(x){ x/sum(x)})]
   otus_rel_abund[,OTU:=otus[,OTU]]
-  otus_rel_abund_melt = melt(otus_rel_abund, id.var = "OTU", variable.name = "Sample", value.name = "OTURelAbund")
+  otus_rel_abund_melt = data.table::melt(otus_rel_abund, id.var = "OTU", variable.name = "Sample", value.name = "OTURelAbund")
   all_samps = unique(contribs[,Sample])
   #contribs[,RelAbundSample:=CountContributedByOTU/sum(CountContributedByOTU),by=Sample] #relative abundance of this gene from this taxon in all the genes
   contribs = merge(contribs, otus_rel_abund_melt, by=c("OTU", "Sample"), all.x=T)
