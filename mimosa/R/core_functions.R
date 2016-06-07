@@ -31,6 +31,7 @@
 #' @return A list in which the first item is a data.table of gene abundances and the second is a data.table of metabolite abundances.
 #' @examples
 #' read_files(gene_file, met_file)
+#' @export
 read_files = function(genefile, metfile){
   genes = data.table::fread(genefile, header=T, sep="\t")
   setkey(genes,KO)
@@ -51,6 +52,18 @@ read_files = function(genefile, metfile){
   return(list(genes, mets))
 }
 
+#' Create a community metabolic network model using a few different methods.
+#'
+#' @param kos Genes to include in network (KEGG Orthology IDs)
+#' @param keggSource source of network information, currently can be "labKEGG", "loadNet", or "metacyc"
+#' @param degree_filter Compounds connected to this number of KOs or more will be filtered from the network
+#' @param minpath_file file of minimal pathways to use for core network
+#' @param normalize Whether to normalize output matrix to show relative impacts of each gene on each compound
+#' @param networkFile If keggSource is "loadNet", file that template network should be loaded from
+#' @return List containing 3 different versions of the same network: an adjacency matrix, an adjacency matrix that differentiates between genes with a neutral effect on a compound and no effect (0 vs NA), and an edge list.
+#' @examples
+#' generate_genomic_network(kos, "labKegg", degree_filter = 30)
+#' @export
 generate_genomic_network = function(kos, keggSource = "labKegg", degree_filter = 0,
                                     minpath_file = '', normalize = T, networkFile=""){
   #keggSource must be either "labKegg", or "loadNet" for if the network has already been generated, or "metacyc"
@@ -262,6 +275,14 @@ generate_genomic_network = function(kos, keggSource = "labKegg", degree_filter =
   }
 }
 
+#' Calculate CMP scores based on community network and gene abundances
+#'
+#' @param emm Stoichiometric network matrix produced by generate_genomic_network
+#' @param norm_kos Data.table of gene abundances
+#' @return Data.table of CMP scores
+#' @examples
+#' get_prmt_scores(ko_net[[1]], gene_abunds)
+#' @export
 get_prmt_scores = function(emm, norm_kos){
   metlen = dim(emm)[1]
   nsamp = dim(norm_kos)[2]-1
@@ -282,7 +303,15 @@ get_prmt_scores = function(emm, norm_kos){
   return(prmt)
 }
 
-#this can be used for either PRMT scores or metabolite concentrations
+#' Make a data vector into a pairwise difference matrix (can be used for either PRMT scores or metabolite concentrations)
+#'
+#' @param metabolite metabolite ID
+#' @param met_mat Abundances or scores for that metabolite across samples
+#' @param diff_function Difference by default, could be fold_change
+#' @return Data.frame of score or abundance pairwise differentials
+#' @examples
+#'
+#' @export
 make_pairwise_met_matrix = function(metabolite, met_mat, diff_function = "difference"){
   #diff_function options: 'difference', 'fold_change'
   #met_mat can be either PRMT scores or metabolomic abundances
@@ -303,7 +332,16 @@ make_pairwise_met_matrix = function(metabolite, met_mat, diff_function = "differ
   return(met_matrix)
 }
 
-#modification of vegan mantel test to do 2-sided or signif less than
+#' Modification of vegan mantel test to test 2-sided or significantly less than
+#'
+#' @param xdis A distance matrix
+#' @param ydis Another distance matrix
+#' @param method Correlation coefficient to use (pearson or spearman)
+#' @param permutations Number of permutations to perform
+#' @return Data.frame of score or abundance pairwise differentials
+#' @examples
+#'
+#' @export
 mantel_2sided = function (xdis, ydis, method = "pearson", permutations = 999,
                           strata, na.rm = FALSE, direction = "pos") {
   #direction must be either "pos","neg", or "two-sided"
@@ -459,7 +497,26 @@ select_best_id = function(met_table, met_data, net_compounds, final_method = "fi
   return(new_mets)
 }
 
-#Runall function to do complete predictions and comparison for all shared metabolites
+#' Runall function to do complete predictions and comparison for all shared metabolites
+#'
+#' @param genes Gene abundances
+#' @param mets Metabolite abundances
+#' @param file_prefix Prefix for output files
+#' @param correction Type of multiple hypothesis correction to perform (bonferroni or fdr)
+#' @param cutoff Q/P-value cutoff for significance
+#' @param net_method Network generation method (see generate_genomic_network)
+#' @param id_met Whether metabolites have putative identifications that need to be processed
+#' @param met_id_file If id_met, file of metabolite identifications
+#' @param degree_filter Threshold for filtering currency metabolites
+#' @param minpath_file
+#' @param cor_method
+#' @param net_file
+#' @param nperm
+#' @param nonzero_filter
+#' @return No return, writes output to file
+#' @examples
+#'
+#' @export
 run_all_metabolites = function(genes, mets, file_prefix = 'net1', correction = "fdr", cutoff = 0.1,
                                net_method = "load", id_met = F, met_id_file = '',
                                degree_filter = 0, minpath_file = '', cor_method = "spearman",
@@ -546,11 +603,32 @@ run_all_metabolites = function(genes, mets, file_prefix = 'net1', correction = "
   return(NULL)
 }
 
-#Runall function for classifying samples for every metabolite
+
+#' Runall function to do complete predictions and evaluate classification of metabolites as high or low abundance
+#'
+#' @param genes Gene abundances
+#' @param mets Metabolite abundances
+#' @param file_prefix Prefix for output files
+#' @param correction Type of multiple hypothesis correction to perform (bonferroni or fdr)
+#' @param cutoff Q/P-value cutoff for significance
+#' @param net_method Network generation method (see generate_genomic_network)
+#' @param id_met Whether metabolites have putative identifications that need to be processed
+#' @param met_id_file If id_met, file of metabolite identifications
+#' @param degree_filter Threshold for filtering currency metabolites
+#' @param minpath_file
+#' @param net_file
+#' @param quant
+#' @param plot_rank
+#' @param plot_continuous
+#' @param nonzero_filter
+#' @return No return, writes output to file
+#' @examples
+#'
+#' @export
 run_all_metabolites2 = function(genes, mets, file_prefix = 'net1', correction = "fdr", cutoff = 0.1,
                                net_method = "load", id_met = F, met_id_file = '',
                                degree_filter = 0, minpath_file = '',
-                               net_file = "", quant = 0.5, plot_rank = F, plot_continuous=T, nonzero_filter=2, rel_abund_mets = T){
+                               net_file = "", quant = 0.5, plot_rank = F, plot_continuous=T, nonzero_filter=2, rel_abund_mets = F){
   #must be data.tables keyed by KOs/KEGG IDs in first column, all other columns are subject IDs
   #correction must be either "bonferroni" or "fdr", cutoff is q value cutoff
   #id_mets specifies whether to use network for improved metabolite identification (i.e. for Braun datasets)
@@ -659,7 +737,14 @@ run_all_metabolites2 = function(genes, mets, file_prefix = 'net1', correction = 
   #return(list(all_comparisons = all_comparisons, met_table = node_data))
 }
 
-
+#' Multiple hypothesis correction
+#'
+#' @param pvals Vector of p-values
+#' @param method Must be either "fdr" or "bonferroni"
+#' @return Vector of corrected values
+#' @examples
+#'
+#' @export
 correct = function(pvals, method = "fdr"){
  #vector of p values, method must be either "bonferroni" or "fdr"
   foo = which(!is.na(pvals))
@@ -779,7 +864,14 @@ ggMMplot <- function(var1, var2, prop=T, fontsize=7, text_location="bottom"){
     ggplot2::annotate("text", label = plotData$labels, x = plotData$var1Center,y=y, size=fontsize) + ggplot2::scale_x_continuous(expand=c(0,0)) + ylim(ylims[1], ylims[2])
 }
 
-
+#' Get non-reverible reactions of network.
+#'
+#' @param pvals Vector of p-values
+#' @param method Must be either "fdr" or "bonferroni"
+#' @return Vector of corrected values
+#' @examples
+#'
+#' @export
 get_non_rev_rxns = function(rxn_table, all_rxns=T){ #whether to return all reactions or only 1/2 of each reversible reaction since info is redundant
   if(dim(rxn_table)[1]>0){
     all_sorted= data.table::data.table(t(apply(rxn_table[,list(KO,Reac,Prod,stoichReac,stoichProd)],1,function(y){ sort(unlist(y))})))
@@ -831,7 +923,19 @@ prmt_contributions = function(j, prmts_sub_good, all_rxns, subjects, norm_kos, k
   } else return(NULL)
 }
 
-
+#' Compare a single set each of CMP scores and metabolite concentrations
+#'
+#' @param met_met metabolite to use from metabolite concentration data
+#' @param met_prmt metabolite to use from CMP score data
+#' @param met_all matrix of metabolite concentrations
+#' @param prmt_all matrix of CMP scores
+#' @param posneg Whether to test for positive or negative concentration
+#' @param cor_method spearman or pearson
+#' @param nperm number of permutations for Mantel test
+#' @return p-value from Mantel test
+#' @examples
+#' compare_met("C00001", "C00002", mets, cmp_mat, "pos")
+#' @export
 compare_met = function(met_met, met_prmt, met_all, prmt_all, posneg="pos", cor_method="spearman", nperm=15000){
   good_subs = names(met_all)[which(!is.na(unlist(met_all[met_met])) & names(met_all)!="KEGG")]
   met_mat = make_pairwise_met_matrix(met_prmt, prmt_all[,c(good_subs,"compound"),with=F])
@@ -841,7 +945,14 @@ compare_met = function(met_met, met_prmt, met_all, prmt_all, posneg="pos", cor_m
   return(test$signif)
 }
 
-##Function for getting ko abundances from BV qPCR data
+#' Function for getting ko abundances from BV qPCR data
+#'
+#' @param qpcr qPCR species abundance data across samples
+#' @param ref_kos gene content of every species
+#' @return gene abundances across samples
+#' @examples
+#' kos_from_species(bv_qpcr, genome_content)
+#' @export
 kos_from_species = function(qpcr, ref_kos){
   #kos_by_sample=list(NULL) ##kos by ksample and species - have qpcr for 14 species but genomes for only 11 of them
   ref_names = unique(ref_kos[,species])
@@ -865,6 +976,21 @@ kos_from_species = function(qpcr, ref_kos){
   return(BV_kos)
 }
 
+#' Evaluate species contributors for a single metabolite with qPCR/species abundance data
+#'
+#' @param j metabolite # (usually from lapply/sapply)
+#' @param prmts_sub_good CMP scores for metabolites with abundance data
+#' @param all_rxns list of relevant reactions for each metabolite
+#' @param subjects vector of subjects
+#' @param norm_kos data.table of gene abundances
+#' @param ko_net network created by generate_genomic_network
+#' @param qpcr original species abundances
+#' @param ref_kos gene abundances for each species
+#' @param cor_with whether to look at the correlation of CMP scores of each species by itself with the metabolite, or of the whole community with that species removed
+#' @return
+#' @examples
+#' sapply(1:length(metabolites), prmt_species_contributions, cmp_scores, all_rxns, all_subjects, ko_abunds, ko_net, spec_abunds, ref_kos)
+#' @export
 prmt_species_contributions = function(j, prmts_sub_good, all_rxns, subjects, norm_kos, ko_net, qpcr, ref_kos, cor_with=F){
   if(!is.null(all_rxns[[j]])){
     if(!cor_with){
@@ -905,6 +1031,21 @@ prmt_species_contributions = function(j, prmts_sub_good, all_rxns, subjects, nor
   } else return(NULL)
 }
 
+#' Evaluate species contributors for a single metabolite with OTU and PICRUSt data
+#'
+#' @param j metabolite # (usually from lapply/sapply)
+#' @param prmts_sub_good CMP scores for metabolites with abundance data
+#' @param all_rxns list of relevant reactions for each metabolite
+#' @param subjects vector of subjects
+#' @param norm_kos data.table of gene abundances
+#' @param ko_net network created by generate_genomic_network
+#' @param all_taxa vector of OTUs
+#' @param single_spec_prmts single-species CMP scores calculated from get_spec_contribs function
+#' @param cor_with whether to look at the correlation of CMP scores of each species by itself with the metabolite, or of the whole community with that species removed
+#' @return list of 2-item lists for every metabolite - 1st item is data.table of OTUs and correlations, second item is vector of OTUs with correlations > 0.5
+#' @examples
+#' sapply(1:length(metabolites), prmt_species_contributions, cmp_scores, all_rxns, all_subjects, ko_abunds, ko_net, spec_abunds, ref_kos)
+#' @export
 prmt_species_contributions_picrust = function(j, prmts_sub_good, all_rxns, subjects, norm_kos, ko_net, all_taxa, single_spec_prmts, cor_with=F){
   if(!is.null(all_rxns[[j]])){
       compound = prmts_sub_good[j,compound]
@@ -918,7 +1059,14 @@ prmt_species_contributions_picrust = function(j, prmts_sub_good, all_rxns, subje
   } else return(NULL)
 }
 
-#Test against list of known microbial metabolites
+#' Test against list of known microbial metabolites
+#'
+#' @param node_data output of run_all_metabolites
+#' @param met_list List of metabolites to test against
+#' @return Null, just prints a bunch of p-values
+#' @examples
+#' test_met_enrichment(node_data, microbial_mets)
+#' @export
 test_met_enrichment = function(node_data, met_list){
   node_data[,MicrobeControl:=ifelse(compound %in% met_list[,KEGG],1,0)]
   if(any(node_data[,MicrobeControl])) {
@@ -939,7 +1087,16 @@ simpleCap <- function(x) {
 }
 
 
-##Get network distances between 2 compounds
+#' Get network distances between 2 compounds
+#'
+#' @param c1 first compound
+#' @param c2 second compound
+#' @param allnet edge list output of generate_genomic_network
+#' @param max_dist distance at which the function will stop looking and assume the two compounds are not connected
+#' @return integer representing the number of reaction steps between the two compounds, or max_dist if they are not connected
+#' @examples
+#' get_net_dist("C00001", "C00002", allnet)
+#' @export
 get_net_dist = function(c1, c2, allnet, max_dist = 20){
   if(c1==c2) return(0)
   match_rxns = allnet[Prod==c1 | Reac==c1]
@@ -952,122 +1109,7 @@ get_net_dist = function(c1, c2, allnet, max_dist = 20){
   return(netdist)
 }
 
-##Function to randomize a network
-##randomly sample 2 edges and if it works, switch products
-randomize_net=function(netw, n_reps){
-  revnet = get_non_rev_rxns(netw, all_rxns=F)
-  network2=revnet #we'll expand the reversible edges back out later
-  #Don't want the switching to be biased towards reversible edges
-  n_edges = dim(revnet)[1]
-  m = 1
-  while(m < n_reps){
-    rand_is=sample(n_edges,size=2)
-    rand_edges=network2[rand_is]
-    if(all(rand_edges[,Reversible]==0) | all(rand_edges[,Reversible]==1)){ ##if both are single edges or both are reversible
-      ##check that switched connection does not already exist
-      comps=unique(c(rand_edges[,Prod], rand_edges[,Reac]))
-      check=network2[Reac %in% comps & Prod %in% comps & KO %in% rand_edges[,KO]]
-      if(dim(check)[1]==dim(rand_edges)[1] & length(comps)==4){
-        #make the switch
-        ind1 = which(network2[,KO]==rand_edges[1,KO] & network2[,Reac]==rand_edges[1,Reac] & network2[,Prod]==rand_edges[1,Prod])
-        network2[ind1, Prod:=rand_edges[2,Prod]]
-        network2[ind1, stoichProd:=rand_edges[2,stoichProd]]
-        ind2 = which(network2[,KO]==rand_edges[2,KO] & network2[,Reac]==rand_edges[2,Reac] & network2[,Prod]==rand_edges[2,Prod])
-        network2[ind2, Prod:=rand_edges[1,Prod]]
-        network2[ind2, stoichProd:=rand_edges[1,stoichProd]]
-        m=m+1
-      }
-    }
-  }
-  #Add back reversible complements
-  for(j in 1:length(network2[,KO])){
-    if(network2[j,Reversible]==1){
-      network2 = rbind(network2, data.table(KO=network2[j,KO], Reac=network2[j,Prod], Prod=network2[j,Reac], stoichReac=network2[j,stoichProd], stoichProd=network2[j,stoichReac], Reversible=1))
-    }
-  }
-  network2[,stoichReac:=as.numeric(stoichReac)]
-  network2[,stoichProd:=as.numeric(stoichProd)]
-  return(network2)
-}
 
-
-###Single species contributions functions
-make_unnormalized_single_spec = function(contribs, otu_id = "all", out_dir){
-  all_samps = unique(contribs[,Sample])
-  contribs[,RelAbundSample:=CountContributedByOTU/sum(CountContributedByOTU),by=Sample] #relative abundance of this gene from this taxon in all the genes
-  if(otu_id!="all"){
-    contribs = contribs[OTU==otu_id]
-    contribs = data.table::dcast.data.table(contribs, Gene~Sample, value.var = "RelAbundSample")
-    #contribs = dcast.data.table(contribs, Gene~Sample, value.var = "ContributionPercentOfSample")
-    for(j in 1:length(all_samps)){
-      if(!(all_samps[j] %in% names(contribs))){
-        contribs[,eval(all_samps[j]):=rep(0)]
-      }
-    }
-    setnames(contribs, "Gene","KO")
-    contribs = contribs[,c("KO",sort(all_samps)),with=F]
-    write.table(contribs, file = paste0(out_dir,otu_id,"_KOabund.txt"), quote=F, row.names=F, sep = "\t")
-  }
-  return(contribs)
-}
-
-sum_to_genus = function(contribs, valueVar){ #Value var is relAbundSample or singleMusicc
-  taxonomy = data.table::fread("97_otu_taxonomy.txt")
-  taxonomy[,Genus:=gsub("; s__.*", "", V2)]
-  data.table::setnames(taxonomy, c("OTU", "Taxonomy", "Genus"))
-  contribs = merge(contribs, taxonomy, by="OTU", all.x=T, all.y=F)
-  contribs = contribs[,sum(get(valueVar)), by=list(Gene, Sample, Genus)]
-  data.table::setnames(contribs, "Genus", "OTU") #now just treat genera like otus
-  data.table::setnames(contribs, "V1", valueVar)
-}
-
-save_contribs_by_species = function(contribs, valueVar, out_dir){
-  #Separate contribs by species and save
-  all_otus = sort(unique(contribs[,OTU]))
-  all_samps = unique(contribs[,as.character(Sample)])
-  cat(all_otus)
-  all_koAbunds_byOTU = vector("list", length(all_otus))
-  for(k in 1:length(all_otus)){
-    contribs_sub = contribs[OTU==all_otus[k]]
-    contribs_sub = data.table::dcast.data.table(contribs_sub, Gene~Sample, value.var = valueVar)
-    #contribs_sub = dcast.data.table(contribs_sub, Gene~Sample, value.var = "ContributionPercentOfSample")
-    for(j in 1:length(all_samps)){
-      if(!(all_samps[j] %in% names(contribs_sub))){
-        contribs_sub[,(as.character(all_samps[j])):=rep(0)]
-      }
-    }
-    data.table::setnames(contribs_sub, "Gene","KO")
-    all_koAbunds_byOTU[[k]] = contribs_sub[,c("KO",sort(all_samps)),with=F]
-  }
-  save(all_koAbunds_byOTU, file = paste0(out_dir,"all_koAbunds_byOTU_",valueVar,".rda"))
-}
-
-single_spec_musicc = function(contribs, otu_file){
-  otus = data.table::fread(otu_file)
-  if("#OTU ID" %in% names(otus)) setnames(otus, "#OTU ID", "OTU")
-  if("OTU_ID" %in% names(otus)) setnames(otus, "OTU_ID", "OTU")
-  otus_rel_abund = otus[,lapply(.SD, function(x){ x/sum(x)})]
-  otus_rel_abund[,OTU:=otus[,OTU]]
-  otus_rel_abund_melt = data.table::melt(otus_rel_abund, id.var = "OTU", variable.name = "Sample", value.name = "OTURelAbund")
-  all_samps = unique(contribs[,Sample])
-  #contribs[,RelAbundSample:=CountContributedByOTU/sum(CountContributedByOTU),by=Sample] #relative abundance of this gene from this taxon in all the genes
-  contribs = merge(contribs, otus_rel_abund_melt, by=c("OTU", "Sample"), all.x=T)
-  all_otus = sort(unique(contribs[,OTU]))
-  cat(all_otus)
-  all_koAbunds_byOTU = vector("list", length(all_otus))
-  all_kos = contribs[,unique(Gene)]
-  contribs[,singleMusicc:=OTURelAbund*GeneCountPerGenome] #Relative abundance of OTU times copy number
-  return(contribs)
-}
-
-get_all_singleSpec_prmts = function(all_otus, valueVar){
-  cat(valueVar)
-  if(!"all_koAbunds_byOTU" %in% ls()) load(paste0(out_dir, "all_koAbunds_byOTU_",valueVar,".rda"))
-  if(length(all_otus) != length(all_koAbunds_byOTU)) stop("Problem!! OTU lists don't match")
-  prmts_alone = vector("list", length(all_otus))
-  for(k in 1:length(all_otus)){
-    sub_ko_net = generate_genomic_network(all_koAbunds_byOTU[[k]][,KO], keggSource = "labKegg", degree_filter = 30)
-    prmts_alone[[k]] = get_prmt_scores(sub_ko_net[[1]], all_koAbunds_byOTU[[k]])
-  }
-  save(prmts_alone, file = paste0(out_dir, "all_prmtsAlone_byOTU_",valueVar,".rda"))
-}
+#' Defaults for NULL values
+#' @export
+`%||%` <- function(a, b) if (is.null(a)) b else a

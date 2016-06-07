@@ -7,8 +7,16 @@
 
 #source(paste0(homedir, "PRMT_functions_clean.R"))
 
-##Function to randomize a network
-##randomly sample 2 edges and if it works, switch products
+#' Function to randomize a network
+#'
+#' Randomly sample 2 edges and if it works, switch products
+#'
+#' @param netw edge list network
+#' @param n_reps number of times to successfully sample and switch
+#' @return randomized edge list
+#' @examples
+#' randomize_net(allnet1, 1000)
+#' @export
 randomize_net=function(netw, n_reps){
   revnet = get_non_rev_rxns(netw, all_rxns=F)
   network2=revnet #we'll expand the reversible edges back out later
@@ -45,6 +53,14 @@ randomize_net=function(netw, n_reps){
   return(network2)
 }
 
+
+#' Convert network edge list to stoichiometric matrix
+#'
+#' @param rxn_table edge list network
+#' @return list of two matrices of compounds x genes, one with NAs to indicate lack of relationship vs. neutral and one with all zeros
+#' @examples
+#' make_network_matrix(ko_net[[3]])
+#' @export
 make_network_matrix = function(rxn_table){
   cmpds = unique(c(rxn_table[,Reac], rxn_table[,Prod]))
   goodkos = unique(rxn_table[,KO])
