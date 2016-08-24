@@ -15,7 +15,9 @@ Imports:
     stringr,
     qvalue,
     reshape2,
+    permute,
     devtools
 Suggests:
-    KEGGREST
+    KEGGREST,
+    ggplot2
 RoxygenNote: 5.0.1

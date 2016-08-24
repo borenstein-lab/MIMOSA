@@ -26,6 +26,7 @@
 
 #' Read in processed files and assign keys to datasets. Sets NA metabolite values to 0.
 #'
+#' @import data.table
 #' @param genefile File where gene data is located.
 #' @param metfile File where metaboltie data is located.
 #' @return A list in which the first item is a data.table of gene abundances and the second is a data.table of metabolite abundances.
@@ -33,17 +34,17 @@
 #' read_files(gene_file, met_file)
 #' @export
 read_files = function(genefile, metfile){
-  genes = data.table::fread(genefile, header=T, sep="\t")
+  genes = fread(genefile, header=T, sep="\t")
   setkey(genes,KO)
-  mets = data.table::fread(metfile, header=T, sep="\t")
+  mets = fread(metfile, header=T, sep="\t")
   if("KEGG" %in% names(mets)){
 	 mets = mets[,c(subjects,"KEGG"), with=F]
   } else mets = mets[,c("Mass", subjects), with=F]
    #Set NAs to 0
   for(j in names(mets)){
-    data.table::set(mets,which(is.na(mets[[j]])),j,0)
+    set(mets,which(is.na(mets[[j]])),j,0)
   }
-  if("KEGG" %in% names(mets)) data.table::setkey(mets,KEGG) #2 possibilities for metabolite file format
+  if("KEGG" %in% names(mets)) setkey(mets,KEGG) #2 possibilities for metabolite file format
   #save only samples that have both kinds of data and put datasets in the same order of subjects/samples
   subjects = sort(intersect(names(genes), names(mets)))
   genes = genes[,c("KO", subjects), with=F]
@@ -54,6 +55,7 @@ read_files = function(genefile, metfile){
 
 #' Create a community metabolic network model using a few different methods.
 #'
+#' @import data.table
 #' @param kos Genes to include in network (KEGG Orthology IDs)
 #' @param keggSource source of network information, currently can be "labKEGG", "loadNet", or "metacyc"
 #' @param degree_filter Compounds connected to this number of KOs or more will be filtered from the network
@@ -73,13 +75,13 @@ generate_genomic_network = function(kos, keggSource = "labKegg", degree_filter =
     return(allnet)
   } else if(keggSource == "labKegg") { #load sharon's network and just grab subset
     #cat("Using mapformula/labKegg\n")
-    rxn_table = data.table::fread("ko_rxn_map_all_info_filtered.txt", colClasses = c(rep("character",6), rep("numeric",2)))
+    rxn_table = fread("ko_rxn_map_all_info_filtered.txt", colClasses = c(rep("character",6), rep("numeric",2)))
     rxn_table = rxn_table[KO %in% kos]
 
     #rxn_table[,rxn_id:=rxn_ids2]
     if(minpath_file!=''){
-      minpaths = data.table::fread(minpath_file, colClasses="character")
-      data.table::setnames(minpaths,"Path")
+      minpaths = fread(minpath_file, colClasses="character")
+      setnames(minpaths,"Path")
       #for reactions in the minpath set we are only saving the info from those minimal pathways,
       #but we are also saving the reactions not in the minpath set
       rxn_table2 = rxn_table[Path %in% minpaths[,Path]]
@@ -143,12 +145,12 @@ generate_genomic_network = function(kos, keggSource = "labKegg", degree_filter =
     rxn_info = all_kegg$Reaction_info[goodrxns]
 
     #Load in metacyc rxn information, save those with associated KEGG ids
-    metacyc_rxns = data.table::fread("metacyc/good_reactions.txt")
+    metacyc_rxns = fread("metacyc/good_reactions.txt")
     metacyc_rxns = unique(metacyc_rxns[,list(`UNIQUE-ID`, Category, Value)])
     klinks = metacyc_rxns[Category=="DBLINKS" & grepl("LIGAND-RXN", Value)]
     klinks[,RID:=regmatches(Value, regexpr("R[0-9]+", Value))]
     klinks = klinks[RID %in% rxn_ids]
-    metacyc_rxns = data.table::merge(metacyc_rxns, klinks[,list(`UNIQUE-ID`, RID)], by="UNIQUE-ID")
+    metacyc_rxns = merge(metacyc_rxns, klinks[,list(`UNIQUE-ID`, RID)], by="UNIQUE-ID")
     setkey(metacyc_rxns, NULL)
     metacyc_rxns = metacyc_rxns[!duplicated(metacyc_rxns[,list(Category, Value, RID)])]
     #only save rxns with assoc metacyc info
@@ -158,7 +160,7 @@ generate_genomic_network = function(kos, keggSource = "labKegg", degree_filter =
     good_kos = kos[kos %in% rxn_kos]
 
     #Get compound ID info
-    compound_key = data.table::fread("metacyc/good_compounds.txt")
+    compound_key = fread("metacyc/good_compounds.txt")
     compound_key = unique(compound_key[,`UNIQUE-ID`, Value])
     setkey(compound_key, `UNIQUE-ID`)
     compound_key = compound_key[`UNIQUE-ID` %in% metacyc_rxns[,Value]]
@@ -180,7 +182,7 @@ generate_genomic_network = function(kos, keggSource = "labKegg", degree_filter =
       rxn = rxn_ids[j]
       meta_info = metacyc_rxns[RID==rxn_ids[j]]
       meta_compounds = meta_info[Category %in% c("LEFT","RIGHT")]
-      meta_compounds = data.table::merge(meta_compounds, compound_key, all.x=T, all.y=F, by="Value")[!is.na(CID)]
+      meta_compounds = merge(meta_compounds, compound_key, all.x=T, all.y=F, by="Value")[!is.na(CID)]
       #get reactants and products
       kos_involved = names(rxn_info[[j]]$ORTHOLOGY)
       kos_involved = kos_involved[kos_involved %in% good_kos]
@@ -240,7 +242,7 @@ generate_genomic_network = function(kos, keggSource = "labKegg", degree_filter =
         }
       }
     }
-    network_table = data.table::data.table(Rxn = net_rxns, KO = net_kos, Reac = net_reacs, Prod = net_prods, Direction = net_dir)
+    network_table = data.table(Rxn = net_rxns, KO = net_kos, Reac = net_reacs, Prod = net_prods, Direction = net_dir)
     network_table = network_table[Prod != Reac]
     degree = apply(stoich_mat, 1, function(x){ length(x[!is.na(x)])})
     compounds = compounds[degree != 0]
@@ -277,6 +279,7 @@ generate_genomic_network = function(kos, keggSource = "labKegg", degree_filter =
 
 #' Calculate CMP scores based on community network and gene abundances
 #'
+#' @import data.table
 #' @param emm Stoichiometric network matrix produced by generate_genomic_network
 #' @param norm_kos Data.table of gene abundances
 #' @return Data.table of CMP scores
@@ -294,7 +297,10 @@ get_prmt_scores = function(emm, norm_kos){
     for(m in 1:nsamp){
       prmt[,m] =  as.matrix(emm) %*% unlist(norm_kos_sub[,subjects[m],with=F])
     }
-  }else{
+  }else if(all(sort(names(emm))==sort(norm_kos_sub[,KO]))){ #Just out of order
+    emm = emm[,order(names(emm))]
+    norm_kos_sub = norm_kos_sub[order(KO)]
+  } else {
     stop("Double check you are using the correct metabolic network! Gene KOs do not equal network KOs")
   }
   prmt = data.table(prmt,row.names(emm))
@@ -305,6 +311,7 @@ get_prmt_scores = function(emm, norm_kos){
 
 #' Make a data vector into a pairwise difference matrix (can be used for either PRMT scores or metabolite concentrations)
 #'
+#' @import data.table
 #' @param metabolite metabolite ID
 #' @param met_mat Abundances or scores for that metabolite across samples
 #' @param diff_function Difference by default, could be fold_change
@@ -334,6 +341,7 @@ make_pairwise_met_matrix = function(metabolite, met_mat, diff_function = "differ
 
 #' Modification of vegan mantel test to test 2-sided or significantly less than
 #'
+#' @import data.table
 #' @param xdis A distance matrix
 #' @param ydis Another distance matrix
 #' @param method Correlation coefficient to use (pearson or spearman)
@@ -362,7 +370,7 @@ mantel_2sided = function (xdis, ydis, method = "pearson", permutations = 999,
       arg <- if (missing(strata))
         NULL
       else strata
-      permat <- t(replicate(permutations, shuffle(N)))
+      permat <- t(replicate(permutations, permute::shuffle(N)))
       #permat <- t(replicate(permutations, permuted.index(N, strata = arg)))
     }
   }
@@ -444,8 +452,8 @@ select_best_id2 = function(met_table, met_data, net_compounds, final_method = "f
   }
   #for(k in 1:length(unique_ids))
   #  new_mets = rbind(new_mets, lapply(met_data[which(single_final == unique_ids[k]),],sum))
-  new_mets = data.table::data.table(new_mets, KEGG = good_mets)
-  data.table::setkey(new_mets, KEGG)
+  new_mets = data.table(new_mets, KEGG = good_mets)
+  setkey(new_mets, KEGG)
   return(new_mets)
 }
 
@@ -492,13 +500,14 @@ select_best_id = function(met_table, met_data, net_compounds, final_method = "fi
   #add together matching ions
   #for(k in 1:length(unique_ids))
   #  new_mets = rbind(new_mets, lapply(met_data[which(single_final == unique_ids[k]),],sum))
-  new_mets = data.table::data.table(new_mets, KEGG = good_mets)
+  new_mets = data.table(new_mets, KEGG = good_mets)
   setkey(new_mets, KEGG)
   return(new_mets)
 }
 
 #' Runall function to do complete predictions and comparison for all shared metabolites
 #'
+#' @import data.table
 #' @param genes Gene abundances
 #' @param mets Metabolite abundances
 #' @param file_prefix Prefix for output files
@@ -585,9 +594,9 @@ run_all_metabolites = function(genes, mets, file_prefix = 'net1', correction = "
   pvals_n = sapply(all_comparisons,function(x){return(x$Mantel[[2]]$signif)})
   pvals2_n = correct(pvals_n, method = correction)
 
-  node_data = data.table::data.table(compound = shared_mets, CorrS = cors_s, PValS = pvals_s, QValS = pvals2_s,
+  node_data = data.table(compound = shared_mets, CorrS = cors_s, PValS = pvals_s, QValS = pvals2_s,
                          CorrN = cors_n, PValN = pvals_n, QValN = pvals2_n)
-  data.table::setkey(node_data,compound)
+  setkey(node_data,compound)
 
   #save everything
   #write edge file
@@ -606,6 +615,7 @@ run_all_metabolites = function(genes, mets, file_prefix = 'net1', correction = "
 
 #' Runall function to do complete predictions and evaluate classification of metabolites as high or low abundance
 #'
+#' @import data.table
 #' @param genes Gene abundances
 #' @param mets Metabolite abundances
 #' @param file_prefix Prefix for output files
@@ -675,6 +685,7 @@ run_all_metabolites2 = function(genes, mets, file_prefix = 'net1', correction = 
       error = sum(abs(higher_pred-higher_obs))/length(higher_obs)
       #need to clarify - this is different from not having any information
       if(plot_rank){
+        requireNamespace("ggplot2", quietly = TRUE)
         preds = data.frame(Prediction = factor(higher_pred), Prmt = prmts, Value = met1, Rank = rank(met1))
         ggplot2::ggplot(preds, ggplot2::aes(x=Rank,y=Value, col = Prediction)) + ggplot2::geom_point(size=3) + ggplot2::xlim(c(0,max(preds$Rank)))+ ggplot2::theme_bw() + ggplot2::scale_color_manual(values=c("purple","orange")) +
           ggplot2::annotate("text",x=0.3*max(preds$Rank), y=0.8*max(preds$Value),label=met_names(shared_mets[j]))+
@@ -719,10 +730,10 @@ run_all_metabolites2 = function(genes, mets, file_prefix = 'net1', correction = 
   pvals_nc = correct(pvals_n, method = correction)
   accuracy = 1 - sapply(all_comparisons, function(x){ return(x$Error)})
 
-  node_data = data.table::data.table(compound = shared_mets, PValS = pvals, QValS = pvals_c,
+  node_data = data.table(compound = shared_mets, PValS = pvals, QValS = pvals_c,
                          #CorrP = cors_p, PValP = pvals_p, QValP = pvals2_p,
                          PValN = pvals_n, QValN = pvals_nc, Accuracy = accuracy, Sensitivity = sensitivity, Specificity = specificity, Precision = precision)
-  data.table::setkey(node_data,compound)
+  setkey(node_data,compound)
   #write to network file
   write.table(ko_net_table,file=paste(file_prefix,'_edges.txt',sep=''),sep="\t",quote=F,row.names=F)
   #write node attribute file
@@ -739,6 +750,7 @@ run_all_metabolites2 = function(genes, mets, file_prefix = 'net1', correction = 
 
 #' Multiple hypothesis correction
 #'
+#' @import data.table
 #' @param pvals Vector of p-values
 #' @param method Must be either "fdr" or "bonferroni"
 #' @return Vector of corrected values
@@ -769,59 +781,21 @@ plot_mantel_results = function(metabolite_list, node_data, file_prefix){
   dev.off()
 }
 
-#ggplot2 multiplot function
-multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
-  require(grid)
 
-  # Make a list from the ... arguments and plotlist
-  plots <- c(list(...), plotlist)
-
-  numPlots = length(plots)
-
-  # If layout is NULL, then use 'cols' to determine layout
-  if (is.null(layout)) {
-    # Make the panel
-    # ncol: Number of columns of plots
-    # nrow: Number of rows needed, calculated from # of cols
-    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
-                     ncol = cols, nrow = ceiling(numPlots/cols))
-  }
-
-  if (numPlots==1) {
-    print(plots[[1]])
-
-  } else {
-    # Set up the page
-    grid.newpage()
-    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
-
-    # Make each plot, in the correct location
-    for (i in 1:numPlots) {
-      # Get the i,j matrix positions of the regions that contain this subplot
-      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
-
-      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
-                                      layout.pos.col = matchidx$col))
-    }
-  }
-}
-
-calculate_net_dist=function(compound1,compound2, netmat){
-  #re-doing to make sure there's an actual reaction connecting the 2 compounds - net_mat should be edge list (network[[3]]) - data.table is awesome for this
-  if(identical(compound1,compound2)) return(0)
-  level = 1
-  comps1 = sort(unique(c(netmat[Prod==compound1, Reac], netmat[Reac==compound1, Prod])))
-  while(!(compound2 %in% comps1) & level < 12){
-    level = level+1
-    comps1 = sort(unique(c(netmat[Prod %in% comps1, Reac], netmat[Reac %in% comps1, Prod])))
-  }
-  return(level)
-}
-
-#need to load the file KeggCompoundNames.rda for this to work - get names that go with KEGG metabolite IDs
+#' Get metabolite name for KEGG ID(s)
+#'
+#' Requires metaboliteCategories_compoundNames.txt to be in the same directory
+#'
+#' @import data.table
+#' @param met_ids One or a vector of KEGG compound IDs
+#' @return vector of character metabolite names
+#' @examples
+#' met_names(c("C00082", "C00334"))
+#'
+#' @export
 met_names = function(met_ids){
-  path_key = data.table::fread("metaboliteCategories_compoundNames.txt")
-  data.table::setkey(path_key, "compound")
+  #path_key = fread("metaboliteCategories_compoundNames.txt")
+  setkey(path_key, "compound")
   return(path_key[met_ids, CompoundName])
 #   load("KeggCompoundNames.rda")
 #   return(sapply(met_ids, function(x){ return(all_met_names[match(x,names(all_met_names))][[1]][1])}))
@@ -829,6 +803,7 @@ met_names = function(met_ids){
 
 
 plot_ref_mets_by_prmts = function(met, prmts, id, file_prefix){
+  requireNamespace("ggplot2", quietly = TRUE)
   med_met = quantile(met, probs = quant)
   if(any(met==med_met)) med_prmt = median(prmts[met==med_met]) else med_prmt = mean(prmts[which(abs(met-med_met) <= min(abs(met-med_met)) + 0.001)]) #median of two closest from which median was calculated
   ref_met = met - med_met
@@ -846,7 +821,7 @@ plot_ref_mets_by_prmts = function(met, prmts, id, file_prefix){
 
 
 ggMMplot <- function(var1, var2, prop=T, fontsize=7, text_location="bottom"){
-  #require(ggplot2)
+  requireNamespace("ggplot2", quietly = TRUE)
   levVar1 <- length(levels(var1))
   levVar2 <- length(levels(var2))
   y = ifelse(text_location=="bottom",-0.1,1.1)
@@ -866,6 +841,7 @@ ggMMplot <- function(var1, var2, prop=T, fontsize=7, text_location="bottom"){
 
 #' Get non-reverible reactions of network.
 #'
+#' @import data.table
 #' @param pvals Vector of p-values
 #' @param method Must be either "fdr" or "bonferroni"
 #' @return Vector of corrected values
@@ -874,20 +850,45 @@ ggMMplot <- function(var1, var2, prop=T, fontsize=7, text_location="bottom"){
 #' @export
 get_non_rev_rxns = function(rxn_table, all_rxns=T){ #whether to return all reactions or only 1/2 of each reversible reaction since info is redundant
   if(dim(rxn_table)[1]>0){
-    all_sorted= data.table::data.table(t(apply(rxn_table[,list(KO,Reac,Prod,stoichReac,stoichProd)],1,function(y){ sort(unlist(y))})))
+    all_sorted= data.table(t(apply(rxn_table[,list(KO,Reac,Prod,stoichReac,stoichProd)],1,function(y){ sort(unlist(y))})))
     all_sorted[,Count:=.N,by=names(all_sorted)]
     all_sorted[,Reversible:=ifelse(Count==2,1,0)]
     rxn_table[,Reversible:=ifelse(all_sorted[,Count]==2,1,0)] #order is the same
     if("V1" %in% names(all_sorted)){
       all_sorted = unique(all_sorted)
       all_sorted = all_sorted[,list(V5, V4, V3, V2, V1, Reversible)]
-      data.table::setnames(all_sorted, c("KO","Reac", "Prod", "stoichReac", "stoichProd", "Reversible"))
+      setnames(all_sorted, c("KO","Reac", "Prod", "stoichReac", "stoichProd", "Reversible"))
     }
     if(all_rxns) return(rxn_table) else return(all_sorted)
   } else return(NULL)
 }
 
-prmt_contributions = function(j, prmts_sub_good, all_rxns, subjects, norm_kos, ko_net){
+#' Calculate scores based on only a single gene.
+#' 
+#' @import data.table
+#' 
+#' 
+#' 
+#' @export
+single_gene_cmp = function(compound, gene, norm_kos, ko_net){
+  
+  
+}
+
+#' Identify potential important gene contributors for each metabolite.
+#'
+#' @import data.table
+#' @param j
+#' @param prmts_sub_good
+#' @param all_rxns
+#' @param subjects
+#' @param norm_kos
+#' @param ko_net
+#' @return list of contributors and correlations
+#' @examples
+#'
+#' @export
+gene_contributions = function(j, prmts_sub_good, all_rxns, subjects, norm_kos, ko_net){
   #index (from sapply usually), prmt matrix, list of reaction tables for each compound, subjects, gene matrix, full network
   if(!is.null(all_rxns[[j]])){
     compound = prmts_sub_good[j,compound]
@@ -899,7 +900,7 @@ prmt_contributions = function(j, prmts_sub_good, all_rxns, subjects, norm_kos, k
       prmt_without = data.matrix(ko_net[[1]][compound,vals_without[,KO]])%*%data.matrix(vals_without[,subjects,with=F])
       return(cor(as.vector(unlist(prmts_sub_good[compound,subjects,with=F])),as.vector(prmt_without), method="spearman"))
     })
-    ko_cors = data.table::data.table(KO=kos_involved, Cor=ko_prmt_cors)
+    ko_cors = data.table(KO=kos_involved, Cor=ko_prmt_cors)
     #save KOs that have a major effect
     ko_good = ko_cors[is.na(Cor)|(Cor < 0.5),KO]
     net_primary = all_rxns[[j]][KO %in% ko_good & Reversible==0]
@@ -925,6 +926,7 @@ prmt_contributions = function(j, prmts_sub_good, all_rxns, subjects, norm_kos, k
 
 #' Compare a single set each of CMP scores and metabolite concentrations
 #'
+#' @import data.table
 #' @param met_met metabolite to use from metabolite concentration data
 #' @param met_prmt metabolite to use from CMP score data
 #' @param met_all matrix of metabolite concentrations
@@ -947,13 +949,15 @@ compare_met = function(met_met, met_prmt, met_all, prmt_all, posneg="pos", cor_m
 
 #' Function for getting ko abundances from BV qPCR data
 #'
+#' @import data.table
 #' @param qpcr qPCR species abundance data across samples
 #' @param ref_kos gene content of every species
+#' @param scale_factor Scale abundances by a factor
 #' @return gene abundances across samples
 #' @examples
 #' kos_from_species(bv_qpcr, genome_content)
 #' @export
-kos_from_species = function(qpcr, ref_kos){
+kos_from_species = function(qpcr, ref_kos, scale_factor = 1){
   #kos_by_sample=list(NULL) ##kos by ksample and species - have qpcr for 14 species but genomes for only 11 of them
   ref_names = unique(ref_kos[,species])
   spec_names = names(qpcr)[!names(qpcr) %in% c("ID", "Sample")]
@@ -965,19 +969,20 @@ kos_from_species = function(qpcr, ref_kos){
       if(any(grepl(i, ref_names)) & !is.na(unlist(qpcr[j,i,with=F]))){
         amt=as.numeric(qpcr[j,i,with=F]) #amount in that sample
         if(amt>0){
-          kolist=rbind(kolist, data.table(KO=as.character(ref_kos[species==i,KO]),Abund=ref_kos[species==i,CopyNum]*amt/1000, Species=i, Sample=qpcr[j,ID]))
+          kolist=rbind(kolist, data.table(KO=as.character(ref_kos[species==i,KO]),Abund=ref_kos[species==i,CopyNum]*amt/scale_factor, Species=i, Sample=qpcr[j,ID]))
           ##scale by 1000 to make numbers more manageable
         }
       } #else kos_by_sample[[j]]=NULL
     }
   }
   BV_kos = kolist[,sum(Abund),by=list(KO,Sample)]
-  BV_kos = data.table::dcast.data.table(BV_kos,KO~Sample, value.var="V1")
+  BV_kos = dcast.data.table(BV_kos,KO~Sample, value.var="V1")
   return(BV_kos)
 }
 
 #' Evaluate species contributors for a single metabolite with qPCR/species abundance data
 #'
+#' @import data.table
 #' @param j metabolite # (usually from lapply/sapply)
 #' @param prmts_sub_good CMP scores for metabolites with abundance data
 #' @param all_rxns list of relevant reactions for each metabolite
@@ -1033,6 +1038,7 @@ prmt_species_contributions = function(j, prmts_sub_good, all_rxns, subjects, nor
 
 #' Evaluate species contributors for a single metabolite with OTU and PICRUSt data
 #'
+#' @import data.table
 #' @param j metabolite # (usually from lapply/sapply)
 #' @param prmts_sub_good CMP scores for metabolites with abundance data
 #' @param all_rxns list of relevant reactions for each metabolite
@@ -1061,6 +1067,7 @@ prmt_species_contributions_picrust = function(j, prmts_sub_good, all_rxns, subje
 
 #' Test against list of known microbial metabolites
 #'
+#' @import data.table
 #' @param node_data output of run_all_metabolites
 #' @param met_list List of metabolites to test against
 #' @return Null, just prints a bunch of p-values
@@ -1089,6 +1096,7 @@ simpleCap <- function(x) {
 
 #' Get network distances between 2 compounds
 #'
+#' @import data.table
 #' @param c1 first compound
 #' @param c2 second compound
 #' @param allnet edge list output of generate_genomic_network
@@ -1109,6 +1117,18 @@ get_net_dist = function(c1, c2, allnet, max_dist = 20){
   return(netdist)
 }
 
+# calculate_net_dist=function(compound1,compound2, netmat, maxdist){
+#   #re-doing to make sure there's an actual reaction connecting the 2 compounds - net_mat should be edge list (network[[3]])
+#   if(identical(compound1,compound2)) return(0)
+#   level = 1
+#   comps1 = sort(unique(c(netmat[Prod==compound1, Reac], netmat[Reac==compound1, Prod])))
+#   while(!(compound2 %in% comps1) & level < 12){
+#     level = level+1
+#     comps1 = sort(unique(c(netmat[Prod %in% comps1, Reac], netmat[Reac %in% comps1, Prod])))
+#   }
+#   return(level)
+# }
+#
 
 #' Defaults for NULL values
 #' @export

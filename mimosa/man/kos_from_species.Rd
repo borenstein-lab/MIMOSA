@@ -4,12 +4,14 @@
 \alias{kos_from_species}
 \title{Function for getting ko abundances from BV qPCR data}
 \usage{
-kos_from_species(qpcr, ref_kos)
+kos_from_species(qpcr, ref_kos, scale_factor = 1)
 }
 \arguments{
 \item{qpcr}{qPCR species abundance data across samples}
 
 \item{ref_kos}{gene content of every species}
+
+\item{scale_factor}{Scale abundances by a factor}
 }
 \value{
 gene abundances across samples
