@@ -5,9 +5,10 @@
 \title{Runall function to do complete predictions and comparison for all shared metabolites}
 \usage{
 run_all_metabolites(genes, mets, file_prefix = "net1", correction = "fdr",
-  cutoff = 0.1, net_method = "load", id_met = F, met_id_file = "",
-  degree_filter = 0, minpath_file = "", cor_method = "spearman",
-  net_file = "", nperm = 20000, nonzero_filter = 2)
+  cutoff = 0.1, net_method = "load", rxn_table_source = "", id_met = F,
+  met_id_file = "", degree_filter = 0, minpath_file = "",
+  cor_method = "spearman", net_file = "", nperm = 20000,
+  nonzero_filter = 3)
 }
 \arguments{
 \item{genes}{Gene abundances}
@@ -27,6 +28,16 @@ run_all_metabolites(genes, mets, file_prefix = "net1", correction = "fdr",
 \item{met_id_file}{If id_met, file of metabolite identifications}
 
 \item{degree_filter}{Threshold for filtering currency metabolites}
+
+\item{minpath_file}{Optional file of pathways to filter network to}
+
+\item{cor_method}{Either "spearman" or "pearson", default is Spearman}
+
+\item{net_file}{file containing network template to use}
+
+\item{nperm}{Number of permutations for Mantel test, default is 20000}
+
+\item{nonzero_filter}{Minimum number of samples required to have nonzero concentrations and nonzero metabolic potential scores in order for metabolite to be evaluated, default is 3}
 }
 \value{
 No return, writes output to file

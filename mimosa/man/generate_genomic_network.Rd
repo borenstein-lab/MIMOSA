@@ -4,13 +4,14 @@
 \alias{generate_genomic_network}
 \title{Create a community metabolic network model using a few different methods.}
 \usage{
-generate_genomic_network(kos, keggSource = "labKegg", degree_filter = 0,
-  minpath_file = "", normalize = T, networkFile = "")
+generate_genomic_network(kos, keggSource = "KeggTemplate",
+  degree_filter = 0, minpath_file = "", normalize = T, rxn_table = "",
+  networkFile = "")
 }
 \arguments{
 \item{kos}{Genes to include in network (KEGG Orthology IDs)}
 
-\item{keggSource}{source of network information, currently can be "labKEGG", "loadNet", or "metacyc"}
+\item{keggSource}{source of network information, currently can be "KeggTemplate", "loadNet", or "metacyc"}
 
 \item{degree_filter}{Compounds connected to this number of KOs or more will be filtered from the network}
 
@@ -18,7 +19,9 @@ generate_genomic_network(kos, keggSource = "labKegg", degree_filter = 0,
 
 \item{normalize}{Whether to normalize output matrix to show relative impacts of each gene on each compound}
 
-\item{networkFile}{If keggSource is "loadNet", file that template network should be loaded from}
+\item{rxn_table}{If keggSource is "KeggTemplate", must supply a data.table with the format of}
+
+\item{networkFile}{If keggSource is "loadNet", file that template network should be loaded from, should have same format as output of generate_network_template_kegg}
 }
 \value{
 List containing 3 different versions of the same network: an adjacency matrix, an adjacency matrix that differentiates between genes with a neutral effect on a compound and no effect (0 vs NA), and an edge list.

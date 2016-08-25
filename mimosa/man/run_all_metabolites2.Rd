@@ -5,9 +5,9 @@
 \title{Runall function to do complete predictions and evaluate classification of metabolites as high or low abundance}
 \usage{
 run_all_metabolites2(genes, mets, file_prefix = "net1", correction = "fdr",
-  cutoff = 0.1, net_method = "load", id_met = F, met_id_file = "",
-  degree_filter = 0, minpath_file = "", net_file = "", quant = 0.5,
-  plot_rank = F, plot_continuous = T, nonzero_filter = 2,
+  cutoff = 0.1, net_method = "load", rxn_table_source = "", id_met = F,
+  met_id_file = "", degree_filter = 0, minpath_file = "", net_file = "",
+  quant = 0.5, plot_rank = F, plot_continuous = F, nonzero_filter = 3,
   rel_abund_mets = F)
 }
 \arguments{
@@ -28,6 +28,18 @@ run_all_metabolites2(genes, mets, file_prefix = "net1", correction = "fdr",
 \item{met_id_file}{If id_met, file of metabolite identifications}
 
 \item{degree_filter}{Threshold for filtering currency metabolites}
+
+\item{minpath_file}{Optional file of pathways to filter network to}
+
+\item{net_file}{file containing network template to use}
+
+\item{quant}{Quantile above which a metabolite is "elevated", default is 0.5}
+
+\item{plot_rank}{Whether to generate plots of ranks of metabolite concentrations and scores, default is F}
+
+\item{plot_continuous}{Whether to generate plots of metabolite concentrations and scores, default is F}
+
+\item{nonzero_filter}{Minimum number of samples required to have nonzero concentrations and nonzero metabolic potential scores in order for metabolite to be evaluated, default is 3}
 }
 \value{
 No return, writes output to file

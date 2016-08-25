@@ -1,7 +1,5 @@
-#7-21-2014
-#Functions to create a stoichiometric matrix (EMM) and gene abundance matrix from a metagenomic network, and compare
-#with metabolomic data
-#assumes already-processed KO and metabolite abundance datasets 
+#Create a stoichiometric matrix (EMM) and gene abundance matrix from a metagenomic network, and compare with metabolomic data
+#assumes already-processed KO and metabolite abundance datasets
 
 library(KEGGREST)
 library(data.table)
@@ -12,9 +10,9 @@ library(qvalue)
 library(getopt)
 library(ggplot2)
 library(reshape2)
-#library(bit64)
+library(mimosa)
 options(stringsAsFactors=F)
-source("core_functions.R")
+#source("core_functions.R")
 
 spec = matrix(c('genefile','g',1,"character",
               'metfile','m',1,"character",
@@ -30,8 +28,11 @@ spec = matrix(c('genefile','g',1,"character",
               'cor_method','c',2,"character",
               'num_permute','u',2,"integer",
               'quant','q',2,"double",
-              'nonzero_filt','z',2, "integer"), byrow=T, ncol=4)
-  
+              'nonzero_filt','z',2, "integer",
+              'mapformula_file','e',2, "character",
+              'ko_rxn_file','r',2, "character",
+              'rxn_annots_file','a', 2, "character"), byrow=T, ncol=4)
+
 opt = getopt(spec, opt = commandArgs(TRUE))
 datasets = read_files(opt$genefile, opt$metfile)
 genes = datasets[[1]]
@@ -42,7 +43,7 @@ if(!is.null(opt$file_prefix)) file_prefix = opt$file_prefix else file_prefix = '
 cat(paste("File prefix is ", file_prefix,"\n"))
 #if(!is.null(opt$dir_method)) dir_method = opt$dir_method else dir_method = 'standard' #standard or minpath
 #cat(paste("Dir method is ", dir_method,"\n"))
-if(!is.null(opt$net_method)) net_method = opt$net_method else net_method = 'load' #load, api, labKegg, or loadNet
+if(!is.null(opt$net_method)) net_method = opt$net_method else net_method = 'load' #loadNet or KeggTemplate
 cat(paste("Net method is ", net_method,"\n"))
 if(!is.null(opt$degree_filter)) degree_filter = opt$degree_filter else degree_filter = 0
 cat(paste("Degree filter is", degree_filter,"\n"))
@@ -55,11 +56,23 @@ cat(paste("Mantel correlation method is ",cor_method,"\n"))
 if(net_method == "loadNet"){
   if(!is.null(opt$net_file)) net_file = opt$net_file
   cat(paste("Network file is ",net_file,"\n"))
-} else net_file = ""
+} else if(net_method == "KeggTemplate"){
+  if(is.null(opt$mapformula_file)){
+    stop("Need mapformula file!")
+  } else{
+    #Set up generic network info
+    if(is.null(opt$ko_rxn_file)){ ##Use KEGGREST
+      all_kegg = get_kegg_reaction_info("KEGGREST")
+    } else{
+      all_kegg = get_kegg_reaction_info(opt$ko_rxn_file, opt$rxn_annots_file)
+    }
+    rxn_table = generate_network_template_kegg(opt$mapformula_file, all_kegg)
+  }
+}
 if(!is.null(opt$num_permute)) num_permute = opt$num_permute else num_permute = 20000
 cat(paste("Number of Mantel permutations is ", num_permute,"\n"))
 if(!is.null(opt$classification)) {
-  runmet2 = T 
+  runmet2 = T
   if(!is.null(opt$quant)) quant = opt$quant else quant = 0.5
   cat(paste("Quantile cutoff for classification is"), quant, "\n")
 } else runmet2 = F
@@ -67,14 +80,19 @@ if(!is.null(opt$nonzero_filt)) nonzero_filt = opt$nonzero_filt else nonzero_filt
 cat(paste("Nonzero filter is ", nonzero_filt,"\n"))
 
 
-
 if(!runmet2){
-  run_all_metabolites(genes, mets, file_prefix = file_prefix, id_met = !is.null(opt$met_id_file), met_id_file = met_id_file, 
-                    net_method = net_method, net_file = net_file,
+  run_all_metabolites(genes, mets, file_prefix = file_prefix, id_met = !is.null(opt$met_id_file), met_id_file = met_id_file,
+                    net_method = net_method, net_file = net_file, rxn_table_source = rxn_table,
                     correction = "fdr", degree_filter = degree_filter, minpath_file = minpath_file, cor_method = cor_method, nperm = num_permute, nonzero_filter = nonzero_filt)
 } else {
-  run_all_metabolites2(genes, mets, file_prefix = file_prefix, id_met = !is.null(opt$met_id_file), met_id_file = met_id_file, 
-                       net_method = net_method, net_file = net_file,
+  run_all_metabolites2(genes, mets, file_prefix = file_prefix, id_met = !is.null(opt$met_id_file), met_id_file = met_id_file,
+                       net_method = net_method, net_file = net_file,  rxn_table_source = rxn_table,
                        correction = "fdr", degree_filter = degree_filter, minpath_file = minpath_file, quant = quant, nonzero_filter = nonzero_filt)
-  
+
 }
+
+
+###Get potential key species contributors
+
+###Run network shuffling tests
+

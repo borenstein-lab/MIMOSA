@@ -19,5 +19,6 @@ Imports:
     devtools
 Suggests:
     KEGGREST,
-    ggplot2
+    ggplot2,
+    readr
 RoxygenNote: 5.0.1

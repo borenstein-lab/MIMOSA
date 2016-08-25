@@ -29,6 +29,95 @@
 # cat(paste(contrib_file, "\n"))
 # cat(paste(data_dir, "\n"))
 
+#' Evaluate species contributors for a single metabolite with qPCR/species abundance data
+#'
+#' @import data.table
+#' @param j metabolite # (usually from lapply/sapply)
+#' @param prmts_sub_good CMP scores for metabolites with abundance data
+#' @param all_rxns list of relevant reactions for each metabolite
+#' @param subjects vector of subjects
+#' @param norm_kos data.table of gene abundances
+#' @param ko_net network created by generate_genomic_network
+#' @param qpcr original species abundances
+#' @param ref_kos gene abundances for each species
+#' @param cor_with whether to look at the correlation of CMP scores of each species by itself with the metabolite, or of the whole community with that species removed
+#' @return list of potential key species contributors and associated info
+#' @examples
+#' sapply(1:length(metabolites), prmt_species_contributions, cmp_scores, all_rxns,
+#' all_subjects, ko_abunds, ko_net, spec_abunds, ref_kos)
+#' @export
+prmt_species_contributions = function(j, prmts_sub_good, all_rxns, subjects, norm_kos, ko_net, qpcr, ref_kos, cor_with=F){
+  if(!is.null(all_rxns[[j]])){
+    if(!cor_with){
+      compound = prmts_sub_good[j,compound]
+      kos_involved = unique(all_rxns[[j]][Reversible==0,KO])
+      #plan - look at correlation between old prmt score and prmt score w/out each species
+      species_involved = ref_kos[KO %in% kos_involved, unique(species)]
+
+      species_prmt_cors = sapply(species_involved, function(x){
+        spec_without = qpcr[,names(qpcr)!=x, with=F]
+        vals_without = kos_from_species(spec_without, ref_kos)
+        vals_without = vals_without[KO %in% names(ko_net[[1]])]
+        net_mod = ko_net[[1]][,which(names(ko_net[[1]]) %in% vals_without[,KO])]
+        prmt_without = data.matrix(net_mod[compound,vals_without[,KO]])%*%data.matrix(vals_without[,subjects,with=F])
+        return(cor(as.vector(unlist(prmts_sub_good[compound,subjects,with=F])),as.vector(prmt_without), method="spearman"))
+      })
+      spec_cors = data.table(Species=species_involved, Cor=species_prmt_cors)
+      #save KOs that have a major effect
+      species_good = spec_cors[is.na(Cor)|(Cor < 0.5),Species]
+      return(list(spec_cors, species_good))
+      #  return(ko_cors)
+    }else{
+      compound = prmts_sub_good[j,compound]
+      kos_involved = unique(all_rxns[[j]][Reversible==0,KO])
+      species_involved = ref_kos[KO %in% kos_involved, unique(species)]
+      species_prmt_cors = sapply(species_involved, function(x){
+        spec_alone = qpcr[,names(qpcr) %in% c(x, "Subject","Visit", "Sample", "ID"), with=F]
+        vals_alone = kos_from_species(spec_alone, ref_kos)
+        vals_alone = vals_alone[KO %in% names(ko_net[[1]])]
+        net_mod = ko_net[[1]][,which(names(ko_net[[1]]) %in% vals_alone[,KO])]
+        prmt_alone = data.matrix(net_mod[compound,vals_alone[,KO]])%*%data.matrix(vals_alone[,subjects,with=F])
+        return(cor(as.vector(unlist(prmts_sub_good[compound,subjects,with=F])),as.vector(prmt_alone), method="spearman"))
+      })
+      spec_cors = data.table(Species=species_involved, Cor=species_prmt_cors)
+      species_good = spec_cors[Cor > 0.5,Species]
+      return(list(spec_cors,species_good))
+    }
+  } else return(NULL)
+}
+
+#' Evaluate species contributors for a single metabolite with OTU and PICRUSt data
+#'
+#' @import data.table
+#' @param j metabolite # (usually from lapply/sapply)
+#' @param prmts_sub_good CMP scores for metabolites with abundance data
+#' @param all_rxns list of relevant reactions for each metabolite
+#' @param subjects vector of subjects
+#' @param norm_kos data.table of gene abundances
+#' @param ko_net network created by generate_genomic_network
+#' @param all_taxa vector of OTUs
+#' @param single_spec_prmts single-species CMP scores calculated from get_spec_contribs function
+#' @param cor_with whether to look at the correlation of CMP scores of each species by itself with the metabolite, or of the whole community with that species removed
+#' @return list of 2-item lists for every metabolite - 1st item is data.table of OTUs and correlations, second item is vector of OTUs with correlations > 0.5
+#' @examples
+#' sapply(1:length(metabolites), prmt_species_contributions_picrust, cmp_scores, all_rxns,
+#' all_subjects, ko_abunds, ko_net, spec_abunds, ref_kos)
+#' @export
+prmt_species_contributions_picrust = function(j, prmts_sub_good, all_rxns, subjects, norm_kos, ko_net, all_taxa, single_spec_prmts, cor_with=F){
+  if(!is.null(all_rxns[[j]])){
+    compound = prmts_sub_good[j,compound]
+    kos_involved = unique(all_rxns[[j]][Reversible==0,KO])
+    species_prmt_cors = sapply(1:length(all_taxa), function(x){
+      return(cor(as.vector(unlist(prmts_sub_good[compound,subjects,with=F])),as.vector(unlist(single_spec_prmts[[x]][compound,subjects,with=F])), method="spearman"))
+    })
+    spec_cors = data.table(Species=all_taxa, Cor=species_prmt_cors)
+    species_good = spec_cors[Cor > 0.5,Species]
+    return(list(spec_cors,species_good))
+  } else return(NULL)
+}
+
+
+
 #' Get contributors for every metabolite and save
 #'
 #' @param contribs data.table of OTU, genes, samples and abundances
@@ -130,9 +219,10 @@ save_contribs_by_species = function(contribs, valueVar, out_dir){
 #'
 #' @param all_otus vector of OTUs or taxa
 #' @param valueVar "relAbundSample" or "singleMusicc", abundance metric to use for single taxon gene abundances
+#' @param out_dir Path of directory for loading and saving output
 #' @return Null, saves to Rdata file
 #' @export
-get_all_singleSpec_prmts = function(all_otus, valueVar){
+get_all_singleSpec_prmts = function(all_otus, valueVar, out_dir){
   cat(valueVar)
   if(!"all_koAbunds_byOTU" %in% ls()) load(paste0(out_dir, "all_koAbunds_byOTU_",valueVar,".rda"))
   if(length(all_otus) != length(all_koAbunds_byOTU)) stop("Problem!! OTU lists don't match")

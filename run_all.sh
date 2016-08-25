@@ -35,7 +35,7 @@ gene_file5="$DATADIR1/BV_kos_qpcr_good.txt"
 # gene_file5='BV_data/BV_metagenomes_good.txt'
 met_file5="$DATADIR1/bv_raw_mets_good.txt"
 
-Rscript runMimosa.R --genefile=$gene_file5 -m $met_file5 -w -p "$RUNDIR/bv_q" -n labKegg -f 30 -z 4 -u 10000
+Rscript runMimosa.R --genefile=$gene_file5 -m $met_file5 -w -p "$RUNDIR/bv_q" -n KeggTemplate -f 30 -z 4 -u 10000 -e "$HOMEDIR/reaction_mapformula.lst"
 
 
 #BV validation Dataset 2
@@ -44,7 +44,7 @@ met_file="$DATADIR1/validation_mets_good.txt"
 
 run_musicc.py $gene_file -o "$DATADIR1/validation_picrust_musicc.txt" -n -c learn_model -v
 
-Rscript runMimosa.R --genefile="$DATADIR1/validation_picrust_musicc.txt" -m "$DATADIR1/$met_file" -w -p "$RUNDIR/bv_val_picrust" -n labKegg -f 30 -z 4
+Rscript runMimosa.R --genefile="$DATADIR1/validation_picrust_musicc.txt" -m "$DATADIR1/$met_file" -w -p "$RUNDIR/bv_val_picrust" -n KeggTemplate -f 30 -z 4 -e "$HOMEDIR/reaction_mapformula.lst"
 
 # #mice ABs Dataset 3
 
@@ -53,7 +53,7 @@ met_file6="$DATADIR2/mice_raw_mets_good.txt"
 
 run_musicc.py "$gene_file6" -o "$DATADIR2/musicc_out.txt" -n -c learn_model -v
 
-Rscript runMimosa.R --genefile="$DATADIR2/musicc_out.txt" -m "$met_file6" -w -p "$RUNDIR/mice_AB" -n labKegg -f 30 -z 4 -u 10000
+Rscript runMimosa.R --genefile="$DATADIR2/musicc_out.txt" -m "$met_file6" -w -p "$RUNDIR/mice_AB" -n KeggTemplate -f 30 -z 4 -u 10000 -e "$HOMEDIR/reaction_mapformula.lst"
 
 #Swedish twins Dataset 4
 gene_file1="$DATADIR3/genes_good.txt"
@@ -61,37 +61,15 @@ met_file1="$DATADIR3/met_data_sub.txt"
 met_ids1="$DATADIR3/metabosearch_KEGG_noHMDB.txt"
 
 # #normalize the gene abundance data
-run_musicc.py "$gene_file1" -o "$DATADIR3/swedish_musicc_out.txt" -n -c learn_model -v 
+run_musicc.py "$gene_file1" -o "$DATADIR3/swedish_musicc_out.txt" -n -c learn_model -v
 
-Rscript runMimosa.R --genefile="$DATADIR3/swedish_musicc_out.txt" -m "$met_file1"  -w --file_prefix="$RUNDIR/swedish" -n labKegg -f 30 -z 4 -i "$met_ids1"
+Rscript runMimosa.R --genefile="$DATADIR3/swedish_musicc_out.txt" -m "$met_file1"  -w --file_prefix="$RUNDIR/swedish" -n KeggTemplate -f 30 -z 4 -i "$met_ids1" -e "$HOMEDIR/reaction_mapformula.lst"
 
 #E coli dataset
 gene_file_ecoli="$HOMEDIR/Ecoli_data/genes_sub_tp14_good.txt"
 met_file_ecoli="$HOMEDIR/Ecoli_data/mets_sub_tp14_good.txt"
 
-Rscript runMimosa.R --genefile="$gene_file_ecoli" -m "$met_file_ecoli"  -w --file_prefix="$RUNDIR/ecoli_tp14" -n labKegg -f 30 -z 4
+Rscript runMimosa.R --genefile="$gene_file_ecoli" -m "$met_file_ecoli"  -w --file_prefix="$RUNDIR/ecoli_tp14" -n KeggTemplate -f 30 -z 4 -e "$HOMEDIR/reaction_mapformula.lst"
 
-
-# 4 Get key species contributors for PICRUSt datasets
-
-#Dataset 2
-CONTRIBFILE="$DATADIR1/bv_val_picrust_metagenome_contributions.txt"
-RESULTSFILE="$RUNDIR/bv_val_picrust_out.rda"
-
-Rscript singleSpec_contributions_picrust.R "$CONTRIBFILE" "$DATADIR1" "$RESULTSFILE" all make_unnormalized prmts contributions save
-
-#Dataset 3
-CONTRIBFILE="$DATADIR2/mice_metagenome_contributions.txt"
-RESULTSFILE="$RUNDIR/mice_AB_out.rda"
-
-Rscript singleSpec_contributions_picrust.R "$CONTRIBFILE" "$DATADIR2" "$RESULTSFILE" all make_unnormalized prmts contributions save
-
-###Network shuffling tests (submit to cluster)
-qsub -t 1-100 $HOMEDIR/shuffle_net.sh
-
-Rscript summarize_net_shuff_tests.R bv_q
-
-##Knit Rmd Document with all core analyses and results
-Rscript -e "rmarkdown::render('TaxaMet_paper_figures_all.Rmd')"
 
 
