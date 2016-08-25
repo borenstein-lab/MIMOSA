@@ -5,7 +5,7 @@ A pipeline for joint metabolic model-based analysis of metabolomics measurements
 
 ## Contents
 
-- **mimosa**: R package to generate community-specific metabolic network model, use the model to make metabolite predictions and identify consistent and contrasting metabolite variation, identify potential taxonomic contributors to metabolite variation, and shuffle the community metabolic network for comparison of results with a null model.
+- **mimosa**: R package to generate community-specific metabolic network model, use the model to make metabolite predictions and identify consistent and contrasting metabolite variation, identify potential taxonomic contributors to metabolite variation, and shuffle the community metabolic network for comparison of results with a null model. Some functions require downloaded files from the KEGG database (Kanehisa and Goto, 2000).
 
 You can install **mimosa** using the `devtools` package in R:
 ```R
@@ -14,9 +14,7 @@ devtools::install_github("borenstein-lab/MIMOSA/mimosa")
 
 - **runMimosa.R**: wrapper script, used to run main analysis from the command line
 
-- **run_all.sh**: example script to regenerate results from the 4 datasets described in Noecker et al, 2016.
-
-- **network_generation.R**: initial generation of metabolic network template from KEGG database (Kanehisa and Goto, 2000)
+- **run_all.sh**: example script to regenerate results from the 4 datasets described in Noecker et al, 2016. This script uses the Python modules [`picrust`](http://picrust.github.io/picrust/) and [`MUSiCC`](http://elbo.gs.washington.edu/software_musicc.html) to process and prepare the datasets. 
 
 ## Citation
 
