@@ -19,17 +19,17 @@ get_kegg_reaction_info = function(kos_to_rxns_method, reaction_info_file = "", s
       all_kegg = list(KOs = gsub("ko:","",names(KEGGREST::keggList("ko")), fixed=T),
                       Reactions = gsub("rn:", "", names(KEGGREST::keggList("reaction")), fixed = T))
     kos_to_rxns = lapply(all_kegg$Reactions, function(x){
-     try(KEGGREST::keggLink(x, target="ko")) })
-    all_kegg$Reactions = all_kegg$Reactions[sapply(kos_rxns, length) != 0]
-    kos_to_rxns = kos_to_rxns[which(sapply(kos_rxns, length) != 0)]
-    kos_to_rxns = data.table(Rxn = gsub("rn:","", unlist(sapply(kos_rxns, function(x){ return(names(x))}))), KO = gsub("ko:","",unlist(kos_rxns)), fixed = T)
+     KEGGREST::keggLink(x, target="ko") })
+    all_kegg$Reactions = all_kegg$Reactions[sapply(kos_to_rxns, length) != 0]
+    kos_to_rxns = kos_to_rxns[which(sapply(kos_to_rxns, length) != 0)]
+    kos_to_rxns = data.table(Rxn = gsub("rn:","", unlist(sapply(kos_to_rxns, function(x){ return(names(x))}))), KO = gsub("ko:","",unlist(kos_to_rxns)), fixed = T)
     if(kolist != ""){ #if we only want specific KOs)
       kos_to_rxns = kos_to_rxns[KO %in% kolist]
       all_kegg$KOs = all_kegg$KOs[all_kegg$KOs %in% kolist]
       all_kegg$Reactions = all_kegg$Reactions[all_kegg$Reactions %in% kos_to_rxns[,Rxn]]
     }
     all_kegg$Reaction_info = lapply(all_kegg$Reactions, function(x){
-      try(KEGGREST::keggGet(x)) }) #This is slow!
+      KEGGREST::keggGet(x) }) #This is slow!
   } else {
   ##### Option 2: Read reaction info and KO links from KEGG database file
     kos_to_rxns = fread(kos_to_rxns_method, header=F)

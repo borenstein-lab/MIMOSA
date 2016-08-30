@@ -5,12 +5,16 @@
 \title{Get basic KEGG reaction and KO info in a unified format}
 \usage{
 get_kegg_reaction_info(kos_to_rxns_method, reaction_info_file = "",
-  save_out = F)
+  save_out = F, kolist = "")
 }
 \arguments{
 \item{kos_to_rxns_method}{EITHER "KEGGREST" indicating to use the KEGGREST API to link KOs and reactions and get reaction info, OR a file path to the KEGG file genes/ko/ko_reaction.list}
 
 \item{reaction_info_file}{If kos_to_rxns_method is a file path, additional file containing full reaction info from the KEGG database}
+
+\item{save_out}{whether to save output as an Rdata file named "KeggReactions.rda"}
+
+\item{kolist}{Optionally, a vector of KO IDs. Will create an all_kegg object containing information only on those KOs and the reactions linked to them.}
 }
 \value{
 An R object with 4 components: a list of KOs, a list of Reaction IDs, a list of associated reaction info, and a table linking KOs to reactions
