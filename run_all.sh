@@ -28,25 +28,7 @@ Rscript runMimosa.R --genefile="$DATADIR1/Dataset2_picrust_musicc.txt" -m "$met_
 #OR Using downloaded KEGG files to build community network
 Rscript runMimosa.R --genefile="$DATADIR1/Dataset2_picrust_musicc.txt" -m "$met_file" -w -p "$RUNDIR/Dataset2_bv" -n KeggTemplate -f 30 -z 4 -e "$HOMEDIR/reaction_mapformula.lst" -r "ko_reaction.list" -x "reaction"
 
-spec = matrix(c('genefile','g',1,"character",
-              'metfile','m',1,"character",
-              'classification','a',0,"logical",
-              'write_net','w',0,"logical",
-              'file_prefix','p',2,"character",
-              'net_method','n',2,"character",
-              'net_file','l',2,"character",
-              'degree_filter','f',2,"integer",
-              'met_id_file','i',2,"character",
-              'minpath_file','k',2,"character",
-              'cor_method','c',2,"character",
-              'num_permute','u',2,"integer",
-              'quant','q',2,"double",
-              'nonzero_filt','z',2, "integer",
-              'mapformula_file','e',2, "character",
-              'ko_rxn_file','r',2, "character",
-              'rxn_annots_file','x', 2, "character",
-              'contribs_file', 'o', 2, "character",
-              'keggFile', 'b', 2, "character"), byrow=T, ncol=4)
+
 ### Options for runMimosa.R:
 # -g,--genefile gene abundance file path
 # -m,--metfile metabolite abundance file path
