@@ -4,7 +4,7 @@
 \alias{generate_network_template_kegg}
 \title{Generate community metabolic network template from the KEGG database, using reaction_mapformula.lst and}
 \usage{
-generate_network_template_kegg(mapformula_file, all_kegg)
+generate_network_template_kegg(mapformula_file, all_kegg, save_out = F)
 }
 \arguments{
 \item{mapformula_file}{file path to "reaction_mapformula.lst" from the KEGG database, specifying reaction IDs annotated in pathways}
@@ -18,8 +18,6 @@ A table specifying a community metabolic network based on KEGG pathways with the
 Generate community metabolic network template from the KEGG database, using reaction_mapformula.lst and
 }
 \examples{
-generate_network_template_kegg("KEGG/ligand/reaction/reaction_mapformula.lst", "KEGGREST")
-generate_network_template_kegg("KEGG/ligand/reaction/reaction_mapformula.lst",
-"KEGG/genes/ko/ko_reaction.list", "KEGG/ligand/reaction/reaction")
+generate_network_template_kegg("KEGG/ligand/reaction/reaction_mapformula.lst", all_kegg)
 }
 

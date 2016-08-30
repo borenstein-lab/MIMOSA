@@ -5,7 +5,8 @@
 \title{Perform a series of steps related to identifying single-species contributors.}
 \usage{
 get_spec_contribs(contrib_file, data_dir, results_file, out_dir, otu_id,
-  otu_file, valueVar, make_unnormalized, sum_to_genus, prmts, contributions)
+  otu_file, valueVar, make_unnormalized, sum_to_genus, prmts, contributions,
+  rxn_table)
 }
 \arguments{
 \item{contrib_file}{File where metagenome_contributions PICRUSt output is located}
@@ -29,6 +30,8 @@ get_spec_contribs(contrib_file, data_dir, results_file, out_dir, otu_id,
 \item{prmts}{Whether to calculate single-species CMP scores}
 
 \item{contributions}{Whether to evaluate contributions based on single-species CMP scores}
+
+\item{rxn_table}{Community metabolic network template}
 }
 \value{
 No return, saves output to specified file

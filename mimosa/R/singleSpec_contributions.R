@@ -212,7 +212,7 @@ save_contribs_by_species = function(contribs, valueVar, out_dir){
     data.table::setnames(contribs_sub, "Gene","KO")
     all_koAbunds_byOTU[[k]] = contribs_sub[,c("KO",sort(all_samps)),with=F]
   }
-  save(all_koAbunds_byOTU, file = paste0(out_dir,"all_koAbunds_byOTU_",valueVar,".rda"))
+  save(all_koAbunds_byOTU, file = paste0(out_dir,"/all_koAbunds_byOTU_",valueVar,".rda"))
 }
 
 #' Get single-species CMP scores for every OTU and metabolite
@@ -220,15 +220,16 @@ save_contribs_by_species = function(contribs, valueVar, out_dir){
 #' @param all_otus vector of OTUs or taxa
 #' @param valueVar "relAbundSample" or "singleMusicc", abundance metric to use for single taxon gene abundances
 #' @param out_dir Path of directory for loading and saving output
+#' @param rxn_table Community network template
 #' @return Null, saves to Rdata file
 #' @export
-get_all_singleSpec_prmts = function(all_otus, valueVar, out_dir){
+get_all_singleSpec_prmts = function(all_otus, valueVar, out_dir, rxn_table){
   cat(valueVar)
-  if(!"all_koAbunds_byOTU" %in% ls()) load(paste0(out_dir, "all_koAbunds_byOTU_",valueVar,".rda"))
+  if(!"all_koAbunds_byOTU" %in% ls()) load(paste0(out_dir, "/all_koAbunds_byOTU_",valueVar,".rda"))
   if(length(all_otus) != length(all_koAbunds_byOTU)) stop("Problem!! OTU lists don't match")
   prmts_alone = vector("list", length(all_otus))
   for(k in 1:length(all_otus)){
-    sub_ko_net = generate_genomic_network(all_koAbunds_byOTU[[k]][,KO], keggSource = "labKegg", degree_filter = 30)
+    sub_ko_net = generate_genomic_network(all_koAbunds_byOTU[[k]][,KO], keggSource = "KeggTemplate", degree_filter = 30, rxn_table = rxn_table)
     prmts_alone[[k]] = get_prmt_scores(sub_ko_net[[1]], all_koAbunds_byOTU[[k]])
   }
   save(prmts_alone, file = paste0(out_dir, "all_prmtsAlone_byOTU_",valueVar,".rda"))
@@ -247,11 +248,12 @@ get_all_singleSpec_prmts = function(all_otus, valueVar, out_dir){
 #' @param sum_to_genus Whether to sum over OTUs to the genus level (requires Greengenes taxonomy info)
 #' @param prmts Whether to calculate single-species CMP scores
 #' @param contributions Whether to evaluate contributions based on single-species CMP scores
+#' @param rxn_table Community metabolic network template
 #' @return No return, saves output to specified file
 #' @examples
 #' read_files(gene_file, met_file)
 #' @export
-get_spec_contribs = function(contrib_file, data_dir, results_file, out_dir, otu_id, otu_file, valueVar, make_unnormalized, sum_to_genus, prmts, contributions){
+get_spec_contribs = function(contrib_file, data_dir, results_file, out_dir, otu_id, otu_file, valueVar, make_unnormalized, sum_to_genus, prmts, contributions, rxn_table){
   devtools::load_all()
   contribs = data.table::fread(contrib_file, stringsAsFactors = F) #To avoid reading in multiple times
   all_otus = sort(unique(contribs[,OTU]))
@@ -294,7 +296,7 @@ get_spec_contribs = function(contrib_file, data_dir, results_file, out_dir, otu_
       prmts_alone = get_prmt_scores(sub_ko_net[[1]], kos_alone)
       write.table(prmts_alone, file = paste0(data_dir, otu_id, "_prmts.txt"), quote=F, row.names=F, sep = "\t")
     }else{
-      get_all_singleSpec_prmts(all_otus, valueVar)
+      get_all_singleSpec_prmts(all_otus, valueVar, out_dir = out_dir, rxn_table = rxn_table)
     }
   }
 

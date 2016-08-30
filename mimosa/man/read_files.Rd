@@ -9,7 +9,7 @@ read_files(genefile, metfile)
 \arguments{
 \item{genefile}{File where gene data is located.}
 
-\item{metfile}{File where metaboltie data is located.}
+\item{metfile}{File where metabolite data is located.}
 }
 \value{
 A list in which the first item is a data.table of gene abundances and the second is a data.table of metabolite abundances.

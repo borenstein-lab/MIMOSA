@@ -4,7 +4,7 @@
 \alias{get_all_singleSpec_prmts}
 \title{Get single-species CMP scores for every OTU and metabolite}
 \usage{
-get_all_singleSpec_prmts(all_otus, valueVar, out_dir)
+get_all_singleSpec_prmts(all_otus, valueVar, out_dir, rxn_table)
 }
 \arguments{
 \item{all_otus}{vector of OTUs or taxa}
@@ -12,6 +12,8 @@ get_all_singleSpec_prmts(all_otus, valueVar, out_dir)
 \item{valueVar}{"relAbundSample" or "singleMusicc", abundance metric to use for single taxon gene abundances}
 
 \item{out_dir}{Path of directory for loading and saving output}
+
+\item{rxn_table}{Community network template}
 }
 \value{
 Null, saves to Rdata file

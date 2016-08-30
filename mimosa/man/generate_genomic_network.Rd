@@ -30,6 +30,6 @@ List containing 3 different versions of the same network: an adjacency matrix, a
 Create a community metabolic network model using a few different methods.
 }
 \examples{
-generate_genomic_network(kos, "labKegg", degree_filter = 30)
+generate_genomic_network(kos, "KeggTemplate", degree_filter = 30)
 }
 

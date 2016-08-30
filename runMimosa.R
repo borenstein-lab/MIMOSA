@@ -19,7 +19,6 @@ spec = matrix(c('genefile','g',1,"character",
               'classification','a',0,"logical",
               'write_net','w',0,"logical",
               'file_prefix','p',2,"character",
-#              'dir_method','d',2,"character",
               'net_method','n',2,"character",
               'net_file','l',2,"character",
               'degree_filter','f',2,"integer",
@@ -31,7 +30,9 @@ spec = matrix(c('genefile','g',1,"character",
               'nonzero_filt','z',2, "integer",
               'mapformula_file','e',2, "character",
               'ko_rxn_file','r',2, "character",
-              'rxn_annots_file','a', 2, "character"), byrow=T, ncol=4)
+              'rxn_annots_file','x', 2, "character",
+              'contribs_file', 'o', 2, "character",
+              'keggFile', 'b', 2, "character"), byrow=T, ncol=4)
 
 opt = getopt(spec, opt = commandArgs(TRUE))
 datasets = read_files(opt$genefile, opt$metfile)
@@ -61,10 +62,16 @@ if(net_method == "loadNet"){
     stop("Need mapformula file!")
   } else{
     #Set up generic network info
-    if(is.null(opt$ko_rxn_file)){ ##Use KEGGREST
+    if(is.null(opt$ko_rxn_file) & is.null(opt$keggFile)){ ##Use KEGGREST
       all_kegg = get_kegg_reaction_info("KEGGREST")
     } else{
-      all_kegg = get_kegg_reaction_info(opt$ko_rxn_file, opt$rxn_annots_file)
+      if(!is.null(opt$keggFile)){
+        load(opt$keggFile) #should include correctly formatted object named "all_kegg"
+      } else if(is.null(opt$rxn_annots_file)){
+        stop("If using downloaded KEGG files for reaction info, must provide a file linking KOs to reactions and a file with reaction annotations")
+      } else{
+        all_kegg = get_kegg_reaction_info(opt$ko_rxn_file, opt$rxn_annots_file)
+      }
     }
     rxn_table = generate_network_template_kegg(opt$mapformula_file, all_kegg)
   }
@@ -76,7 +83,7 @@ if(!is.null(opt$classification)) {
   if(!is.null(opt$quant)) quant = opt$quant else quant = 0.5
   cat(paste("Quantile cutoff for classification is"), quant, "\n")
 } else runmet2 = F
-if(!is.null(opt$nonzero_filt)) nonzero_filt = opt$nonzero_filt else nonzero_filt = 2
+if(!is.null(opt$nonzero_filt)) nonzero_filt = opt$nonzero_filt else nonzero_filt = 3
 cat(paste("Nonzero filter is ", nonzero_filt,"\n"))
 
 
@@ -91,8 +98,23 @@ if(!runmet2){
 
 }
 
+### Get potential key species contributors, assumes PICRUSt was used to generate metagenome predictions
+if(!is.null(opt$contribs_file)){
+  get_spec_contribs(opt$contribs_file, data_dir = getwd(), results_file = paste0(file_prefix, "_out.rda"), out_dir = getwd(), otu_file = "Dataset2_otu_table.txt", otu_id = "all", valueVar = "singleMusicc", make_unnormalized = F, sum_to_genus = F, prmts = T, contributions = T)
+}
 
-###Get potential key species contributors
+### Get key gene/reaction contributors across all species
+load(paste0(file_prefix, "_out.rda"))
+good_mets = node_data[,compound]
+subjects = names(mets)[names(mets) != "KEGG"]
+prmts = get_prmt_scores(ko_net[[1]], norm_kos)
+prmts_sub_good = prmts[compound %in% good_mets]
+all_rxns = lapply(good_mets, function(x){ return(get_non_rev_rxns(ko_net[[3]][Reac==x | Prod==x]))})
+all_gene_contribs = lapply(1:length(good_mets), gene_contributions, prmts_sub_good = prmts_sub_good, all_rxns = all_rxns[[j]],
+       subjects=subjects, norm_kos = norm_kos, ko_net = ko_net)
+save(all_gene_contribs, file = paste0(file_prefix, "_geneContribs.rda"))
 
-###Run network shuffling tests
-
+### Run 500 network shuffling tests
+for(j in 1:500){
+  run_shuffle(paste0(file_prefix, "_out.rda"), id_num = j)
+}

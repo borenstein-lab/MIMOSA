@@ -13,6 +13,7 @@ list of contributors and correlations
 Identify potential important gene contributors for each metabolite.
 }
 \examples{
-
+lapply(1:length(good_mets), prmt_contributions, prmts_sub_good = prmts_sub_good, all_rxns = all_rxns[[j]],
+subjects=subjects, norm_kos = norm_kos, ko_net = ko_net)
 }
 

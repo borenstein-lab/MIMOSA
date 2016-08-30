@@ -4,7 +4,7 @@
 #'
 #' @import data.table
 #' @param genefile File where gene data is located.
-#' @param metfile File where metaboltie data is located.
+#' @param metfile File where metabolite data is located.
 #' @return A list in which the first item is a data.table of gene abundances and the second is a data.table of metabolite abundances.
 #' @examples
 #' read_files(gene_file, met_file)
@@ -13,19 +13,16 @@ read_files = function(genefile, metfile){
   genes = fread(genefile, header=T, sep="\t")
   setkey(genes,KO)
   mets = fread(metfile, header=T, sep="\t")
-  if("KEGG" %in% names(mets)){
-    mets = mets[,c(subjects,"KEGG"), with=F]
-  } else mets = mets[,c("Mass", subjects), with=F]
-  #Set NAs to 0
-  for(j in names(mets)){
-    set(mets,which(is.na(mets[[j]])),j,0)
-  }
   if("KEGG" %in% names(mets)) setkey(mets,KEGG) #2 possibilities for metabolite file format
   #save only samples that have both kinds of data and put datasets in the same order of subjects/samples
   subjects = sort(intersect(names(genes), names(mets)))
   genes = genes[,c("KO", subjects), with=F]
   if("KEGG" %in% names(mets)) mets = mets[,c(subjects,"KEGG"), with=F]
   else mets = mets[,c("Mass", subjects), with=F]
+  #Set NAs to 0
+  for(j in names(mets)){
+    set(mets,which(is.na(mets[[j]])),j,0)
+  }
   return(list(genes, mets))
 }
 
@@ -59,7 +56,7 @@ get_net_dist = function(c1, c2, allnet, max_dist = 20){
 #' @param method Must be either "fdr" or "bonferroni"
 #' @return Vector of corrected values
 #' @examples
-#'
+#' get_non_rev_rxns(rxn_table)
 #' @export
 get_non_rev_rxns = function(rxn_table, all_rxns=T){ #whether to return all reactions or only 1/2 of each reversible reaction since info is redundant
   if(dim(rxn_table)[1]>0){
@@ -75,6 +72,47 @@ get_non_rev_rxns = function(rxn_table, all_rxns=T){ #whether to return all react
     if(all_rxns) return(rxn_table) else return(all_sorted)
   } else return(NULL)
 }
+
+
+#' Convert edge list network format to matrix format, including row normalization.
+#'
+#' @import data.table
+#' @param rxn_table Edge list format of network, as from 3rd output of generate_genomic_network
+#' @return list of two matrices, one with NAs filled in with zeros, one without, as first two outputs of generate_genomic_network
+#' @examples
+#' make_network_matrix(randomized_edge_list)
+#' @export
+make_network_matrix = function(rxn_table){
+  cmpds = unique(c(rxn_table[,Reac], rxn_table[,Prod]))
+  goodkos = unique(rxn_table[,KO])
+  network_mat = matrix(rep(0), nrow = length(cmpds), ncol = length(goodkos))
+  stoich_mat = matrix(rep(NA), nrow = length(cmpds), ncol = length(goodkos))
+  for(j in 1:length(rxn_table[,KO])){
+    foo1 = match(rxn_table[j,Reac], cmpds)
+    foo2 = match(rxn_table[j,Prod], cmpds)
+    fooko = match(rxn_table[j,KO], goodkos)
+    network_mat[foo1, fooko] = network_mat[foo1, fooko] - rxn_table[j,stoichReac]
+    network_mat[foo2, fooko] = network_mat[foo2, fooko] + rxn_table[j, stoichProd]
+    if(is.na(stoich_mat[foo1,fooko])) stoich_mat[foo1,fooko] = -1*rxn_table[j,stoichReac] else stoich_mat[foo1,fooko] = stoich_mat[foo1, fooko] - rxn_table[j,stoichReac]
+    if(is.na(stoich_mat[foo2,fooko])) stoich_mat[foo2,fooko] = 1*rxn_table[j,stoichProd] else stoich_mat[foo2,fooko] = stoich_mat[foo2, fooko] + rxn_table[j,stoichProd]
+  }
+  negsums = apply(network_mat, 1, function(x){ abs(sum(x[x < 0]))})
+  possums = apply(network_mat, 1, function(x){ sum(x[x > 0])})
+  for(j in 1:length(cmpds)){
+    negkos = which(network_mat[j,] < 0)
+    poskos = which(network_mat[j,] > 0)
+    if(length(negkos) > 0) network_mat[j,negkos] = network_mat[j,][negkos]/negsums[j]
+    if(length(poskos) > 0) network_mat[j,poskos] = network_mat[j,][poskos]/possums[j]
+  }
+  network_mat = data.frame(network_mat)
+  names(network_mat) = goodkos
+  row.names(network_mat) = cmpds
+  stoich_mat = data.frame(stoich_mat)
+  names(stoich_mat) = goodkos
+  row.names(stoich_mat) = cmpds
+  return(list(network_mat, stoich_mat))
+}
+
 
 #' Modification of vegan mantel test to test 2-sided or significantly less than
 #'
@@ -243,43 +281,41 @@ test_met_enrichment = function(node_data, met_list){
 }
 
 ##Functions for selecting approximate compound identifications based on MetaboSearch output
-select_best_id2 = function(met_table, met_data, net_compounds, final_method = "first"){ ###no retention time, swedish data format
-  met_table2 = data.frame(met_table)
-  met_table2$Mass = as.character(met_table2$Mass)
-  met_data = data.frame(met_data)
+select_best_id2 = function(met_table2, met_data, net_compounds, final_method = "first"){ ###no retention time, swedish data format
+  met_table2[,Mass:=as.character(Mass)]
+  met_table2 = melt(met_table2, id.vars = c("Mass", "Delta"))
   subjects = names(met_data)[names(met_data)!="Mass"]
   met_data$Mass = as.character(met_data$Mass)
-  met_table2 = met_table2[met_table2$KEGG %in% net_compounds,]
-  met_data = met_data[met_data$Mass %in% met_table2$Mass,]
-  met_table2 = met_table2[met_table2$Mass %in% met_data$Mass,]
-  met_table2 = unique(met_table2[order(met_table2$Mass),])
-  unique_ids = unique(unlist(met_table2$KEGG))
-  unique_ids = sort(unique_ids[!is.na(unique_ids)]) #get list of potential IDs
-  new_mets = head(met_data[,names(met_data)!="Mass"],0)
+  met_table2 = met_table2[value %in% net_compounds]
+  met_data = met_data[Mass %in% met_table2$Mass]
+  met_table2 = met_table2[Mass %in% met_data$Mass,]
+  met_table2 = unique(met_table2[order(Mass),])
+  unique_ids = sort(unique(met_table2[,value]))
   good_mets = c()
+  new_mets = data.table()
   for(j in 1:length(unique_ids)){
-    foo = met_table2[apply(met_table2,1,function(x){ unique_ids[j] %in% x}),]
+    foo = met_table2[value==unique_ids[j]]
     foo_good = foo[which.min(foo$Delta),]
-    foo_data = met_data[met_data$Mass %in% foo$Mass,]
+    foo_data = met_data[Mass %in% foo$Mass,]
     #foo_good_close = foo[abs(foo$RetTime - foo_good$RetTime)<0.1,]
     if(dim(foo_data)[1] == 1){
-      new_mets = rbind(new_mets, foo_data[,subjects])
+      new_mets = rbind(new_mets, foo_data[,subjects,with=F])
       #figure out way to merge ones that are close in mass
       good_mets = c(good_mets, unique_ids[j])
-      met_data = met_data[-which(met_data$Mass %in% foo$Mass),] #remove these peaks from consideration for future identifications
-      met_table2 = met_table2[-which(met_table2$Mass %in% foo$Mass),]
+      met_data = met_data[!Mass %in% foo[,Mass]] #remove these peaks from consideration for future identifications
+      met_table2 = met_table2[!Mass %in% foo[,Mass]]
     }
-    if(dim(foo_data)[1] > 1){
-      test = apply(foo_data[,1:12],2,function(x){length(x[x!=0])})
-      if(length(test[test>1])>2){
-        foo_good=foo[which.min(foo$Delta),]
-        foo_data2=foo_data[foo_data$Mass %in% foo_good$Mass,subjects]
-      } else foo_data2=apply(foo_data[,1:12],2,sum)
-      new_mets = rbind(new_mets, foo_data2)
-      good_mets = c(good_mets,unique_ids[j])
-      met_data = met_data[-which(met_data$Mass %in% foo$Mass),] #remove these peaks from consideration for future identifications
-      met_table2 = met_table2[-which(met_table2$Mass %in% foo$Mass),]
-    }
+#     if(nrow(foo_data) > 1){
+#       test = apply(foo_data[,1:ncol(foo_data)],2,function(x){length(x[x!=0])})
+#       if(length(test[test>1])>2){
+#         foo_good=foo[which.min(foo$Delta),]
+#         foo_data2=foo_data[foo_data$Mass %in% foo_good$Mass,subjects]
+#       } else foo_data2=apply(foo_data[,1:12],2,sum)
+#       new_mets = rbind(new_mets, foo_data2)
+#       good_mets = c(good_mets,unique_ids[j])
+#       met_data = met_data[-which(met_data$Mass %in% foo$Mass),] #remove these peaks from consideration for future identifications
+#       met_table2 = met_table2[-which(met_table2$Mass %in% foo$Mass),]
+#     }
   }
   #for(k in 1:length(unique_ids))
   #  new_mets = rbind(new_mets, lapply(met_data[which(single_final == unique_ids[k]),],sum))
@@ -293,7 +329,7 @@ select_best_id = function(met_table, met_data, net_compounds, final_method = "fi
   #takes list of compounds from a network, preferentially selects IDs in that network from putative options,
   #and combines data assigned to the same id
   #final_method can be 'first', 'random', or 'most_rxns' - how to make the final selection between multiple options
-  #most_rxns not yet implemented but i think worth doing - forgot about this
+  #most_rxns not yet implemented s
   met_table2 = met_table[met_table$Delta!="-",]
   met_data = data.frame(met_data)
   #  met_table3 = met_table2[apply(met_table2[,3:10],1,function(x){ length(x[!is.na(x)])})==1,]

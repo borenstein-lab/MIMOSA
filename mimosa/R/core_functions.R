@@ -3,18 +3,27 @@
 
 #' Get basic KEGG reaction and KO info in a unified format
 #'
+#' @import data.table
 #' @param kos_to_rxns_method EITHER "KEGGREST" indicating to use the KEGGREST API to link KOs and reactions and get reaction info, OR a file path to the KEGG file genes/ko/ko_reaction.list
 #' @param reaction_info_file If kos_to_rxns_method is a file path, additional file containing full reaction info from the KEGG database
 #' @return An R object with 4 components: a list of KOs, a list of Reaction IDs, a list of associated reaction info, and a table linking KOs to reactions
-get_kegg_reaction_info = function(kos_to_rxns_method, reaction_info_file = ""){
+#' @examples
+#' get_kegg_reaction_info("KEGGREST")
+#' get_kegg_reaction_info("KEGG/genes/ko/ko_reaction.list", "KEGG/ligand/reaction/reaction")
+#' @export
+get_kegg_reaction_info = function(kos_to_rxns_method, reaction_info_file = "", save_out = F){
 ###Combine processed mapformula with information on reaction IDs and stoichiometry
 #### Option 1: Access most recent KEGG reaction annotations with the KEGGREST API
   if(kos_to_rxns_method=="KEGGREST"){
     all_kegg = list(KOs = gsub("ko:","",names(KEGGREST::keggList("ko")), fixed=T),
                   Reactions = gsub("rn:", "", names(KEGGREST::keggList("reaction")), fixed = T))
-    all_kegg$Reaction_info = lapply(all_kegg$Reaction, KEGGREST::keggGet) #This is slow
-    kos_rxns = lapply(all_kegg$Reactions, KEGGREST::keggLink, target="ko")
-    kos_to_rxns = data.table(Rxn = gsub("rn:","", unlist(sapply(kos_rxns, function(x){ return(names(x))}))), KO = gsub("ko:","",unlist(kos_rxns)))
+    kos_to_rxns = lapply(all_kegg$Reactions, function(x){
+     try(KEGGREST::keggLink(x, target="ko")) })
+    all_kegg$Reactions = all_kegg$Reactions[sapply(kos_rxns, length) != 0]
+    kos_to_rxns = kos_to_rxns[which(sapply(kos_rxns, length) != 0)]
+    kos_to_rxns = data.table(Rxn = gsub("rn:","", unlist(sapply(kos_rxns, function(x){ return(names(x))}))), KO = gsub("ko:","",unlist(kos_rxns)), fixed = T)
+    all_kegg$Reaction_info = lapply(all_kegg$Reactions, function(x){
+      try(KEGGREST::keggGet(x)) }) #This is slow!
   } else {
   ##### Option 2: Read reaction info and KO links from KEGG database file
     kos_to_rxns = fread(kos_to_rxns_method, header=F)
@@ -39,6 +48,7 @@ get_kegg_reaction_info = function(kos_to_rxns_method, reaction_info_file = ""){
     })
   }
   all_kegg$kos_to_rxns = kos_to_rxns
+  if(save_out) save(all_kegg, file = "KeggReactions.rda")
   return(all_kegg)
 }
 
@@ -49,11 +59,9 @@ get_kegg_reaction_info = function(kos_to_rxns_method, reaction_info_file = ""){
 #' @param all_kegg Output of get_kegg_reaction_info
 #' @return A table specifying a community metabolic network based on KEGG pathways with the following columns: Rxn (reaction ID),	KO (Gene ID),	Reac (Reactant ID),	Prod (Product ID),	Path (Pathway ID),	ReacProd (Original reaction specification),	stoichReac (Reactant stoichiometry coefficient),	stoichProd (Product stoichiometry coefficient)
 #' @examples
-#' generate_network_template_kegg("KEGG/ligand/reaction/reaction_mapformula.lst", "KEGGREST")
-#' generate_network_template_kegg("KEGG/ligand/reaction/reaction_mapformula.lst",
-#' "KEGG/genes/ko/ko_reaction.list", "KEGG/ligand/reaction/reaction")
+#' generate_network_template_kegg("KEGG/ligand/reaction/reaction_mapformula.lst", all_kegg)
 #' @export
-generate_network_template_kegg = function(mapformula_file, all_kegg){
+generate_network_template_kegg = function(mapformula_file, all_kegg, save_out = F){
   mapformula = fread(mapformula_file, colClasses = "character") #get mapformula pathway annotations of reactions
   setnames(mapformula, c("Rxn","Path","ReacProd"))
   #Process Reacs and Prods, flip reversible reactions, etc
@@ -137,6 +145,7 @@ generate_network_template_kegg = function(mapformula_file, all_kegg){
   rxn_table[,stoichReac:=stoichReac]
   rxn_table[,stoichProd:=stoichProd]
   rxn_table[,Path:=gsub(" ","",Path)]
+  if(save_out) write.table(rxn_table, file = "mapformula_all_info.txt", quote=F, row.names = F, sep = "\t")
   return(rxn_table)
 }
 
@@ -152,17 +161,19 @@ generate_network_template_kegg = function(mapformula_file, all_kegg){
 #' @param networkFile If keggSource is "loadNet", file that template network should be loaded from, should have same format as output of generate_network_template_kegg
 #' @return List containing 3 different versions of the same network: an adjacency matrix, an adjacency matrix that differentiates between genes with a neutral effect on a compound and no effect (0 vs NA), and an edge list.
 #' @examples
-#' generate_genomic_network(kos, "labKegg", degree_filter = 30)
+#' generate_genomic_network(kos, "KeggTemplate", degree_filter = 30)
 #' @export
 generate_genomic_network = function(kos, keggSource = "KeggTemplate", degree_filter = 0,
                                     minpath_file = '', normalize = T, rxn_table = "", networkFile=""){
   #keggSource must be either "labKegg", or "loadNet" for if the network has already been generated, or "metacyc"
   #degree filter says whether to filter hub compounds with a degree greater than this value
-  if(keggSource == "loadNet"){
+  if(!keggSource %in% c("loadNet", "KeggTemplate", "metacyc")){
+    stop("Invalid network method selected")
+    } else if(keggSource == "loadNet"){
     load(networkFile)
     return(allnet)
   } else if(keggSource == "KeggTemplate") { #load network template and just grab subset
-    if(rxn_table==""){
+    if(identical(rxn_table, "")){
       stop("Must supply a community network reaction table, for example the output of generate_network_template_kegg")
     }
     #rxn_table = fread("ko_rxn_map_all_info_filtered.txt", colClasses = c(rep("character",6), rep("numeric",2)))
@@ -467,13 +478,11 @@ run_all_metabolites = function(genes, mets, file_prefix = 'net1', correction = "
   if(id_met){
     cat("Selecting best metabolite identifications\n")
     net_compounds = row.names(ko_net[[1]])
-    met_id_table = read.table(met_id_file, sep = "\t", header=T)
-    met_id_table = met_id_table[met_id_table$Delta!="-",] #get rid of mets with no possible KEGG ID
+    met_id_table = fread(met_id_file, sep = "\t", header=T)
+    met_id_table = met_id_table[met_id_table$Delta!="-"] #get rid of mets with no possible KEGG ID
     #met_id_list = strsplit(unlist(met_id_list), split = " ")
-    if(grepl("swedish",file_prefix)){
-      new_mets = select_best_id2(met_id_table, mets, net_compounds)
-      cat("Swedish ID met\n")
-    } else new_mets = select_best_id(met_id_table, mets, net_compounds)
+    #if(grepl("swedish",file_prefix)){
+    new_mets = select_best_id2(met_id_table, mets, net_compounds)
     mets = new_mets
     cat("Done identifying metabolites!\n")
   }
@@ -727,7 +736,8 @@ single_gene_cmp = function(compound, gene, norm_kos, ko_net){
 #' @param ko_net
 #' @return list of contributors and correlations
 #' @examples
-#'
+#' lapply(1:length(good_mets), prmt_contributions, prmts_sub_good = prmts_sub_good, all_rxns = all_rxns[[j]],
+#' subjects=subjects, norm_kos = norm_kos, ko_net = ko_net)
 #' @export
 gene_contributions = function(j, prmts_sub_good, all_rxns, subjects, norm_kos, ko_net){
   #index (from sapply usually), prmt matrix, list of reaction tables for each compound, subjects, gene matrix, full network
@@ -786,5 +796,105 @@ compare_met = function(met_met, met_prmt, met_all, prmt_all, posneg="pos", cor_m
   if(posneg=="pos") test = vegan::mantel(met_mat,metabol_mat,method=cor_method,permutations = nperm)
   else test = mantel_2sided(met_mat,metabol_mat,method=cor_method,permutations = nperm, direction = "neg")
   return(test$signif)
+}
+
+
+#' Randomize a metabolic network edge list by randomly sampling 2 edges and if it works, switching products
+#'
+#' @import data.table
+#' @param netw Network edge list, format of the 3rd output item of generate_genomic_network
+#' @param n_reps Number of successful edge switches to perform (default = 5000)
+#' @return Network edge list in the same format with the same compounds and degree distribution, but with randomized edges
+#' @examples
+#' randomize_net(edge_list, 3000)
+#' @export
+randomize_net=function(netw, n_reps = 5000){
+  revnet = get_non_rev_rxns(netw, all_rxns=F)
+  network2=revnet #we'll expand the reversible edges back out later
+  #Don't want the switching to be biased towards reversible edges
+  n_edges = dim(revnet)[1]
+  m = 1
+  while(m < n_reps){
+    rand_is=sample(n_edges,size=2)
+    rand_edges=network2[rand_is]
+    if(all(rand_edges[,Reversible]==0) | all(rand_edges[,Reversible]==1)){ ##if both are single edges or both are reversible
+      ##check that switched connection does not already exist
+      comps=unique(c(rand_edges[,Prod], rand_edges[,Reac]))
+      check=network2[Reac %in% comps & Prod %in% comps & KO %in% rand_edges[,KO]]
+      if(dim(check)[1]==dim(rand_edges)[1] & length(comps)==4){
+        #make the switch
+        ind1 = which(network2[,KO]==rand_edges[1,KO] & network2[,Reac]==rand_edges[1,Reac] & network2[,Prod]==rand_edges[1,Prod])
+        network2[ind1, Prod:=rand_edges[2,Prod]]
+        network2[ind1, stoichProd:=rand_edges[2,stoichProd]]
+        ind2 = which(network2[,KO]==rand_edges[2,KO] & network2[,Reac]==rand_edges[2,Reac] & network2[,Prod]==rand_edges[2,Prod])
+        network2[ind2, Prod:=rand_edges[1,Prod]]
+        network2[ind2, stoichProd:=rand_edges[1,stoichProd]]
+        m=m+1
+      }
+    }
+  }
+  #Add back reversible complements
+  for(j in 1:length(network2[,KO])){
+    if(network2[j,Reversible]==1){
+      network2 = rbind(network2, data.table(KO=network2[j,KO], Reac=network2[j,Prod], Prod=network2[j,Reac], stoichReac=network2[j,stoichProd], stoichProd=network2[j,stoichReac], Reversible=1))
+    }
+  }
+  network2[,stoichReac:=as.numeric(stoichReac)]
+  network2[,stoichProd:=as.numeric(stoichProd)]
+  return(network2)
+}
+
+#' Run one iteration of MIMOSA analysis with a randomized metabolic network. Run this function many times to generate a null distribution of metabolite comparisons.
+#'
+#' @import data.table
+#' @param out_file File path to .Rda file of MIMOSA output from run_all_metabolites
+#' @param id_num ID number of shuffle (if running many iterations)
+#' @param n_iter Number of edge switches to generate randomized network, default is 5000
+#' @param nonzero_filter Minimum number of samples required to have nonzero concentrations and nonzero metabolic potential scores in order for metabolite to be evaluated, default is 3
+#' @param qval_thresholds 1 or more significance thresholds above which to count the number of metabolites
+#' @return None, writes two tables to file - one of the total counts of metabolites meeting each threshold, and one of the results for each metabolite
+#' @examples
+#' run_shuffle("Dataset2_bv_out.rda", id_num = 1)
+#' @export
+#'
+run_shuffle = function(out_file, id_num = 1, n_iter = 5000, nonzero_filter = 3, qval_thresholds = c(0.1, 0.01)){
+  load(out_file)
+  rxn_table = ko_net[[3]]
+  random_net = randomize_net(rxn_table, n_iter)
+  net_mats = make_network_matrix(random_net)
+  prmts = get_prmt_scores(net_mats[[1]], norm_kos)
+
+  metIDs = mets[,KEGG]
+  shared_mets = metIDs[metIDs %in% row.names(net_mats[[1]])]
+  mets_shared_only = mets[shared_mets]
+  prmts_shared_only = prmts[shared_mets]
+
+  good_data = which(apply(prmts_shared_only, 1, function(x){ length(x[as.numeric(x)!=0]) >= nonzero_filter }) & apply(mets_shared_only, 1, function(x){ length(x[as.numeric(x)!=0]) >= nonzero_filter }))
+  mets_shared_only = mets_shared_only[good_data]
+  prmts_shared_only = prmts_shared_only[good_data]
+  shared_mets = shared_mets[good_data]
+
+  compare_pos = sapply(1:length(shared_mets), function(x){
+    compare_met(shared_mets[x], shared_mets[x], mets_shared_only, prmts_shared_only, posneg = "pos", nperm = 10000)
+  })
+  compare_neg = sapply(1:length(shared_mets), function(x){
+    compare_met(shared_mets[x], shared_mets[x], mets_shared_only, prmts_shared_only, posneg = "neg", nperm = 10000)
+  })
+
+  corrected_pos = correct(compare_pos, method="fdr")
+  corrected_neg = correct(compare_neg, method = "fdr")
+  total_pos = c()
+  total_neg = c()
+  for(j in 1:length(qval_thresholds)){
+    total_pos[j] = length(corrected_pos[corrected_pos < qval_thresholds[j] & compare_pos < qval_thresholds[j] & !is.na(corrected_pos)])
+    total_neg[j] = length(corrected_neg[corrected_neg < qval_thresholds[j] & compare_neg < qval_thresholds[j] & !is.na(corrected_neg)])
+  }
+
+  met_table = data.table(compound=shared_mets, Pos=corrected_pos, Neg=corrected_neg, Iter=rep(id_num, length(shared_mets)))
+
+  file_prefix = paste0(gsub("_out.rda", "", out_file), id_num)
+
+  write.table(data.table(t(total_pos), t(total_neg)), file = paste0(file_prefix, "_shuff_network.txt"), sep = "\t", quote=F, row.names=F, col.names=F, header = F)
+  write.table(met_table, file = paste0(file_prefix,"_shuff_network_mets.txt"), sep = "\t", quote=F, row.names=F, col.names=F)
 }
 
