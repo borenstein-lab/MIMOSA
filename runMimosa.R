@@ -63,7 +63,7 @@ if(net_method == "loadNet"){
   } else{
     #Set up generic network info
     if(is.null(opt$ko_rxn_file) & is.null(opt$keggFile)){ ##Use KEGGREST
-      all_kegg = get_kegg_reaction_info("KEGGREST")
+      all_kegg = get_kegg_reaction_info("KEGGREST", kolist = genes[,KO])
     } else{
       if(!is.null(opt$keggFile)){
         load(opt$keggFile) #should include correctly formatted object named "all_kegg"
@@ -107,10 +107,10 @@ if(!is.null(opt$contribs_file)){
 load(paste0(file_prefix, "_out.rda"))
 good_mets = node_data[,compound]
 subjects = names(mets)[names(mets) != "KEGG"]
-prmts = get_prmt_scores(ko_net[[1]], norm_kos)
-prmts_sub_good = prmts[compound %in% good_mets]
+cmps = get_prmt_scores(ko_net[[1]], norm_kos)
+cmps_sub_good = cmps[compound %in% good_mets]
 all_rxns = lapply(good_mets, function(x){ return(get_non_rev_rxns(ko_net[[3]][Reac==x | Prod==x]))})
-all_gene_contribs = lapply(1:length(good_mets), gene_contributions, prmts_sub_good = prmts_sub_good, all_rxns = all_rxns[[j]],
+all_gene_contribs = lapply(1:length(good_mets), gene_contributions, prmts_sub_good = cmps_sub_good, all_rxns = all_rxns[[j]],
        subjects=subjects, norm_kos = norm_kos, ko_net = ko_net)
 save(all_gene_contribs, file = paste0(file_prefix, "_geneContribs.rda"))
 

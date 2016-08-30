@@ -6,22 +6,28 @@
 #' @import data.table
 #' @param kos_to_rxns_method EITHER "KEGGREST" indicating to use the KEGGREST API to link KOs and reactions and get reaction info, OR a file path to the KEGG file genes/ko/ko_reaction.list
 #' @param reaction_info_file If kos_to_rxns_method is a file path, additional file containing full reaction info from the KEGG database
+#' @param save_out whether to save output as an Rdata file named "KeggReactions.rda"
+#' @param kolist Optionally, a vector of KO IDs. Will create an all_kegg object containing information only on those KOs and the reactions linked to them.
 #' @return An R object with 4 components: a list of KOs, a list of Reaction IDs, a list of associated reaction info, and a table linking KOs to reactions
 #' @examples
 #' get_kegg_reaction_info("KEGGREST")
 #' get_kegg_reaction_info("KEGG/genes/ko/ko_reaction.list", "KEGG/ligand/reaction/reaction")
 #' @export
-get_kegg_reaction_info = function(kos_to_rxns_method, reaction_info_file = "", save_out = F){
-###Combine processed mapformula with information on reaction IDs and stoichiometry
+get_kegg_reaction_info = function(kos_to_rxns_method, reaction_info_file = "", save_out = F, kolist = ""){
 #### Option 1: Access most recent KEGG reaction annotations with the KEGGREST API
   if(kos_to_rxns_method=="KEGGREST"){
-    all_kegg = list(KOs = gsub("ko:","",names(KEGGREST::keggList("ko")), fixed=T),
-                  Reactions = gsub("rn:", "", names(KEGGREST::keggList("reaction")), fixed = T))
+      all_kegg = list(KOs = gsub("ko:","",names(KEGGREST::keggList("ko")), fixed=T),
+                      Reactions = gsub("rn:", "", names(KEGGREST::keggList("reaction")), fixed = T))
     kos_to_rxns = lapply(all_kegg$Reactions, function(x){
      try(KEGGREST::keggLink(x, target="ko")) })
     all_kegg$Reactions = all_kegg$Reactions[sapply(kos_rxns, length) != 0]
     kos_to_rxns = kos_to_rxns[which(sapply(kos_rxns, length) != 0)]
     kos_to_rxns = data.table(Rxn = gsub("rn:","", unlist(sapply(kos_rxns, function(x){ return(names(x))}))), KO = gsub("ko:","",unlist(kos_rxns)), fixed = T)
+    if(kolist != ""){ #if we only want specific KOs)
+      kos_to_rxns = kos_to_rxns[KO %in% kolist]
+      all_kegg$KOs = all_kegg$KOs[all_kegg$KOs %in% kolist]
+      all_kegg$Reactions = all_kegg$Reactions[all_kegg$Reactions %in% kos_to_rxns[,Rxn]]
+    }
     all_kegg$Reaction_info = lapply(all_kegg$Reactions, function(x){
       try(KEGGREST::keggGet(x)) }) #This is slow!
   } else {
