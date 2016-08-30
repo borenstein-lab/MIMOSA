@@ -5,16 +5,16 @@ A pipeline for joint metabolic model-based analysis of metabolomics measurements
 
 ## Contents
 
-- **mimosa**: R package to generate community-specific metabolic network model, use the model to make metabolite predictions and identify consistent and contrasting metabolite variation, identify potential taxonomic contributors to metabolite variation, and shuffle the community metabolic network for comparison of results with a null model. Some functions require downloaded files from the KEGG database (Kanehisa and Goto, 2000).
+- **mimosa**: An R package to generate community-specific metabolic network model, use the model to make metabolite predictions and identify consistent and contrasting metabolite variation, identify potential taxonomic contributors to metabolite variation, and shuffle the community metabolic network for comparison of results with a null model. Some functions require the file `reaction_mapformula.lst` from the KEGG database (Kanehisa and Goto, 2000). If you do not have access to this file, you can email `elbo [at] uw.edu` for access to an older version.
 
 You can install **mimosa** using the `devtools` package in R:
 ```R
 devtools::install_github("borenstein-lab/MIMOSA/mimosa")
 ```
 
-- **runMimosa.R**: wrapper script, used to run main analysis from the command line
+- **runMimosa.R**: wrapper script, used to run main MIMOSA analyses from the command line using `Rscript` with various options.
 
-- **run_all.sh**: example script to regenerate results from the 4 datasets described in Noecker et al, 2016. This script uses the Python modules [`picrust`](http://picrust.github.io/picrust/) and [`MUSiCC`](http://elbo.gs.washington.edu/software_musicc.html) to process and prepare the datasets. 
+- **run_all.sh**: example script using `runMimosa.R` to regenerate results from one of the datasets described in Noecker et al, 2016. This script uses the Python modules [`picrust`](http://picrust.github.io/picrust/)(Langille et al, 2013) and [`MUSiCC`](http://elbo.gs.washington.edu/software_musicc.html)(Manor and Borenstein, 2015) to process and prepare the datasets. 
 
 ## Citation
 
