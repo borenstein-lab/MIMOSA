@@ -5,7 +5,7 @@
 \title{Get basic KEGG reaction and KO info in a unified format}
 \usage{
 get_kegg_reaction_info(kos_to_rxns_method, reaction_info_file = "",
-  save_out = F, kolist = "")
+  save_out = T, kolist = "")
 }
 \arguments{
 \item{kos_to_rxns_method}{EITHER "KEGGREST" indicating to use the KEGGREST API to link KOs and reactions and get reaction info, OR a file path to the KEGG file genes/ko/ko_reaction.list}

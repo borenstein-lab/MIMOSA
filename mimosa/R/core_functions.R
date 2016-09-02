@@ -22,22 +22,23 @@ get_kegg_reaction_links = function(rxns){
 #' get_kegg_reaction_info("KEGGREST")
 #' get_kegg_reaction_info("KEGG/genes/ko/ko_reaction.list", "KEGG/ligand/reaction/reaction")
 #' @export
-get_kegg_reaction_info = function(kos_to_rxns_method, reaction_info_file = "", save_out = F, kolist = ""){
+get_kegg_reaction_info = function(kos_to_rxns_method, reaction_info_file = "", save_out = T, kolist = ""){
 #### Option 1: Access most recent KEGG reaction annotations with the KEGGREST API
   if(kos_to_rxns_method=="KEGGREST"){
       all_kegg = list(KOs = gsub("ko:","",names(KEGGREST::keggList("ko")), fixed=T),
                       Reactions = gsub("rn:", "", names(KEGGREST::keggList("reaction")), fixed = T))
-    kos_to_rxns = get_kegg_reaction_links(all_kegg$Reactions[1:200])
+    kos_to_rxns = get_kegg_reaction_links(all_kegg$Reactions)
     all_kegg$Reactions = all_kegg$Reactions[sapply(kos_to_rxns, length) != 0]
     kos_to_rxns = kos_to_rxns[which(sapply(kos_to_rxns, length) != 0)]
-    kos_to_rxns = data.table(Rxn = gsub("rn:","", unlist(sapply(kos_to_rxns, function(x){ return(names(x))}))), KO = gsub("ko:","",unlist(kos_to_rxns)), fixed = T)
+    kos_to_rxns = data.table(Rxn = gsub("rn:","", unlist(sapply(kos_to_rxns, function(x){ return(names(x))})), fixed = T), KO = gsub("ko:","",unlist(kos_to_rxns), fixed = T))
     if(!identical(kolist, "")){ #if we only want specific KOs)
       kos_to_rxns = kos_to_rxns[KO %in% kolist]
       all_kegg$KOs = all_kegg$KOs[all_kegg$KOs %in% kolist]
       all_kegg$Reactions = all_kegg$Reactions[all_kegg$Reactions %in% kos_to_rxns[,Rxn]]
     }
     all_kegg$Reaction_info = lapply(all_kegg$Reactions, function(x){
-      return(KEGGREST::keggGet(x)) }) #This is slow!
+      return(KEGGREST::keggGet(x)[[1]]) }) #This is slow!
+    cat("Done downloading reaction info!\n")
   } else {
   ##### Option 2: Read reaction info and KO links from KEGG database file
     kos_to_rxns = fread(kos_to_rxns_method, header=F)
@@ -141,9 +142,13 @@ generate_network_template_kegg = function(mapformula_file, all_kegg, save_out = 
   #parse KEGG Reaction for stoichiometry
   for(j in 1:length(goodrxns)){
     rxn_info = all_kegg$Reaction_info[[goodrxns[j]]]
-    eqn = strsplit(rxn_info$EQUATION, split = " <=> ", fixed=T) #get chemical formula for reaction
-    comps = unlist(lapply(eqn, strsplit, split = " \\+ "))
-    coefs = unique(comps[grepl(" ", comps)])
+    if(!is.null(rxn_info$EQUATION)){
+      eqn = strsplit(rxn_info$EQUATION, split = " <=> ", fixed=T) #get chemical formula for reaction
+      comps = unlist(lapply(eqn, strsplit, split = " \\+ "))
+      coefs = unique(comps[grepl(" ", comps)])
+    } else {
+      coefs = c()
+    }
     if(length(coefs) > 0){
       coefs_split = strsplit(coefs, split = " ",fixed=T)
       comp = sapply(coefs_split, function(x){ return(x[2])})
@@ -742,12 +747,12 @@ single_gene_cmp = function(compound, gene, norm_kos, ko_net){
 #' Identify potential important gene contributors for each metabolite.
 #'
 #' @import data.table
-#' @param j
-#' @param prmts_sub_good
-#' @param all_rxns
-#' @param subjects
-#' @param norm_kos
-#' @param ko_net
+#' @param j index (from lapply usually)
+#' @param prmts_sub_good CMP scores for metabolites to be analyzed
+#' @param all_rxns list of reaction tables for each compound
+#' @param subjects vector of subject names
+#' @param norm_kos gene abundance matrix
+#' @param ko_net full network
 #' @return list of contributors and correlations
 #' @examples
 #' lapply(1:length(good_mets), prmt_contributions, prmts_sub_good = prmts_sub_good, all_rxns = all_rxns[[j]],

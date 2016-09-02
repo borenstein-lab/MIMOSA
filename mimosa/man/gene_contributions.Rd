@@ -6,6 +6,19 @@
 \usage{
 gene_contributions(j, prmts_sub_good, all_rxns, subjects, norm_kos, ko_net)
 }
+\arguments{
+\item{j}{index (from lapply usually)}
+
+\item{prmts_sub_good}{CMP scores for metabolites to be analyzed}
+
+\item{all_rxns}{list of reaction tables for each compound}
+
+\item{subjects}{vector of subject names}
+
+\item{norm_kos}{gene abundance matrix}
+
+\item{ko_net}{full network}
+}
 \value{
 list of contributors and correlations
 }
