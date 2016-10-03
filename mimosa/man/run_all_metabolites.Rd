@@ -40,7 +40,7 @@ run_all_metabolites(genes, mets, file_prefix = "net1", correction = "fdr",
 \item{nonzero_filter}{Minimum number of samples required to have nonzero concentrations and nonzero metabolic potential scores in order for metabolite to be evaluated, default is 3}
 }
 \value{
-No return, writes output to file
+No return, writes output to files.
 }
 \description{
 Runall function to do complete predictions and comparison for all shared metabolites

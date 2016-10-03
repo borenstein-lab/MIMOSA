@@ -4,17 +4,17 @@
 \alias{compare_met}
 \title{Compare a single set each of CMP scores and metabolite concentrations}
 \usage{
-compare_met(met_met, met_prmt, met_all, prmt_all, posneg = "pos",
+compare_met(met_met, met_cmp, met_all, cmp_all, posneg = "pos",
   cor_method = "spearman", nperm = 15000)
 }
 \arguments{
 \item{met_met}{metabolite to use from metabolite concentration data}
 
-\item{met_prmt}{metabolite to use from CMP score data}
+\item{met_cmp}{metabolite to use from CMP score data}
 
 \item{met_all}{matrix of metabolite concentrations}
 
-\item{prmt_all}{matrix of CMP scores}
+\item{cmp_all}{matrix of CMP scores}
 
 \item{posneg}{Whether to test for positive or negative concentration}
 

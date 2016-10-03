@@ -1,7 +1,8 @@
  #single species contributions picrust
-#make_unnormalized = get formatted KO abundances for one species
-#prmts = get single species PRMT
-#contributions - do contributions analysis for all species
+#potential steps:
+#get formatted KO abundances for one species
+#get single species CMP scores
+#do contributions analysis for all species
 ##Revision - aggregate to genus level 11/24/2015
 ##Revision 4/20/2016: single species MUSiCC
 #NOTE: need to use OTUs normalized by 16S copy #
@@ -33,7 +34,7 @@
 #'
 #' @import data.table
 #' @param j metabolite # (usually from lapply/sapply)
-#' @param prmts_sub_good CMP scores for metabolites with abundance data
+#' @param cmps_sub_good CMP scores for metabolites with abundance data
 #' @param all_rxns list of relevant reactions for each metabolite
 #' @param subjects vector of subjects
 #' @param norm_kos data.table of gene abundances
@@ -41,45 +42,45 @@
 #' @param qpcr original species abundances
 #' @param ref_kos gene abundances for each species
 #' @param cor_with whether to look at the correlation of CMP scores of each species by itself with the metabolite, or of the whole community with that species removed
-#' @return list of potential key species contributors and associated info
+#' @return List of length two. Item 1 is a table of all relevant species and correlation between the scores alone and the true scores, while item 2 is a vector of taxa that were classified as potential key taxa.
 #' @examples
-#' sapply(1:length(metabolites), prmt_species_contributions, cmp_scores, all_rxns,
+#' sapply(1:length(metabolites), cmp_species_contributions, cmp_scores, all_rxns,
 #' all_subjects, ko_abunds, ko_net, spec_abunds, ref_kos)
 #' @export
-prmt_species_contributions = function(j, prmts_sub_good, all_rxns, subjects, norm_kos, ko_net, qpcr, ref_kos, cor_with=F){
+cmp_species_contributions = function(j, cmps_sub_good, all_rxns, subjects, norm_kos, ko_net, qpcr, ref_kos, cor_with=F){
   if(!is.null(all_rxns[[j]])){
     if(!cor_with){
-      compound = prmts_sub_good[j,compound]
+      compound = cmps_sub_good[j,compound]
       kos_involved = unique(all_rxns[[j]][Reversible==0,KO])
-      #plan - look at correlation between old prmt score and prmt score w/out each species
+      #plan - look at correlation between old cmp score and cmp score w/out each species
       species_involved = ref_kos[KO %in% kos_involved, unique(species)]
 
-      species_prmt_cors = sapply(species_involved, function(x){
+      species_cmp_cors = sapply(species_involved, function(x){
         spec_without = qpcr[,names(qpcr)!=x, with=F]
         vals_without = kos_from_species(spec_without, ref_kos)
         vals_without = vals_without[KO %in% names(ko_net[[1]])]
         net_mod = ko_net[[1]][,which(names(ko_net[[1]]) %in% vals_without[,KO])]
-        prmt_without = data.matrix(net_mod[compound,vals_without[,KO]])%*%data.matrix(vals_without[,subjects,with=F])
-        return(cor(as.vector(unlist(prmts_sub_good[compound,subjects,with=F])),as.vector(prmt_without), method="spearman"))
+        cmp_without = data.matrix(net_mod[compound,vals_without[,KO]])%*%data.matrix(vals_without[,subjects,with=F])
+        return(cor(as.vector(unlist(cmps_sub_good[compound,subjects,with=F])),as.vector(cmp_without), method="spearman"))
       })
-      spec_cors = data.table(Species=species_involved, Cor=species_prmt_cors)
+      spec_cors = data.table(Species=species_involved, Cor=species_cmp_cors)
       #save KOs that have a major effect
       species_good = spec_cors[is.na(Cor)|(Cor < 0.5),Species]
       return(list(spec_cors, species_good))
       #  return(ko_cors)
     }else{
-      compound = prmts_sub_good[j,compound]
+      compound = cmps_sub_good[j,compound]
       kos_involved = unique(all_rxns[[j]][Reversible==0,KO])
       species_involved = ref_kos[KO %in% kos_involved, unique(species)]
-      species_prmt_cors = sapply(species_involved, function(x){
+      species_cmp_cors = sapply(species_involved, function(x){
         spec_alone = qpcr[,names(qpcr) %in% c(x, "Subject","Visit", "Sample", "ID"), with=F]
         vals_alone = kos_from_species(spec_alone, ref_kos)
         vals_alone = vals_alone[KO %in% names(ko_net[[1]])]
         net_mod = ko_net[[1]][,which(names(ko_net[[1]]) %in% vals_alone[,KO])]
-        prmt_alone = data.matrix(net_mod[compound,vals_alone[,KO]])%*%data.matrix(vals_alone[,subjects,with=F])
-        return(cor(as.vector(unlist(prmts_sub_good[compound,subjects,with=F])),as.vector(prmt_alone), method="spearman"))
+        cmp_alone = data.matrix(net_mod[compound,vals_alone[,KO]])%*%data.matrix(vals_alone[,subjects,with=F])
+        return(cor(as.vector(unlist(cmps_sub_good[compound,subjects,with=F])),as.vector(cmp_alone), method="spearman"))
       })
-      spec_cors = data.table(Species=species_involved, Cor=species_prmt_cors)
+      spec_cors = data.table(Species=species_involved, Cor=species_cmp_cors)
       species_good = spec_cors[Cor > 0.5,Species]
       return(list(spec_cors,species_good))
     }
@@ -90,27 +91,27 @@ prmt_species_contributions = function(j, prmts_sub_good, all_rxns, subjects, nor
 #'
 #' @import data.table
 #' @param j metabolite # (usually from lapply/sapply)
-#' @param prmts_sub_good CMP scores for metabolites with abundance data
+#' @param cmps_sub_good CMP scores for metabolites with abundance data
 #' @param all_rxns list of relevant reactions for each metabolite
 #' @param subjects vector of subjects
 #' @param norm_kos data.table of gene abundances
 #' @param ko_net network created by generate_genomic_network
 #' @param all_taxa vector of OTUs
-#' @param single_spec_prmts single-species CMP scores calculated from get_spec_contribs function
+#' @param single_spec_cmps single-species CMP scores calculated from get_spec_contribs function
 #' @param cor_with whether to look at the correlation of CMP scores of each species by itself with the metabolite, or of the whole community with that species removed
 #' @return list of 2-item lists for every metabolite - 1st item is data.table of OTUs and correlations, second item is vector of OTUs with correlations > 0.5
 #' @examples
-#' sapply(1:length(metabolites), prmt_species_contributions_picrust, cmp_scores, all_rxns,
+#' sapply(1:length(metabolites), cmp_species_contributions_picrust, cmp_scores, all_rxns,
 #' all_subjects, ko_abunds, ko_net, spec_abunds, ref_kos)
 #' @export
-prmt_species_contributions_picrust = function(j, prmts_sub_good, all_rxns, subjects, norm_kos, ko_net, all_taxa, single_spec_prmts, cor_with=F){
+cmp_species_contributions_picrust = function(j, cmps_sub_good, all_rxns, subjects, norm_kos, ko_net, all_taxa, single_spec_cmps, cor_with=F){
   if(!is.null(all_rxns[[j]])){
-    compound = prmts_sub_good[j,compound]
+    compound = cmps_sub_good[j,compound]
     kos_involved = unique(all_rxns[[j]][Reversible==0,KO])
-    species_prmt_cors = sapply(1:length(all_taxa), function(x){
-      return(cor(as.vector(unlist(prmts_sub_good[compound,subjects,with=F])),as.vector(unlist(single_spec_prmts[[x]][compound,subjects,with=F])), method="spearman"))
+    species_cmp_cors = sapply(1:length(all_taxa), function(x){
+      return(cor(as.vector(unlist(cmps_sub_good[compound,subjects,with=F])),as.vector(unlist(single_spec_cmps[[x]][compound,subjects,with=F])), method="spearman"))
     })
-    spec_cors = data.table(Species=all_taxa, Cor=species_prmt_cors)
+    spec_cors = data.table(Species=all_taxa, Cor=species_cmp_cors)
     species_good = spec_cors[Cor > 0.5,Species]
     return(list(spec_cors,species_good))
   } else return(NULL)
@@ -223,16 +224,16 @@ save_contribs_by_species = function(contribs, valueVar, out_dir){
 #' @param rxn_table Community network template
 #' @return Null, saves to Rdata file
 #' @export
-get_all_singleSpec_prmts = function(all_otus, valueVar, out_dir, rxn_table){
+get_all_singleSpec_cmps = function(all_otus, valueVar, out_dir, rxn_table){
   cat(valueVar)
   if(!"all_koAbunds_byOTU" %in% ls()) load(paste0(out_dir, "/all_koAbunds_byOTU_",valueVar,".rda"))
   if(length(all_otus) != length(all_koAbunds_byOTU)) stop("Problem!! OTU lists don't match")
-  prmts_alone = vector("list", length(all_otus))
+  cmps_alone = vector("list", length(all_otus))
   for(k in 1:length(all_otus)){
     sub_ko_net = generate_genomic_network(all_koAbunds_byOTU[[k]][,KO], keggSource = "KeggTemplate", degree_filter = 30, rxn_table = rxn_table)
-    prmts_alone[[k]] = get_prmt_scores(sub_ko_net[[1]], all_koAbunds_byOTU[[k]])
+    cmps_alone[[k]] = get_cmp_scores(sub_ko_net[[1]], all_koAbunds_byOTU[[k]])
   }
-  save(prmts_alone, file = paste0(out_dir, "all_prmtsAlone_byOTU_",valueVar,".rda"))
+  save(cmps_alone, file = paste0(out_dir, "all_cmpsAlone_byOTU_",valueVar,".rda"))
 }
 
 #' Perform a series of steps related to identifying single-species contributors.
@@ -246,14 +247,14 @@ get_all_singleSpec_prmts = function(all_otus, valueVar, out_dir, rxn_table){
 #' @param valueVar type of functional abundances to use for single species calculations - either "singleMusicc" or "RelAbundSample"
 #' @param make_unnormalized The next few parameters are binary variables indicating whether to perform each step of the calculation. This is whether to revert to relative abundance values for the gene abundances from single species
 #' @param sum_to_genus Whether to sum over OTUs to the genus level (requires Greengenes taxonomy info)
-#' @param prmts Whether to calculate single-species CMP scores
+#' @param cmps Whether to calculate single-species CMP scores
 #' @param contributions Whether to evaluate contributions based on single-species CMP scores
 #' @param rxn_table Community metabolic network template
 #' @return No return, saves output to specified file
 #' @examples
 #' read_files(gene_file, met_file)
 #' @export
-get_spec_contribs = function(contrib_file, data_dir, results_file, out_dir, otu_id, otu_file, valueVar, make_unnormalized, sum_to_genus, prmts, contributions, rxn_table){
+get_spec_contribs = function(contrib_file, data_dir, results_file, out_dir, otu_id, otu_file, valueVar, make_unnormalized, sum_to_genus, cmps, contributions, rxn_table){
   devtools::load_all()
   contribs = data.table::fread(contrib_file, stringsAsFactors = F) #To avoid reading in multiple times
   all_otus = sort(unique(contribs[,OTU]))
@@ -284,7 +285,7 @@ get_spec_contribs = function(contrib_file, data_dir, results_file, out_dir, otu_
     #   ggplot(test1, aes(x=value, y=V1, label=Sample)) + geom_text()
   }
 
-  if(prmts){ #Basically just runs get_prmt_scores
+  if(cmps){ #Basically just runs get_cmp_scores
     if(otu_id != "all"){
       kos_alone = data.table::fread(paste0(data_dir, otu_id, "_KOabund.txt"))
       #kos_alone = data.table::fread(paste0(data_dir,otu_id, "_KOabund_musicc.txt"))
@@ -293,30 +294,30 @@ get_spec_contribs = function(contrib_file, data_dir, results_file, out_dir, otu_
       #load(results_file)
       #Best just to regenerate network
       sub_ko_net = generate_genomic_network(kos_alone[,KO], keggSource = "labKegg",degree_filter = 30)
-      prmts_alone = get_prmt_scores(sub_ko_net[[1]], kos_alone)
-      write.table(prmts_alone, file = paste0(data_dir, otu_id, "_prmts.txt"), quote=F, row.names=F, sep = "\t")
+      cmps_alone = get_cmp_scores(sub_ko_net[[1]], kos_alone)
+      write.table(cmps_alone, file = paste0(data_dir, otu_id, "_cmps.txt"), quote=F, row.names=F, sep = "\t")
     }else{
-      get_all_singleSpec_prmts(all_otus, valueVar, out_dir = out_dir, rxn_table = rxn_table)
+      get_all_singleSpec_cmps(all_otus, valueVar, out_dir = out_dir, rxn_table = rxn_table)
     }
   }
 
   if((contributions == T) & otu_id=="all"){
     load(results_file)
     subjects = names(norm_kos)[names(norm_kos)!="KO"]
-    prmts_sub_good = get_prmt_scores(ko_net[[1]], norm_kos) # Full community PRMT scores
-    prmt_sub_good = prmts_sub_good[node_data[,compound]]
+    cmps_sub_good = get_cmp_scores(ko_net[[1]], norm_kos) # Full community cmp scores
+    cmp_sub_good = cmps_sub_good[node_data[,compound]]
     all_rxns = lapply(node_data[,compound], function(x){ return(ko_net[[3]][Reac==x|Prod==x])})
     all_rxns = lapply(all_rxns,get_non_rev_rxns)
-    #  if(!all(is.na(match(c("prmts_alone", "all_otus"),ls())))){ #If all of these do not already exist
-    load(paste0(out_dir, "all_prmtsAlone_byOTU_",valueVar,".rda"))
+    #  if(!all(is.na(match(c("cmps_alone", "all_otus"),ls())))){ #If all of these do not already exist
+    load(paste0(out_dir, "all_cmpsAlone_byOTU_",valueVar,".rda"))
     #contribs = data.table::fread(contrib_file)
     all_otus = sort(unique(contribs[,OTU]))
     # }
     #for mice abx only - subject id change
-    #   for(j in 1:length(prmts_alone)){
-    #     setnames(prmts_alone[[j]], gsub("NoAbx6wkrec","NoAbx6wk", names(prmts_alone[[j]])))
+    #   for(j in 1:length(cmps_alone)){
+    #     setnames(cmps_alone[[j]], gsub("NoAbx6wkrec","NoAbx6wk", names(cmps_alone[[j]])))
     #   }
-    spec_contrib=lapply(1:length(node_data[,compound]),prmt_species_contributions_picrust, prmts_sub_good = prmt_sub_good, all_rxns = all_rxns, subjects = subjects, norm_kos = norm_kos, ko_net = ko_net, all_taxa = all_otus, single_spec_prmts = prmts_alone, cor_with=T)
+    spec_contrib=lapply(1:length(node_data[,compound]),cmp_species_contributions_picrust, cmps_sub_good = cmp_sub_good, all_rxns = all_rxns, subjects = subjects, norm_kos = norm_kos, ko_net = ko_net, all_taxa = all_otus, single_spec_cmps = cmps_alone, cor_with=T)
 
     save(spec_contrib, file = paste0(out_dir, "/picrust_spec_contrib_",valueVar,".rda"))
   }

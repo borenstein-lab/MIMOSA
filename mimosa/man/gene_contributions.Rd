@@ -4,12 +4,12 @@
 \alias{gene_contributions}
 \title{Identify potential important gene contributors for each metabolite.}
 \usage{
-gene_contributions(j, prmts_sub_good, all_rxns, subjects, norm_kos, ko_net)
+gene_contributions(j, cmps_sub_good, all_rxns, subjects, norm_kos, ko_net)
 }
 \arguments{
 \item{j}{index (from lapply usually)}
 
-\item{prmts_sub_good}{CMP scores for metabolites to be analyzed}
+\item{cmps_sub_good}{CMP scores for metabolites to be analyzed}
 
 \item{all_rxns}{list of reaction tables for each compound}
 
@@ -20,13 +20,13 @@ gene_contributions(j, prmts_sub_good, all_rxns, subjects, norm_kos, ko_net)
 \item{ko_net}{full network}
 }
 \value{
-list of contributors and correlations
+list of information on contributors. Item 1 is the table of correlations between scores with and without each gene (also written to a file). Item 2 is a table of the associated reactions for each of the contributor genes. Item 3 is an integer equal to 1 if the metabolite scores are predicted primarily by synthesis, -1 if scores are predicted primarily by degradation, or 0 if neither. Item 4 is a vector of the number of genes and contributor genes involved in synthesis and degradation reactions.
 }
 \description{
 Identify potential important gene contributors for each metabolite.
 }
 \examples{
-lapply(1:length(good_mets), prmt_contributions, prmts_sub_good = prmts_sub_good, all_rxns = all_rxns[[j]],
+lapply(1:length(good_mets), cmp_contributions, cmps_sub_good = cmps_sub_good, all_rxns = all_rxns[[j]],
 subjects=subjects, norm_kos = norm_kos, ko_net = ko_net)
 }
 

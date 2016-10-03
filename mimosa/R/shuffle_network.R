@@ -5,7 +5,6 @@
 #library(qvalue)
 #options(stringsAsFactors = FALSE)
 
-#source(paste0(homedir, "PRMT_functions_clean.R"))
 
 #' Function to randomize a network
 #'
@@ -107,23 +106,23 @@ make_network_matrix = function(rxn_table){
 # random_net = randomize_net(rxn_table, n_iter)
 # net_mats = make_network_matrix(random_net)
 #
-# prmts = get_prmt_scores(net_mats[[1]], norm_kos)
+# cmps = get_cmp_scores(net_mats[[1]], norm_kos)
 #
 # metIDs = mets[,KEGG]
 # shared_mets = metIDs[metIDs %in% row.names(net_mats[[1]])]
 # mets_shared_only = mets[shared_mets]
-# prmts_shared_only = prmts[shared_mets]
+# cmps_shared_only = cmps[shared_mets]
 #
-# good_data = which(apply(prmts_shared_only, 1, function(x){ length(x[as.numeric(x)!=0]) > nonzero_filter + 1}) & apply(mets_shared_only, 1, function(x){ length(x[as.numeric(x)!=0]) > nonzero_filter + 1}))
+# good_data = which(apply(cmps_shared_only, 1, function(x){ length(x[as.numeric(x)!=0]) > nonzero_filter + 1}) & apply(mets_shared_only, 1, function(x){ length(x[as.numeric(x)!=0]) > nonzero_filter + 1}))
 # mets_shared_only = mets_shared_only[good_data]
-# prmts_shared_only = prmts_shared_only[good_data]
+# cmps_shared_only = cmps_shared_only[good_data]
 # shared_mets = shared_mets[good_data]
 #
 # compare_pos = sapply(1:length(shared_mets), function(x){
-#   compare_met(shared_mets[x], shared_mets[x], mets_shared_only, prmts_shared_only, posneg = "pos", nperm = 10000)
+#   compare_met(shared_mets[x], shared_mets[x], mets_shared_only, cmps_shared_only, posneg = "pos", nperm = 10000)
 # })
 # compare_neg = sapply(1:length(shared_mets), function(x){
-#   compare_met(shared_mets[x], shared_mets[x], mets_shared_only, prmts_shared_only, posneg = "neg", nperm = 10000)
+#   compare_met(shared_mets[x], shared_mets[x], mets_shared_only, cmps_shared_only, posneg = "neg", nperm = 10000)
 # })
 #
 # corrected_pos = correct(compare_pos, method="fdr")

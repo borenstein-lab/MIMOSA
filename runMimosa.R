@@ -103,7 +103,7 @@ if(!runmet2){
 ### Get potential key species contributors, assumes PICRUSt was used to generate metagenome predictions
 if(!is.null(opt$contribs_file)){
   cat("Getting potential species contributors to metabolite variation\n")
-  get_spec_contribs(opt$contribs_file, data_dir = getwd(), results_file = paste0(file_prefix, "_out.rda"), out_dir = getwd(), otu_file = "Dataset2_otu_table.txt", otu_id = "all", valueVar = "singleMusicc", make_unnormalized = F, sum_to_genus = F, prmts = T, contributions = T)
+  get_spec_contribs(opt$contribs_file, data_dir = getwd(), results_file = paste0(file_prefix, "_out.rda"), out_dir = getwd(), otu_file = "Dataset2_otu_table.txt", otu_id = "all", valueVar = "singleMusicc", make_unnormalized = F, sum_to_genus = F, cmps = T, contributions = T)
 }
 
 ### Get key gene/reaction contributors across all species
@@ -111,10 +111,10 @@ cat("Getting potential gene and reaction contributors to metabolite variation\n"
 load(paste0(file_prefix, "_out.rda"))
 good_mets = node_data[,compound]
 subjects = names(mets)[names(mets) != "KEGG"]
-cmps = get_prmt_scores(ko_net[[1]], norm_kos)
+cmps = get_cmp_scores(ko_net[[1]], norm_kos)
 cmps_sub_good = cmps[compound %in% good_mets]
 all_rxns = lapply(good_mets, function(x){ return(get_non_rev_rxns(ko_net[[3]][Reac==x | Prod==x]))})
-all_gene_contribs = lapply(1:length(good_mets), gene_contributions, prmts_sub_good = cmps_sub_good, all_rxns = all_rxns,
+all_gene_contribs = lapply(1:length(good_mets), gene_contributions, cmps_sub_good = cmps_sub_good, all_rxns = all_rxns,
        subjects=subjects, norm_kos = norm_kos, ko_net = ko_net)
 save(all_gene_contribs, file = paste0(file_prefix, "_geneContribs.rda"))
 

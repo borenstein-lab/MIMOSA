@@ -2,7 +2,7 @@
 % Please edit documentation in R/core_functions.R
 \name{make_pairwise_met_matrix}
 \alias{make_pairwise_met_matrix}
-\title{Make a data vector into a pairwise difference matrix (can be used for either PRMT scores or metabolite concentrations)}
+\title{Make a data vector into a pairwise difference matrix (can be used for either cmp scores or metabolite concentrations)}
 \usage{
 make_pairwise_met_matrix(metabolite, met_mat, diff_function = "difference")
 }
@@ -17,7 +17,7 @@ make_pairwise_met_matrix(metabolite, met_mat, diff_function = "difference")
 Data.frame of score or abundance pairwise differentials
 }
 \description{
-Make a data vector into a pairwise difference matrix (can be used for either PRMT scores or metabolite concentrations)
+Make a data vector into a pairwise difference matrix (can be used for either cmp scores or metabolite concentrations)
 }
 \examples{
 

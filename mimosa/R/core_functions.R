@@ -402,18 +402,18 @@ generate_genomic_network = function(kos, keggSource = "KeggTemplate", degree_fil
 #' @param norm_kos Data.table of gene abundances
 #' @return Data.table of CMP scores
 #' @examples
-#' get_prmt_scores(ko_net[[1]], gene_abunds)
+#' get_cmp_scores(ko_net[[1]], gene_abunds)
 #' @export
-get_prmt_scores = function(emm, norm_kos){
+get_cmp_scores = function(emm, norm_kos){
   metlen = dim(emm)[1]
   nsamp = dim(norm_kos)[2]-1
   norm_kos_sub = norm_kos[KO %in% names(emm)]
   subjects = names(norm_kos)[names(norm_kos)!="KO"]
-  prmt = matrix(rep(NA),nrow = metlen,ncol = nsamp)
+  cmp = matrix(rep(NA),nrow = metlen,ncol = nsamp)
   emm = emm[,match(norm_kos_sub[,KO], names(emm))]
   if(all(names(emm)==norm_kos_sub[,KO])){
     for(m in 1:nsamp){
-      prmt[,m] =  as.matrix(emm) %*% unlist(norm_kos_sub[,subjects[m],with=F])
+      cmp[,m] =  as.matrix(emm) %*% unlist(norm_kos_sub[,subjects[m],with=F])
     }
   }else if(all(sort(names(emm))==sort(norm_kos_sub[,KO]))){ #Just out of order
     emm = emm[,order(names(emm))]
@@ -421,13 +421,13 @@ get_prmt_scores = function(emm, norm_kos){
   } else {
     stop("Double check you are using the correct metabolic network! Gene KOs do not equal network KOs")
   }
-  prmt = data.table(prmt,row.names(emm))
-  setnames(prmt,c(subjects,"compound"))
-  setkey(prmt,compound)
-  return(prmt)
+  cmp = data.table(cmp,row.names(emm))
+  setnames(cmp,c(subjects,"compound"))
+  setkey(cmp,compound)
+  return(cmp)
 }
 
-#' Make a data vector into a pairwise difference matrix (can be used for either PRMT scores or metabolite concentrations)
+#' Make a data vector into a pairwise difference matrix (can be used for either cmp scores or metabolite concentrations)
 #'
 #' @import data.table
 #' @param metabolite metabolite ID
@@ -439,7 +439,7 @@ get_prmt_scores = function(emm, norm_kos){
 #' @export
 make_pairwise_met_matrix = function(metabolite, met_mat, diff_function = "difference"){
   #diff_function options: 'difference', 'fold_change'
-  #met_mat can be either PRMT scores or metabolomic abundances
+  #met_mat can be either cmp scores or metabolomic abundances
   nsamp = ncol(met_mat) - 1
   subjects = names(met_mat)[1:nsamp]
   met_mat_small = unlist(met_mat[metabolite,subjects,with=F])
@@ -475,7 +475,7 @@ make_pairwise_met_matrix = function(metabolite, met_mat, diff_function = "differ
 #' @param net_file file containing network template to use
 #' @param nperm Number of permutations for Mantel test, default is 20000
 #' @param nonzero_filter Minimum number of samples required to have nonzero concentrations and nonzero metabolic potential scores in order for metabolite to be evaluated, default is 3
-#' @return No return, writes output to file
+#' @return No return, writes output to files.
 #' @examples
 #'
 #' @export
@@ -509,26 +509,26 @@ run_all_metabolites = function(genes, mets, file_prefix = 'net1', correction = "
   #get mets
   metIDs = mets[,KEGG]
   shared_mets = metIDs[metIDs %in% row.names(ko_network_mat)]
-  #get PRMT scores
+  #get cmp scores
   norm_kos = genes[,c(subjects,"KO"),with=F]
-  prmt_mat = get_prmt_scores(ko_network_mat, norm_kos)
+  cmp_mat = get_cmp_scores(ko_network_mat, norm_kos)
 
   #do all comparisons
   all_comparisons = vector("list",length(shared_mets))
   for(j in 1:length(shared_mets)){
-    good_subs = intersect(names(mets)[which(!is.na(unlist(mets[shared_mets[j],subjects,with=F])))], names(prmt_mat)[which(!is.na(unlist(prmt_mat[shared_mets[j],subjects,with=F])))])
-    prmt_vector = unlist(prmt_mat[shared_mets[j],good_subs,with=F])
+    good_subs = intersect(names(mets)[which(!is.na(unlist(mets[shared_mets[j],subjects,with=F])))], names(cmp_mat)[which(!is.na(unlist(cmp_mat[shared_mets[j],subjects,with=F])))])
+    cmp_vector = unlist(cmp_mat[shared_mets[j],good_subs,with=F])
     met_vector = unlist(mets[shared_mets[j],good_subs,with=F])
     #check for too many 0s
-    if(length(met_vector[met_vector!=0]) < nonzero_filter | length(prmt_vector[prmt_vector!=0]) < nonzero_filter){
+    if(length(met_vector[met_vector!=0]) < nonzero_filter | length(cmp_vector[cmp_vector!=0]) < nonzero_filter){
       all_comparisons[[j]] = NA
     }else{
-      met_mat = make_pairwise_met_matrix(shared_mets[j], prmt_mat[,c(good_subs, "compound"),with=F])
+      met_mat = make_pairwise_met_matrix(shared_mets[j], cmp_mat[,c(good_subs, "compound"),with=F])
       metabol_mat = make_pairwise_met_matrix(shared_mets[j], mets[,c(good_subs,"KEGG"),with=F])
       test = vegan::mantel(met_mat,metabol_mat,method=cor_method,permutations = nperm)
       test_n = mantel_2sided(met_mat,metabol_mat,method=cor_method,permutations = nperm,
                              direction = "neg")
-      all_comparisons[[j]] = list(ID = shared_mets[j], PRMT = met_mat, Mets = metabol_mat, Mantel = list(test,test_n))
+      all_comparisons[[j]] = list(ID = shared_mets[j], cmp = met_mat, Mets = metabol_mat, Mantel = list(test,test_n))
     }
   }
 
@@ -559,6 +559,7 @@ run_all_metabolites = function(genes, mets, file_prefix = 'net1', correction = "
   signif_neg = node_data[!is.na(node_data$QValN) & node_data$QValN < cutoff & node_data$PValN < 0.05,]
   write.table(signif_pos, file = paste(file_prefix,'_signifPos.txt',sep = ''), sep = "\t", quote = F, row.names = F)
   write.table(signif_neg, file = paste(file_prefix,'_signifNeg.txt',sep = ''), sep = "\t", quote = F, row.names = F)
+  write.table(cmp_mat, file = paste0(file_prefix, '_cmpAll.txt'), quote=F, row.names = F, sep = "\t")
   save(norm_kos, mets, ko_net, all_comparisons, node_data, file = paste(file_prefix,'_out.rda',sep=''))
   return(NULL)
 }
@@ -618,37 +619,37 @@ run_all_metabolites2 = function(genes, mets, file_prefix = 'net1', correction = 
   metIDs = mets[,KEGG]
   norm_kos = normalize_ko_counts(genes,subjects, logdata = F) #this actually does nothing right now
   #norm_kos = norm_kos[KO %in% names(ko_network_mat)]
-  prmt_mat = get_prmt_scores(ko_network_mat, norm_kos)
+  cmp_mat = get_cmp_scores(ko_network_mat, norm_kos)
   shared_mets = metIDs[metIDs %in% row.names(ko_network_mat)]
   all_comparisons = vector("list",length(shared_mets))
   #The idea here is to simply classify samples as higher or lower than the median and just look at classification error
   #rather than Mantel test
   for(j in 1:length(shared_mets)){
-    prmts = unlist(prmt_mat[shared_mets[j],subjects,with=F])
+    cmps = unlist(cmp_mat[shared_mets[j],subjects,with=F])
     met1 = unlist(mets[shared_mets[j],subjects, with=F]) #these have very different distributions - I wonder how often this is the case
-    if(length(met1[met1!=0]) < nonzero_filter | length(prmts[prmts!=0]) < nonzero_filter){
+    if(length(met1[met1!=0]) < nonzero_filter | length(cmps[cmps!=0]) < nonzero_filter){
       all_comparisons[[j]] = NA
     }else{
       med_met = quantile(met1, probs = quant)
-      if(any(met1==med_met)) med_prmt = median(prmts[met1==med_met]) else med_prmt = mean(prmts[which(abs(met1-med_met) <= min(abs(met1-med_met)) + 0.001)]) #median of two closest from which median was calculated
-      higher_pred = ifelse(prmts > med_prmt,1,0)
+      if(any(met1==med_met)) med_cmp = median(cmps[met1==med_met]) else med_cmp = mean(cmps[which(abs(met1-med_met) <= min(abs(met1-med_met)) + 0.001)]) #median of two closest from which median was calculated
+      higher_pred = ifelse(cmps > med_cmp,1,0)
       higher_obs = ifelse(met1 > med_met, 1, 0)
       error = sum(abs(higher_pred-higher_obs))/length(higher_obs)
       #need to clarify - this is different from not having any information
       if(plot_rank){
         requireNamespace("ggplot2", quietly = TRUE)
-        preds = data.frame(Prediction = factor(higher_pred), Prmt = prmts, Value = met1, Rank = rank(met1))
+        preds = data.frame(Prediction = factor(higher_pred), cmp = cmps, Value = met1, Rank = rank(met1))
         ggplot2::ggplot(preds, ggplot2::aes(x=Rank,y=Value, col = Prediction)) + ggplot2::geom_point(size=3) + ggplot2::xlim(c(0,max(preds$Rank)))+ ggplot2::theme_bw() + ggplot2::scale_color_manual(values=c("purple","orange")) +
           ggplot2::annotate("text",x=0.3*max(preds$Rank), y=0.8*max(preds$Value),label=met_names(shared_mets[j]))+
           ggplot2::annotate("text",x=0.3*max(preds$Rank), y=0.6*max(preds$Value), label=paste(length(preds$Value[preds$Value==min(preds$Value) & preds$Prediction==0]), length(preds$Value[preds$Value==min(preds$Value) & preds$Prediction==1]), sep = "  "))
         ggplot2::ggsave(file=paste0(file_prefix,"_",shared_mets[j],".png"))
       }
       if(plot_continuous){
-        if(any(prmts!=0)){
-          plot_ref_mets_by_prmts(met1, prmts,shared_mets[j], file_prefix)
+        if(any(cmps!=0)){
+          plot_ref_mets_by_cmps(met1, cmps,shared_mets[j], file_prefix)
         }
       }
-      if(any(prmts!=0)) {
+      if(any(cmps!=0)) {
         if(any(higher_pred != 0) & any(higher_pred != 1) & any(higher_obs !=0) & any(higher_obs !=1)){
           ftest = fisher.test(higher_pred, higher_obs, alternative = "greater")
           ftest2 = fisher.test(higher_pred, higher_obs, alternative = "less")
@@ -660,7 +661,7 @@ run_all_metabolites2 = function(genes, mets, file_prefix = 'net1', correction = 
         ftest = NA
         ftest2 = NA
       }
-      all_comparisons[[j]] = list(ID = shared_mets[j], Error = error, Test = ftest, Test2 = ftest2, PRMT_med = med_prmt, Met_med = med_met, Pred=higher_pred, Obs=higher_obs)
+      all_comparisons[[j]] = list(ID = shared_mets[j], Error = error, Test = ftest, Test2 = ftest2, cmp_med = med_cmp, Met_med = med_met, Pred=higher_pred, Obs=higher_obs)
     }
   }
 
@@ -713,19 +714,19 @@ plot_mantel_results = function(metabolite_list, node_data, file_prefix){
 }
 
 
-plot_ref_mets_by_prmts = function(met, prmts, id, file_prefix){
+plot_ref_mets_by_cmps = function(met, cmps, id, file_prefix){
   requireNamespace("ggplot2", quietly = TRUE)
   med_met = quantile(met, probs = quant)
-  if(any(met==med_met)) med_prmt = median(prmts[met==med_met]) else med_prmt = mean(prmts[which(abs(met-med_met) <= min(abs(met-med_met)) + 0.001)]) #median of two closest from which median was calculated
+  if(any(met==med_met)) med_cmp = median(cmps[met==med_met]) else med_cmp = mean(cmps[which(abs(met-med_met) <= min(abs(met-med_met)) + 0.001)]) #median of two closest from which median was calculated
   ref_met = met - med_met
-  ref_prmt = prmts - med_prmt
-  higher_pred = ifelse(prmts > med_prmt,1,0)
+  ref_cmp = cmps - med_cmp
+  higher_pred = ifelse(cmps > med_cmp,1,0)
   higher_obs = ifelse(met > med_met, 1, 0)
-  plot_data = data.frame(PRMT=ref_prmt, Met=ref_met, HigherPred=factor(higher_pred),HigherObs=factor(higher_obs))
-  x0=ggplot2::ggplot(plot_data,ggplot2::aes(x=PRMT,y=Met))+ggplot2::geom_point(size=4)+ggplot2::xlab("Score reference difference")+ ggplot2::ylab("Metabolite reference difference") + ggplot2::theme_bw() + ggplot2::geom_vline(xintercept=med_prmt, linetype=2) + ggplot2::geom_hline(ylintercept=med_met, linetype=2)#+
+  plot_data = data.frame(cmp=ref_cmp, Met=ref_met, HigherPred=factor(higher_pred),HigherObs=factor(higher_obs))
+  x0=ggplot2::ggplot(plot_data,ggplot2::aes(x=cmp,y=Met))+ggplot2::geom_point(size=4)+ggplot2::xlab("Score reference difference")+ ggplot2::ylab("Metabolite reference difference") + ggplot2::theme_bw() + ggplot2::geom_vline(xintercept=med_cmp, linetype=2) + ggplot2::geom_hline(ylintercept=med_met, linetype=2)#+
   print(med_met)
-  print(med_prmt)
-    #annotate("text",x=0.3*max(plot_data$PRMT), y=0.8*max(plot_data$Met),label=met_names(id))
+  print(med_cmp)
+    #annotate("text",x=0.3*max(plot_data$cmp), y=0.8*max(plot_data$Met),label=met_names(id))
   return(x0)
   #ggsave(file=paste0(file_prefix,id,".png"))
 }
@@ -748,29 +749,29 @@ single_gene_cmp = function(compound, gene, norm_kos, ko_net){
 #'
 #' @import data.table
 #' @param j index (from lapply usually)
-#' @param prmts_sub_good CMP scores for metabolites to be analyzed
+#' @param cmps_sub_good CMP scores for metabolites to be analyzed
 #' @param all_rxns list of reaction tables for each compound
 #' @param subjects vector of subject names
 #' @param norm_kos gene abundance matrix
 #' @param ko_net full network
-#' @return list of contributors and correlations
+#' @return list of information on contributors. Item 1 is the table of correlations between scores with and without each gene (also written to a file). Item 2 is a table of the associated reactions for each of the contributor genes. Item 3 is an integer equal to 1 if the metabolite scores are predicted primarily by synthesis, -1 if scores are predicted primarily by degradation, or 0 if neither. Item 4 is a vector of the number of genes and contributor genes involved in synthesis and degradation reactions.
 #' @examples
-#' lapply(1:length(good_mets), prmt_contributions, prmts_sub_good = prmts_sub_good, all_rxns = all_rxns[[j]],
+#' lapply(1:length(good_mets), cmp_contributions, cmps_sub_good = cmps_sub_good, all_rxns = all_rxns[[j]],
 #' subjects=subjects, norm_kos = norm_kos, ko_net = ko_net)
 #' @export
-gene_contributions = function(j, prmts_sub_good, all_rxns, subjects, norm_kos, ko_net){
-  #index (from sapply usually), prmt matrix, list of reaction tables for each compound, subjects, gene matrix, full network
+gene_contributions = function(j, cmps_sub_good, all_rxns, subjects, norm_kos, ko_net){
+  #index (from sapply usually), cmp matrix, list of reaction tables for each compound, subjects, gene matrix, full network
   if(!is.null(all_rxns[[j]])){
-    compound = prmts_sub_good[j,compound]
+    compound = cmps_sub_good[j,compound]
     kos_involved = unique(all_rxns[[j]][Reversible==0,KO])
     ko_vals = norm_kos[KO %in% kos_involved]
-    #plan - look at correlation between old prmt score and prmt score w/out each KO - least correlated is most impactful KO
-    ko_prmt_cors = sapply(kos_involved, function(x){
+    #plan - look at correlation between old cmp score and cmp score w/out each KO - least correlated is most impactful KO
+    ko_cmp_cors = sapply(kos_involved, function(x){
       vals_without = ko_vals[KO != x]
-      prmt_without = data.matrix(ko_net[[1]][compound,vals_without[,KO]])%*%data.matrix(vals_without[,subjects,with=F])
-      return(cor(as.vector(unlist(prmts_sub_good[compound,subjects,with=F])),as.vector(prmt_without), method="spearman"))
+      cmp_without = data.matrix(ko_net[[1]][compound,vals_without[,KO]])%*%data.matrix(vals_without[,subjects,with=F])
+      return(cor(as.vector(unlist(cmps_sub_good[compound,subjects,with=F])),as.vector(cmp_without), method="spearman"))
     })
-    ko_cors = data.table(KO=kos_involved, Cor=ko_prmt_cors)
+    ko_cors = data.table(KO=kos_involved, Cor=ko_cmp_cors)
     #save KOs that have a major effect
     ko_good = ko_cors[is.na(Cor)|(Cor < 0.5),KO]
     net_primary = all_rxns[[j]][KO %in% ko_good & Reversible==0]
@@ -789,8 +790,8 @@ gene_contributions = function(j, prmts_sub_good, all_rxns, subjects, norm_kos, k
       nkey_prod = length(unique(net_primary[Reversible==0 & compound==Prod, KO]))
       nkey_reac = length(unique(net_primary[Reversible==0 & compound==Reac, KO]))
     }
+    write.table(ko_cors, file = paste0("geneContribAnalysis_", compound, ".txt", ))
     return(list(ko_cors, net_primary, primary_make, c(nKOReac = nreac, nKOProd = nprod, nkeyKOReac = nkey_reac, nkeyKOProd = nkey_prod)))
-    #  return(ko_cors)
   } else return(NULL)
 }
 
@@ -798,9 +799,9 @@ gene_contributions = function(j, prmts_sub_good, all_rxns, subjects, norm_kos, k
 #'
 #' @import data.table
 #' @param met_met metabolite to use from metabolite concentration data
-#' @param met_prmt metabolite to use from CMP score data
+#' @param met_cmp metabolite to use from CMP score data
 #' @param met_all matrix of metabolite concentrations
-#' @param prmt_all matrix of CMP scores
+#' @param cmp_all matrix of CMP scores
 #' @param posneg Whether to test for positive or negative concentration
 #' @param cor_method spearman or pearson
 #' @param nperm number of permutations for Mantel test
@@ -808,9 +809,9 @@ gene_contributions = function(j, prmts_sub_good, all_rxns, subjects, norm_kos, k
 #' @examples
 #' compare_met("C00001", "C00002", mets, cmp_mat, "pos")
 #' @export
-compare_met = function(met_met, met_prmt, met_all, prmt_all, posneg="pos", cor_method="spearman", nperm=15000){
+compare_met = function(met_met, met_cmp, met_all, cmp_all, posneg="pos", cor_method="spearman", nperm=15000){
   good_subs = names(met_all)[which(!is.na(unlist(met_all[met_met])) & names(met_all)!="KEGG")]
-  met_mat = make_pairwise_met_matrix(met_prmt, prmt_all[,c(good_subs,"compound"),with=F])
+  met_mat = make_pairwise_met_matrix(met_cmp, cmp_all[,c(good_subs,"compound"),with=F])
   metabol_mat = make_pairwise_met_matrix(met_met, met_all[,c(good_subs,"KEGG"),with=F])
   if(posneg=="pos") test = vegan::mantel(met_mat,metabol_mat,method=cor_method,permutations = nperm)
   else test = mantel_2sided(met_mat,metabol_mat,method=cor_method,permutations = nperm, direction = "neg")
@@ -881,23 +882,23 @@ run_shuffle = function(out_file, id_num = 1, n_iter = 5000, nonzero_filter = 3, 
   rxn_table = ko_net[[3]]
   random_net = randomize_net(rxn_table, n_iter)
   net_mats = make_network_matrix(random_net)
-  prmts = get_prmt_scores(net_mats[[1]], norm_kos)
+  cmps = get_cmp_scores(net_mats[[1]], norm_kos)
 
   metIDs = mets[,KEGG]
   shared_mets = metIDs[metIDs %in% row.names(net_mats[[1]])]
   mets_shared_only = mets[shared_mets]
-  prmts_shared_only = prmts[shared_mets]
+  cmps_shared_only = cmps[shared_mets]
 
-  good_data = which(apply(prmts_shared_only, 1, function(x){ length(x[as.numeric(x)!=0]) >= nonzero_filter }) & apply(mets_shared_only, 1, function(x){ length(x[as.numeric(x)!=0]) >= nonzero_filter }))
+  good_data = which(apply(cmps_shared_only, 1, function(x){ length(x[as.numeric(x)!=0]) >= nonzero_filter }) & apply(mets_shared_only, 1, function(x){ length(x[as.numeric(x)!=0]) >= nonzero_filter }))
   mets_shared_only = mets_shared_only[good_data]
-  prmts_shared_only = prmts_shared_only[good_data]
+  cmps_shared_only = cmps_shared_only[good_data]
   shared_mets = shared_mets[good_data]
 
   compare_pos = sapply(1:length(shared_mets), function(x){
-    compare_met(shared_mets[x], shared_mets[x], mets_shared_only, prmts_shared_only, posneg = "pos", nperm = 10000)
+    compare_met(shared_mets[x], shared_mets[x], mets_shared_only, cmps_shared_only, posneg = "pos", nperm = 10000)
   })
   compare_neg = sapply(1:length(shared_mets), function(x){
-    compare_met(shared_mets[x], shared_mets[x], mets_shared_only, prmts_shared_only, posneg = "neg", nperm = 10000)
+    compare_met(shared_mets[x], shared_mets[x], mets_shared_only, cmps_shared_only, posneg = "neg", nperm = 10000)
   })
 
   corrected_pos = correct(compare_pos, method="fdr")
@@ -913,7 +914,7 @@ run_shuffle = function(out_file, id_num = 1, n_iter = 5000, nonzero_filter = 3, 
 
   file_prefix = paste0(gsub("_out.rda", "", out_file), id_num)
 
-  write.table(data.table(t(total_pos), t(total_neg)), file = paste0(file_prefix, "_shuff_network.txt"), sep = "\t", quote=F, row.names=F, col.names=F, header = F)
+  write.table(data.table(t(total_pos), t(total_neg)), file = paste0(file_prefix, "_shuff_network.txt"), sep = "\t", quote=F, row.names=F, col.names=F)
   write.table(met_table, file = paste0(file_prefix,"_shuff_network_mets.txt"), sep = "\t", quote=F, row.names=F, col.names=F)
 }
 
