@@ -1,0 +1,1366 @@
+ENTRY       R01000                      Reaction
+NAME        2-Hydroxybutyrate:NAD+ oxidoreductase
+DEFINITION  2-Hydroxybutanoic acid + NAD+ <=> 2-Oxobutanoate + NADH + H+
+EQUATION    C05984 + C00003 <=> C00109 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP01230  C00109_C05984 main
+ENZYME      1.1.1.27
+PATHWAY     rn00640  Propanoate metabolism
+ORTHOLOGY   K00016  L-lactate dehydrogenase [EC:1.1.1.27]
+///
+ENTRY       R04440                      Reaction
+NAME        (R)-2,3-Dihydroxy-3-methylbutanoate:NADP+ oxidoreductase (isomerizing)
+DEFINITION  (R)-2,3-Dihydroxy-3-methylbutanoate + NADP+ <=> 3-Hydroxy-3-methyl-2-oxobutanoic acid + NADPH + H+
+EQUATION    C04272 + C00006 <=> C04181 + C00005 + C00080
+RPAIR       RP00001  C00005_C00006 cofac
+            RP04079  C04181_C04272 main
+ENZYME      1.1.1.86
+PATHWAY     rn00290  Valine, leucine and isoleucine biosynthesis
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+            rn01210  2-Oxocarboxylic acid metabolism
+            rn01230  Biosynthesis of amino acids
+ORTHOLOGY   K00053  ketol-acid reductoisomerase [EC:1.1.1.86]
+///
+ENTRY       R01528                      Reaction
+NAME        6-phospho-D-gluconate:NADP+ 2-oxidoreductase (decarboxylating)
+DEFINITION  6-Phospho-D-gluconate + NADP+ <=> D-Ribulose 5-phosphate + CO2 + NADPH + H+
+EQUATION    C00345 + C00006 <=> C00199 + C00011 + C00005 + C00080
+COMMENT     NAD+ (see R10221)
+RPAIR       RP00001  C00005_C00006 main
+            RP01572  C00199_C00345 main
+            RP06593  C00011_C00345 leave
+ENZYME      1.1.1.44        1.1.1.351
+PATHWAY     rn00030  Pentose phosphate pathway
+            rn00480  Glutathione metabolism
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+            rn01120  Microbial metabolism in diverse environments
+            rn01200  Carbon metabolism
+ORTHOLOGY   K00033  6-phosphogluconate dehydrogenase [EC:1.1.1.44]
+///
+ENTRY       R02946                      Reaction
+NAME        (R,R)-Butane-2,3-diol:NAD+ oxidoreductase
+DEFINITION  (R,R)-Butane-2,3-diol + NAD+ <=> (R)-Acetoin + NADH + H+
+EQUATION    C03044 + C00003 <=> C00810 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP02625  C00810_C03044 main
+ENZYME      1.1.1.4
+PATHWAY     rn00650  Butanoate metabolism
+ORTHOLOGY   K00004  (R,R)-butanediol dehydrogenase / diacetyl reductase [EC:1.1.1.4 1.1.1.303]
+///
+ENTRY       R00868                      Reaction
+NAME        D-Mannitol:NAD+ 2-oxidoreductase
+DEFINITION  Mannitol + NAD+ <=> D-Fructose + NADH + H+
+EQUATION    C00392 + C00003 <=> C00095 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00231  C00095_C00392 main
+ENZYME      1.1.1.11        1.1.1.67
+PATHWAY     rn00051  Fructose and mannose metabolism
+ORTHOLOGY   K00007  D-arabinitol 4-dehydrogenase [EC:1.1.1.11]
+            K00045  mannitol 2-dehydrogenase [EC:1.1.1.67]
+///
+ENTRY       R05068                      Reaction
+NAME        (R)-2,3-Dihydroxy-3-methylpentanoate:NADP+ oxidoreductase (isomerizing)
+DEFINITION  (R)-2,3-Dihydroxy-3-methylpentanoate + NADP+ <=> (R)-3-Hydroxy-3-methyl-2-oxopentanoate + NADPH + H+
+EQUATION    C06007 + C00006 <=> C14463 + C00005 + C00080
+RPAIR       RP00001  C00005_C00006 cofac
+            RP10180  C06007_C14463 main
+ENZYME      1.1.1.86
+PATHWAY     rn00290  Valine, leucine and isoleucine biosynthesis
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+            rn01210  2-Oxocarboxylic acid metabolism
+            rn01230  Biosynthesis of amino acids
+ORTHOLOGY   K00053  ketol-acid reductoisomerase [EC:1.1.1.86]
+///
+ENTRY       R00875                      Reaction
+NAME        D-Glucitol:NAD+ 2-oxidoreductase
+DEFINITION  D-Sorbitol + NAD+ <=> D-Fructose + NADH + H+
+EQUATION    C00794 + C00003 <=> C00095 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00692  C00095_C00794 main
+ENZYME      1.1.1.14        1.1.1.15
+PATHWAY     rn00051  Fructose and mannose metabolism
+            rn01100  Metabolic pathways
+ORTHOLOGY   K00008  L-iditol 2-dehydrogenase [EC:1.1.1.14]
+///
+ENTRY       R01465                      Reaction
+NAME        L-threonine:NAD+ oxidoreductase
+DEFINITION  L-Threonine + NAD+ <=> L-2-Amino-3-oxobutanoic acid + NADH + H+
+EQUATION    C00188 + C00003 <=> C03508 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP01528  C00188_C03508 main
+ENZYME      1.1.1.103
+PATHWAY     rn00260  Glycine, serine and threonine metabolism
+ORTHOLOGY   K00060  threonine 3-dehydrogenase [EC:1.1.1.103]
+            K15789  threonine 3-dehydrogenase [EC:1.1.1.103]
+///
+ENTRY       R04880                      Reaction
+NAME        3,4-dihydroxyphenylethyleneglycol:NAD+ oxidoreductase
+DEFINITION  3,4-Dihydroxyphenylethyleneglycol + NAD+ <=> 3,4-Dihydroxymandelaldehyde + NADH + H+
+EQUATION    C05576 + C00003 <=> C05577 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP04492  C05576_C05577 main
+ENZYME      1.1.1.1
+PATHWAY     rn00350  Tyrosine metabolism
+            rn01100  Metabolic pathways
+ORTHOLOGY   K00001  alcohol dehydrogenase [EC:1.1.1.1]
+            K00121  S-(hydroxymethyl)glutathione dehydrogenase / alcohol dehydrogenase [EC:1.1.1.284 1.1.1.1]
+            K04072  acetaldehyde dehydrogenase / alcohol dehydrogenase [EC:1.2.1.10 1.1.1.1]
+            K13951  alcohol dehydrogenase 1/7 [EC:1.1.1.1]
+            K13952  alcohol dehydrogenase 6 [EC:1.1.1.1]
+            K13953  alcohol dehydrogenase, propanol-preferring [EC:1.1.1.1]
+            K13954  alcohol dehydrogenase [EC:1.1.1.1]
+            K13980  alcohol dehydrogenase 4 [EC:1.1.1.1]
+///
+ENTRY       R02257                      Reaction
+NAME        Propane-1,2-diol:NAD+ oxidoreductase
+DEFINITION  Propane-1,2-diol + NAD+ <=> (S)-Lactaldehyde + NADH + H+
+EQUATION    C00583 + C00003 <=> C00424 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00495  C00424_C00583 main
+ENZYME      1.1.1.77
+PATHWAY     rn00620  Pyruvate metabolism
+ORTHOLOGY   K00048  lactaldehyde reductase [EC:1.1.1.77]
+///
+ENTRY       R07759                      Reaction
+DEFINITION  3-Oxostearoyl-CoA + NADPH + H+ <=> 3-Hydroxyoctadecanoyl-CoA + NADP+
+EQUATION    C16216 + C00005 + C00080 <=> C16217 + C00006
+RPAIR       RP00001  C00005_C00006 cofac
+            RP12109  C16216_C16217 main
+ENZYME      1.1.1.330
+PATHWAY     rn01040  Biosynthesis of unsaturated fatty acids
+ORTHOLOGY   K00059  3-oxoacyl-[acyl-carrier protein] reductase [EC:1.1.1.100]
+            K10251  17beta-estradiol 17-dehydrogenase / very-long-chain 3-oxoacyl-CoA reductase [EC:1.1.1.62 1.1.1.330]
+///
+ENTRY       R00994                      Reaction
+NAME        (2R,3S)-3-methylmalate:NAD+ oxidoreductase
+DEFINITION  2-Oxobutanoate + CO2 + NADH + H+ <=> D-erythro-3-Methylmalate + NAD+
+EQUATION    C00109 + C00011 + C00004 + C00080 <=> C06032 + C00003
+RPAIR       RP00002  C00003_C00004 cofac
+            RP01224  C00109_C06032 main
+            RP06397  C00011_C06032 leave
+ENZYME      1.1.1.85
+PATHWAY     rn00290  Valine, leucine and isoleucine biosynthesis
+            rn00660  C5-Branched dibasic acid metabolism
+            rn01100  Metabolic pathways
+            rn01210  2-Oxocarboxylic acid metabolism
+            rn01230  Biosynthesis of amino acids
+ORTHOLOGY   K00052  3-isopropylmalate dehydrogenase [EC:1.1.1.85]
+///
+ENTRY       R02081                      Reaction
+NAME        (R)-Mevalonate:NAD+ oxidoreductase (CoA-acetylating)
+DEFINITION  (R)-Mevalonate + CoA + 2 NAD+ <=> (S)-3-Hydroxy-3-methylglutaryl-CoA + 2 NADH + 2 H+
+EQUATION    C00418 + C00010 + 2 C00003 <=> C00356 + 2 C00004 + 2 C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00198  C00010_C00356 main
+            RP01960  C00356_C00418 main
+ENZYME      1.1.1.88
+PATHWAY     rn00900  Terpenoid backbone biosynthesis
+            rn01110  Biosynthesis of secondary metabolites
+ORTHOLOGY   K00054  hydroxymethylglutaryl-CoA reductase [EC:1.1.1.88]
+///
+ENTRY       R01644                      Reaction
+NAME        4-Hydroxybutanoate:NAD+ oxidoreductase
+DEFINITION  4-Hydroxybutanoic acid + NAD+ <=> Succinate semialdehyde + NADH + H+
+EQUATION    C00989 + C00003 <=> C00232 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP01655  C00232_C00989 main
+ENZYME      1.1.1.61
+PATHWAY     rn00650  Butanoate metabolism
+ORTHOLOGY   K00043  4-hydroxybutyrate dehydrogenase [EC:1.1.1.61]
+///
+ENTRY       R04533                      Reaction
+NAME        (3R)-3-Hydroxybutanoyl-[acyl-carrier protein]:NADP+ oxidoreductase
+DEFINITION  (3R)-3-Hydroxybutanoyl-[acyl-carrier protein] + NADP+ <=> Acetoacetyl-[acp] + NADPH + H+
+EQUATION    C04618 + C00006 <=> C05744 + C00005 + C00080
+RPAIR       RP00001  C00005_C00006 cofac
+            RP04177  C04618_C05744 main
+ENZYME      1.1.1.100       2.3.1.85        2.3.1.86
+PATHWAY     rn00061  Fatty acid biosynthesis
+            rn01100  Metabolic pathways
+ORTHOLOGY   K00059  3-oxoacyl-[acyl-carrier protein] reductase [EC:1.1.1.100]
+            K00665  fatty acid synthase, animal type [EC:2.3.1.85]
+            K00667  fatty acid synthase subunit alpha, fungi type [EC:2.3.1.86]
+            K11533  fatty acid synthase, bacteria type [EC:2.3.1.-]
+///
+ENTRY       R01763                      Reaction
+NAME        Benzyl alcohol:NAD+ oxidoreductase
+DEFINITION  Benzyl alcohol + NAD+ <=> Benzaldehyde + NADH + H+
+EQUATION    C00556 + C00003 <=> C00261 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP01738  C00261_C00556 main
+ENZYME      1.1.1.90
+PATHWAY     rn00623  Toluene degradation
+            rn01120  Microbial metabolism in diverse environments
+            rn01220  Degradation of aromatic compounds
+ORTHOLOGY   K00055  aryl-alcohol dehydrogenase [EC:1.1.1.90]
+///
+ENTRY       R08281                      Reaction
+NAME        alcophosphamide:NAD+ oxidoreductase
+DEFINITION  Aldophosphamide + NADH + H+ <=> Alcophosphamide + NAD+
+EQUATION    C07645 + C00004 + C00080 <=> C16551 + C00003
+RPAIR       RP00002  C00003_C00004 cofac
+            RP13149  C07645_C16551 main
+ENZYME      1.1.1.1
+PATHWAY     rn00982  Drug metabolism - cytochrome P450
+ORTHOLOGY   K00001  alcohol dehydrogenase [EC:1.1.1.1]
+            K00121  S-(hydroxymethyl)glutathione dehydrogenase / alcohol dehydrogenase [EC:1.1.1.284 1.1.1.1]
+            K13951  alcohol dehydrogenase 1/7 [EC:1.1.1.1]
+            K13952  alcohol dehydrogenase 6 [EC:1.1.1.1]
+            K13953  alcohol dehydrogenase, propanol-preferring [EC:1.1.1.1]
+            K13980  alcohol dehydrogenase 4 [EC:1.1.1.1]
+///
+ENTRY       R01899                      Reaction
+NAME        Isocitrate:NADP+ oxidoreductase
+DEFINITION  Isocitrate + NADP+ <=> Oxalosuccinate + NADPH + H+
+EQUATION    C00311 + C00006 <=> C05379 + C00005 + C00080
+COMMENT     the first step of two-step reaction (see R00267, R01899+R00268)
+            subsequently R00268
+RPAIR       RP00001  C00005_C00006 cofac
+            RP01829  C00311_C05379 main
+ENZYME      1.1.1.42
+PATHWAY     rn00020  Citrate cycle (TCA cycle)
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+            rn01120  Microbial metabolism in diverse environments
+            rn01210  2-Oxocarboxylic acid metabolism
+ORTHOLOGY   K00031  isocitrate dehydrogenase [EC:1.1.1.42]
+///
+ENTRY       R01781                      Reaction
+NAME        1,2-Ethanediol:NAD+ oxidoreductase
+DEFINITION  Ethylene glycol + NAD+ <=> Glycolaldehyde + NADH + H+
+EQUATION    C01380 + C00003 <=> C00266 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP01751  C00266_C01380 main
+ENZYME      1.1.1.77
+PATHWAY     rn00630  Glyoxylate and dicarboxylate metabolism
+            rn01120  Microbial metabolism in diverse environments
+ORTHOLOGY   K00048  lactaldehyde reductase [EC:1.1.1.77]
+///
+ENTRY       R05231                      Reaction
+NAME        6-Hydroxyhexanoate:NADP+ oxidoreductase
+DEFINITION  6-Hydroxyhexanoic acid + NADP+ <=> Adipate semialdehyde + NADPH + H+
+EQUATION    C06103 + C00006 <=> C06102 + C00005 + C00080
+RPAIR       RP00001  C00005_C00006 cofac
+            RP00819  C06102_C06103 main
+ENZYME      1.1.1.2
+PATHWAY     rn00930  Caprolactam degradation
+            rn01120  Microbial metabolism in diverse environments
+ORTHOLOGY   K00002  alcohol dehydrogenase (NADP+) [EC:1.1.1.2]
+///
+ENTRY       R06927                      Reaction
+NAME        (2-naphthyl)methanol:NAD+ oxidoreductase
+DEFINITION  (2-Naphthyl)methanol + NAD+ <=> 2-Naphthaldehyde + NADH + H+
+EQUATION    C02909 + C00003 <=> C14099 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP09285  C02909_C14099 main
+ENZYME      1.1.1.1
+PATHWAY     rn00626  Naphthalene degradation
+            rn01120  Microbial metabolism in diverse environments
+ORTHOLOGY   K00001  alcohol dehydrogenase [EC:1.1.1.1]
+            K00121  S-(hydroxymethyl)glutathione dehydrogenase / alcohol dehydrogenase [EC:1.1.1.284 1.1.1.1]
+            K04072  acetaldehyde dehydrogenase / alcohol dehydrogenase [EC:1.2.1.10 1.1.1.1]
+            K13953  alcohol dehydrogenase, propanol-preferring [EC:1.1.1.1]
+            K13954  alcohol dehydrogenase [EC:1.1.1.1]
+///
+ENTRY       R05347                      Reaction
+DEFINITION  3-Methylbenzyl alcohol + NAD+ <=> 3-Methylbenzaldehyde + NADH + H+
+EQUATION    C07216 + C00003 <=> C07209 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP04945  C07209_C07216 main
+ENZYME      1.1.1.90
+PATHWAY     rn00622  Xylene degradation
+            rn01100  Metabolic pathways
+            rn01120  Microbial metabolism in diverse environments
+            rn01220  Degradation of aromatic compounds
+ORTHOLOGY   K00055  aryl-alcohol dehydrogenase [EC:1.1.1.90]
+///
+ENTRY       R00342                      Reaction
+NAME        (S)-malate:NAD+ oxidoreductase
+DEFINITION  (S)-Malate + NAD+ <=> Oxaloacetate + NADH + H+
+EQUATION    C00149 + C00003 <=> C00036 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00079  C00036_C00149 main
+ENZYME      1.1.1.37        1.1.1.299
+PATHWAY     rn00020  Citrate cycle (TCA cycle)
+            rn00620  Pyruvate metabolism
+            rn00630  Glyoxylate and dicarboxylate metabolism
+            rn00680  Methane metabolism
+            rn00710  Carbon fixation in photosynthetic organisms
+            rn00720  Carbon fixation pathways in prokaryotes
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+            rn01120  Microbial metabolism in diverse environments
+            rn01200  Carbon metabolism
+ORTHOLOGY   K00024  malate dehydrogenase [EC:1.1.1.37]
+            K00025  malate dehydrogenase [EC:1.1.1.37]
+            K00026  malate dehydrogenase [EC:1.1.1.37]
+///
+ENTRY       R02454                      Reaction
+NAME        D-Mannonate:NAD+ 5-oxidoreductase
+DEFINITION  D-Mannonate + NAD+ <=> D-Fructuronate + NADH + H+
+EQUATION    C00514 + C00003 <=> C00905 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP02228  C00514_C00905 main
+ENZYME      1.1.1.57
+PATHWAY     rn00040  Pentose and glucuronate interconversions
+            rn01100  Metabolic pathways
+ORTHOLOGY   K00040  fructuronate reductase [EC:1.1.1.57]
+///
+ENTRY       R05282                      Reaction
+NAME        4-Methylbenzyl alcohol:NAD+ oxidoreductase
+DEFINITION  4-Methylbenzyl alcohol + NAD+ <=> p-Tolualdehyde + NADH + H+
+EQUATION    C06757 + C00003 <=> C06758 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP04885  C06757_C06758 main
+ENZYME      1.1.1.90
+PATHWAY     rn00622  Xylene degradation
+            rn01100  Metabolic pathways
+            rn01120  Microbial metabolism in diverse environments
+            rn01220  Degradation of aromatic compounds
+ORTHOLOGY   K00055  aryl-alcohol dehydrogenase [EC:1.1.1.90]
+///
+ENTRY       R04566                      Reaction
+NAME        (3R)-3-Hydroxytetradecanoyl-[acyl-carrier-protein]:NADP+ oxidoreductase
+DEFINITION  (3R)-3-Hydroxytetradecanoyl-[acyl-carrier protein] + NADP+ <=> 3-Oxotetradecanoyl-[acp] + NADPH + H+
+EQUATION    C04688 + C00006 <=> C05759 + C00005 + C00080
+RPAIR       RP00001  C00005_C00006 cofac
+            RP12488  C04688_C05759 main
+ENZYME      1.1.1.100       2.3.1.85        2.3.1.86
+PATHWAY     rn00061  Fatty acid biosynthesis
+            rn01100  Metabolic pathways
+ORTHOLOGY   K00059  3-oxoacyl-[acyl-carrier protein] reductase [EC:1.1.1.100]
+            K00665  fatty acid synthase, animal type [EC:2.3.1.85]
+            K00667  fatty acid synthase subunit alpha, fungi type [EC:2.3.1.86]
+            K11533  fatty acid synthase, bacteria type [EC:2.3.1.-]
+///
+ENTRY       R03051                      Reaction
+NAME        2,3-Dihydroxy-3-methylbutanoate:NADP+ oxidoreductase (isomerizing)
+DEFINITION  2-Acetolactate + NADPH + H+ <=> 2,3-Dihydroxy-3-methylbutanoate + NADP+
+EQUATION    C00900 + C00005 + C00080 <=> C04039 + C00006
+RPAIR       RP00001  C00005_C00006 cofac
+            RP02722  C00900_C04039 main
+ENZYME      1.1.1.86
+PATHWAY     rn00770  Pantothenate and CoA biosynthesis
+ORTHOLOGY   K00053  ketol-acid reductoisomerase [EC:1.1.1.86]
+///
+ENTRY       R00286                      Reaction
+NAME        UDP-glucose:NAD+ 6-oxidoreductase
+DEFINITION  UDP-glucose + H2O + 2 NAD+ <=> UDP-glucuronate + 2 NADH + 2 H+
+EQUATION    C00029 + C00001 + 2 C00003 <=> C00167 + 2 C00004 + 2 C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP04543  C00029_C00167 main
+            RP08539  C00001_C00167 leave
+ENZYME      1.1.1.22
+PATHWAY     rn00040  Pentose and glucuronate interconversions
+            rn00053  Ascorbate and aldarate metabolism
+            rn00500  Starch and sucrose metabolism
+            rn00520  Amino sugar and nucleotide sugar metabolism
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+ORTHOLOGY   K00012  UDPglucose 6-dehydrogenase [EC:1.1.1.22]
+///
+ENTRY       R00703                      Reaction
+NAME        (S)-Lactate:NAD+ oxidoreductase
+DEFINITION  (S)-Lactate + NAD+ <=> Pyruvate + NADH + H+
+EQUATION    C00186 + C00003 <=> C00022 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00215  C00022_C00186 main
+ENZYME      1.1.1.27
+PATHWAY     rn00010  Glycolysis / Gluconeogenesis
+            rn00620  Pyruvate metabolism
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+            rn01120  Microbial metabolism in diverse environments
+ORTHOLOGY   K00016  L-lactate dehydrogenase [EC:1.1.1.27]
+///
+ENTRY       R10116                      Reaction
+NAME        3-hydroxyglutaryl-[acp]-methyl-ester:NADP+ oxidoreductase
+DEFINITION  3-Ketoglutaryl-[acp] methyl ester + NADPH + H+ <=> 3-Hydroxyglutaryl-[acp] methyl ester + NADP+
+EQUATION    C20372 + C00005 + C00080 <=> C20373 + C00006
+RPAIR       RP00001  C00005_C00006 cofac
+            RP15919  C20372_C20373 main
+ENZYME      1.1.1.100
+PATHWAY     rn00780  Biotin metabolism
+            rn01100  Metabolic pathways
+ORTHOLOGY   K00059  3-oxoacyl-[acyl-carrier protein] reductase [EC:1.1.1.100]
+///
+ENTRY       R05233                      Reaction
+NAME        trans-3-Chloro-2-propene-1-ol:NAD+ oxidoreductase
+DEFINITION  trans-3-Chloro-2-propene-1-ol + NAD+ <=> trans-3-Chloroallyl aldehyde + NADH + H+
+EQUATION    C06611 + C00003 <=> C06613 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP04835  C06611_C06613 main
+ENZYME      1.1.1.1
+PATHWAY     rn00625  Chloroalkane and chloroalkene degradation
+            rn01100  Metabolic pathways
+            rn01120  Microbial metabolism in diverse environments
+ORTHOLOGY   K00001  alcohol dehydrogenase [EC:1.1.1.1]
+            K00121  S-(hydroxymethyl)glutathione dehydrogenase / alcohol dehydrogenase [EC:1.1.1.284 1.1.1.1]
+            K04072  acetaldehyde dehydrogenase / alcohol dehydrogenase [EC:1.2.1.10 1.1.1.1]
+            K13953  alcohol dehydrogenase, propanol-preferring [EC:1.1.1.1]
+            K13954  alcohol dehydrogenase [EC:1.1.1.1]
+///
+ENTRY       R04536                      Reaction
+NAME        (3R)-3-Hydroxyoctanoyl-[acyl-carrier-protein]:NADP+ oxidoreductase
+DEFINITION  (3R)-3-Hydroxyoctanoyl-[acyl-carrier protein] + NADP+ <=> 3-Oxooctanoyl-[acp] + NADPH + H+
+EQUATION    C04620 + C00006 <=> C05750 + C00005 + C00080
+RPAIR       RP00001  C00005_C00006 cofac
+            RP04180  C04620_C05750 main
+ENZYME      1.1.1.100       2.3.1.85        2.3.1.86
+PATHWAY     rn00061  Fatty acid biosynthesis
+            rn01100  Metabolic pathways
+ORTHOLOGY   K00059  3-oxoacyl-[acyl-carrier protein] reductase [EC:1.1.1.100]
+            K00665  fatty acid synthase, animal type [EC:2.3.1.85]
+            K00667  fatty acid synthase subunit alpha, fungi type [EC:2.3.1.86]
+            K11533  fatty acid synthase, bacteria type [EC:2.3.1.-]
+///
+ENTRY       R00754                      Reaction
+NAME        ethanol:NAD+ oxidoreductase
+DEFINITION  Ethanol + NAD+ <=> Acetaldehyde + NADH + H+
+EQUATION    C00469 + C00003 <=> C00084 + C00004 + C00080
+COMMENT     NADP+ (ec 1.1.1.71, see R00746)
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00238  C00084_C00469 main
+ENZYME      1.1.1.1         1.1.1.71
+PATHWAY     rn00010  Glycolysis / Gluconeogenesis
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+            rn01120  Microbial metabolism in diverse environments
+ORTHOLOGY   K00001  alcohol dehydrogenase [EC:1.1.1.1]
+            K00121  S-(hydroxymethyl)glutathione dehydrogenase / alcohol dehydrogenase [EC:1.1.1.284 1.1.1.1]
+            K04022  alcohol dehydrogenase
+            K04072  acetaldehyde dehydrogenase / alcohol dehydrogenase [EC:1.2.1.10 1.1.1.1]
+            K13951  alcohol dehydrogenase 1/7 [EC:1.1.1.1]
+            K13952  alcohol dehydrogenase 6 [EC:1.1.1.1]
+            K13953  alcohol dehydrogenase, propanol-preferring [EC:1.1.1.1]
+            K13954  alcohol dehydrogenase [EC:1.1.1.1]
+            K13980  alcohol dehydrogenase 4 [EC:1.1.1.1]
+///
+ENTRY       R00623                      Reaction
+NAME        primary_alcohol:NAD+ oxidoreductase
+DEFINITION  Primary alcohol + NAD+ <=> Aldehyde + NADH + H+
+EQUATION    C00226 + C00003 <=> C00071 + C00004 + C00080
+COMMENT     general reaction
+            NADP+ (ec 1.1.1.71, see R00625)
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00139  C00071_C00226 main
+ENZYME      1.1.1.1         1.1.1.71
+PATHWAY     rn00071  Fatty acid metabolism
+ORTHOLOGY   K00001  alcohol dehydrogenase [EC:1.1.1.1]
+            K00121  S-(hydroxymethyl)glutathione dehydrogenase / alcohol dehydrogenase [EC:1.1.1.284 1.1.1.1]
+            K04072  acetaldehyde dehydrogenase / alcohol dehydrogenase [EC:1.2.1.10 1.1.1.1]
+            K13951  alcohol dehydrogenase 1/7 [EC:1.1.1.1]
+            K13952  alcohol dehydrogenase 6 [EC:1.1.1.1]
+            K13953  alcohol dehydrogenase, propanol-preferring [EC:1.1.1.1]
+            K13954  alcohol dehydrogenase [EC:1.1.1.1]
+            K13980  alcohol dehydrogenase 4 [EC:1.1.1.1]
+///
+ENTRY       R00717                      Reaction
+NAME        Glycolate:NAD+ oxidoreductase
+DEFINITION  Glycolate + NAD+ <=> Glyoxylate + NADH + H+
+EQUATION    C00160 + C00003 <=> C00048 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00112  C00048_C00160 main
+ENZYME      1.1.1.26        1.1.1.29
+PATHWAY     rn00630  Glyoxylate and dicarboxylate metabolism
+            rn01100  Metabolic pathways
+            rn01120  Microbial metabolism in diverse environments
+ORTHOLOGY   K00015  glyoxylate reductase [EC:1.1.1.26]
+            K00018  glycerate dehydrogenase [EC:1.1.1.29]
+///
+ENTRY       R01521                      Reaction
+NAME        beta-D-Glucose:NADP+ 1-oxoreductase
+DEFINITION  beta-D-Glucose + NADP+ <=> D-Glucono-1,5-lactone + NADPH + H+
+EQUATION    C00221 + C00006 <=> C00198 + C00005 + C00080
+COMMENT     NAD+ (see R01520)
+RPAIR       RP00001  C00005_C00006 cofac
+            RP00184  C00198_C00221 main
+ENZYME      1.1.1.47
+PATHWAY     rn00030  Pentose phosphate pathway
+            rn01120  Microbial metabolism in diverse environments
+            rn01200  Carbon metabolism
+ORTHOLOGY   K00034  glucose 1-dehydrogenase [EC:1.1.1.47]
+///
+ENTRY       R05066                      Reaction
+NAME        3-Hydroxy-2-methylpropanoate:NAD+ oxidoreductase
+DEFINITION  (S)-3-Hydroxyisobutyrate + NAD+ <=> (S)-Methylmalonate semialdehyde + NADH + H+
+EQUATION    C06001 + C00003 <=> C06002 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP04668  C06001_C06002 main
+ENZYME      1.1.1.31        1.1.1.35
+PATHWAY     rn00280  Valine, leucine and isoleucine degradation
+            rn01100  Metabolic pathways
+ORTHOLOGY   K00020  3-hydroxyisobutyrate dehydrogenase [EC:1.1.1.31]
+            K00022  3-hydroxyacyl-CoA dehydrogenase [EC:1.1.1.35]
+            K01782  3-hydroxyacyl-CoA dehydrogenase / enoyl-CoA hydratase / 3-hydroxybutyryl-CoA epimerase [EC:1.1.1.35 4.2.1.17 5.1.2.3]
+            K01825  3-hydroxyacyl-CoA dehydrogenase / enoyl-CoA hydratase / 3-hydroxybutyryl-CoA epimerase / enoyl-CoA isomerase [EC:1.1.1.35 4.2.1.17 5.1.2.3 5.3.3.8]
+            K07514  enoyl-CoA hydratase / 3-hydroxyacyl-CoA dehydrogenase / 3,2-trans-enoyl-CoA isomerase [EC:4.2.1.17 1.1.1.35 5.3.3.8]
+///
+ENTRY       R01542                      Reaction
+NAME        2-Dehydro-3-deoxy-D-gluconate:NAD+ 5-oxidoreductase
+DEFINITION  2-Dehydro-3-deoxy-D-gluconate + NAD+ <=> (4S)-4,6-Dihydroxy-2,5-dioxohexanoate + NADH + H+
+EQUATION    C00204 + C00003 <=> C04349 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP01583  C00204_C04349 main
+ENZYME      1.1.1.125       1.1.1.127
+PATHWAY     rn00040  Pentose and glucuronate interconversions
+ORTHOLOGY   K00065  2-deoxy-D-gluconate 3-dehydrogenase [EC:1.1.1.125]
+///
+ENTRY       R07105                      Reaction
+NAME        trichloroethanol:NAD+ oxidoreductase
+DEFINITION  Chloral hydrate + NADH + H+ <=> Trichloroethanol + NAD+ + H2O
+EQUATION    C06899 + C00004 + C00080 <=> C07490 + C00003 + C00001
+RPAIR       RP00002  C00003_C00004 cofac
+            RP10008  C00001_C06899 leave
+            RP10191  C06899_C07490 main
+ENZYME      1.1.1.1
+PATHWAY     rn00980  Metabolism of xenobiotics by cytochrome P450
+ORTHOLOGY   K00001  alcohol dehydrogenase [EC:1.1.1.1]
+            K00121  S-(hydroxymethyl)glutathione dehydrogenase / alcohol dehydrogenase [EC:1.1.1.284 1.1.1.1]
+            K13951  alcohol dehydrogenase 1/7 [EC:1.1.1.1]
+            K13952  alcohol dehydrogenase 6 [EC:1.1.1.1]
+            K13953  alcohol dehydrogenase, propanol-preferring [EC:1.1.1.1]
+            K13980  alcohol dehydrogenase 4 [EC:1.1.1.1]
+///
+ENTRY       R00216                      Reaction
+NAME        (S)-Malate:NADP+ oxidoreductase(oxaloacetate-decarboxylating)
+DEFINITION  (S)-Malate + NADP+ <=> Pyruvate + CO2 + NADPH + H+
+EQUATION    C00149 + C00006 <=> C00022 + C00011 + C00005 + C00080
+RPAIR       RP00001  C00005_C00006 cofac
+            RP00287  C00022_C00149 main
+            RP06101  C00011_C00149 leave
+ENZYME      1.1.1.40
+PATHWAY     rn00620  Pyruvate metabolism
+            rn00710  Carbon fixation in photosynthetic organisms
+            rn01100  Metabolic pathways
+            rn01120  Microbial metabolism in diverse environments
+            rn01200  Carbon metabolism
+ORTHOLOGY   K00029  malate dehydrogenase (oxaloacetate-decarboxylating)(NADP+) [EC:1.1.1.40]
+///
+ENTRY       R01977                      Reaction
+NAME        (R)-3-Hydroxybutanoyl-CoA:NADP+ oxidoreductase
+DEFINITION  (R)-3-Hydroxybutanoyl-CoA + NADP+ <=> Acetoacetyl-CoA + NADPH + H+
+EQUATION    C03561 + C00006 <=> C00332 + C00005 + C00080
+RPAIR       RP00001  C00005_C00006 cofac
+            RP01886  C00332_C03561 main
+ENZYME      1.1.1.36
+PATHWAY     rn00630  Glyoxylate and dicarboxylate metabolism
+            rn00650  Butanoate metabolism
+            rn01120  Microbial metabolism in diverse environments
+ORTHOLOGY   K00023  acetoacetyl-CoA reductase [EC:1.1.1.36]
+///
+ENTRY       R01773                      Reaction
+NAME        L-Homoserine:NAD+ oxidoreductase
+DEFINITION  L-Homoserine + NAD+ <=> L-Aspartate 4-semialdehyde + NADH + H+
+EQUATION    C00263 + C00003 <=> C00441 + C00004 + C00080
+COMMENT     NADP+ (see R01775)
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00385  C00263_C00441 main
+ENZYME      1.1.1.3
+PATHWAY     rn00260  Glycine, serine and threonine metabolism
+            rn00270  Cysteine and methionine metabolism
+            rn00300  Lysine biosynthesis
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+            rn01120  Microbial metabolism in diverse environments
+            rn01230  Biosynthesis of amino acids
+ORTHOLOGY   K00003  homoserine dehydrogenase [EC:1.1.1.3]
+            K12524  bifunctional aspartokinase / homoserine dehydrogenase 1 [EC:2.7.2.4 1.1.1.3]
+            K12525  bifunctional aspartokinase / homoserine dehydrogenase 2 [EC:2.7.2.4 1.1.1.3]
+///
+ENTRY       R02124                      Reaction
+NAME        retinol:NAD+ oxidoreductase
+DEFINITION  Retinol + NAD+ <=> Retinal + NADH + H+
+EQUATION    C00473 + C00003 <=> C00376 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP01983  C00376_C00473 main
+ENZYME      1.1.1.1         1.1.1.105
+PATHWAY     rn00830  Retinol metabolism
+            rn01100  Metabolic pathways
+ORTHOLOGY   K00001  alcohol dehydrogenase [EC:1.1.1.1]
+            K00121  S-(hydroxymethyl)glutathione dehydrogenase / alcohol dehydrogenase [EC:1.1.1.284 1.1.1.1]
+            K11149  dehydrogenase/reductase SDR family member 9 [EC:1.1.-.-]
+            K11154  retinol dehydrogenase 16 [EC:1.1.1.-]
+            K13369  17beta-estradiol 17-dehydrogenase / all-trans-retinol dehydrogenase (NAD+) / 3alpha(17beta)-hydroxysteroid dehydrogenase (NAD+) [EC:1.1.1.62 1.1.1.105 1.1.1.239]
+            K13951  alcohol dehydrogenase 1/7 [EC:1.1.1.1]
+            K13952  alcohol dehydrogenase 6 [EC:1.1.1.1]
+            K13953  alcohol dehydrogenase, propanol-preferring [EC:1.1.1.1]
+            K13980  alcohol dehydrogenase 4 [EC:1.1.1.1]
+            K15734  all-trans-retinol dehydrogenase (NAD+) [EC:1.1.1.105]
+///
+ENTRY       R01775                      Reaction
+NAME        L-homoserine:NADP+ oxidoreductase
+DEFINITION  L-Homoserine + NADP+ <=> L-Aspartate 4-semialdehyde + NADPH + H+
+EQUATION    C00263 + C00006 <=> C00441 + C00005 + C00080
+COMMENT     NAD+ (see R01773)
+RPAIR       RP00001  C00005_C00006 cofac
+            RP00385  C00263_C00441 main
+ENZYME      1.1.1.3
+PATHWAY     rn00260  Glycine, serine and threonine metabolism
+            rn00270  Cysteine and methionine metabolism
+            rn00300  Lysine biosynthesis
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+            rn01120  Microbial metabolism in diverse environments
+            rn01230  Biosynthesis of amino acids
+ORTHOLOGY   K00003  homoserine dehydrogenase [EC:1.1.1.3]
+            K12524  bifunctional aspartokinase / homoserine dehydrogenase 1 [EC:2.7.2.4 1.1.1.3]
+            K12525  bifunctional aspartokinase / homoserine dehydrogenase 2 [EC:2.7.2.4 1.1.1.3]
+///
+ENTRY       R01388                      Reaction
+NAME        D-Glycerate:NAD+ 2-oxidoreductase
+DEFINITION  D-Glycerate + NAD+ <=> Hydroxypyruvate + NADH + H+
+EQUATION    C00258 + C00003 <=> C00168 + C00004 + C00080
+COMMENT     NADP+ (see R01392)
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00299  C00168_C00258 main
+ENZYME      1.1.1.26        1.1.1.29        1.1.1.81
+PATHWAY     rn00260  Glycine, serine and threonine metabolism
+            rn00630  Glyoxylate and dicarboxylate metabolism
+            rn00680  Methane metabolism
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+            rn01120  Microbial metabolism in diverse environments
+            rn01200  Carbon metabolism
+ORTHOLOGY   K00015  glyoxylate reductase [EC:1.1.1.26]
+            K00018  glycerate dehydrogenase [EC:1.1.1.29]
+            K00049  glyoxylate/hydroxypyruvate reductase [EC:1.1.1.79 1.1.1.81]
+            K00050  hydroxypyruvate reductase [EC:1.1.1.81]
+            K12972  gyoxylate/hydroxypyruvate reductase A [EC:1.1.1.79 1.1.1.81]
+            K15893  hydroxypyruvate reductase 1
+            K15919  hydroxypyruvate reductase 2
+///
+ENTRY       R00717                      Reaction
+NAME        Glycolate:NAD+ oxidoreductase
+DEFINITION  Glycolate + NAD+ <=> Glyoxylate + NADH + H+
+EQUATION    C00160 + C00003 <=> C00048 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00112  C00048_C00160 main
+ENZYME      1.1.1.26        1.1.1.29
+PATHWAY     rn00630  Glyoxylate and dicarboxylate metabolism
+            rn01100  Metabolic pathways
+            rn01120  Microbial metabolism in diverse environments
+ORTHOLOGY   K00015  glyoxylate reductase [EC:1.1.1.26]
+            K00018  glycerate dehydrogenase [EC:1.1.1.29]
+///
+ENTRY       R03012                      Reaction
+NAME        L-Histidinol:NAD+ oxidoreductase
+DEFINITION  L-Histidinol + NAD+ <=> L-Histidinal + NADH + H+
+EQUATION    C00860 + C00003 <=> C01929 + C00004 + C00080
+COMMENT     first step of two-step reaction (R01158, R03012+R01163)
+            subsequently R01163
+RPAIR       RP00002  C00003_C00004 cofac
+            RP02684  C00860_C01929 main
+ENZYME      1.1.1.23
+PATHWAY     rn00340  Histidine metabolism
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+ORTHOLOGY   K00013  histidinol dehydrogenase [EC:1.1.1.23]
+            K14152  phosphoribosyl-ATP pyrophosphohydrolase / phosphoribosyl-AMP cyclohydrolase / histidinol dehydrogenase [EC:3.6.1.31 3.5.4.19 1.1.1.23]
+///
+ENTRY       R01388                      Reaction
+NAME        D-Glycerate:NAD+ 2-oxidoreductase
+DEFINITION  D-Glycerate + NAD+ <=> Hydroxypyruvate + NADH + H+
+EQUATION    C00258 + C00003 <=> C00168 + C00004 + C00080
+COMMENT     NADP+ (see R01392)
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00299  C00168_C00258 main
+ENZYME      1.1.1.26        1.1.1.29        1.1.1.81
+PATHWAY     rn00260  Glycine, serine and threonine metabolism
+            rn00630  Glyoxylate and dicarboxylate metabolism
+            rn00680  Methane metabolism
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+            rn01120  Microbial metabolism in diverse environments
+            rn01200  Carbon metabolism
+ORTHOLOGY   K00015  glyoxylate reductase [EC:1.1.1.26]
+            K00018  glycerate dehydrogenase [EC:1.1.1.29]
+            K00049  glyoxylate/hydroxypyruvate reductase [EC:1.1.1.79 1.1.1.81]
+            K00050  hydroxypyruvate reductase [EC:1.1.1.81]
+            K12972  gyoxylate/hydroxypyruvate reductase A [EC:1.1.1.79 1.1.1.81]
+            K15893  hydroxypyruvate reductase 1
+            K15919  hydroxypyruvate reductase 2
+///
+ENTRY       R04805                      Reaction
+DEFINITION  3alpha,7alpha,26-Trihydroxy-5beta-cholestane + NAD+ <=> 3alpha,7alpha-Dihydroxy-5beta-cholestan-26-al + NADH + H+
+EQUATION    C05444 + C00003 <=> C05445 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP04436  C05444_C05445 main
+ENZYME      1.1.1.1
+ORTHOLOGY   K00001  alcohol dehydrogenase [EC:1.1.1.1]
+///
+ENTRY       R04439                      Reaction
+NAME        (R)-2,3-dihydroxy-3-methylbutanoate:NADP+ oxidoreductase (isomerizing)
+DEFINITION  (R)-2,3-Dihydroxy-3-methylbutanoate + NADP+ <=> (S)-2-Acetolactate + NADPH + H+
+EQUATION    C04272 + C00006 <=> C06010 + C00005 + C00080
+RPAIR       RP00001  C00005_C00006 cofac
+            RP04078  C04272_C06010 main
+ENZYME      1.1.1.86
+ORTHOLOGY   K00053  ketol-acid reductoisomerase [EC:1.1.1.86]
+///
+ENTRY       R03104                      Reaction
+NAME        3-Mercaptolactate:NAD+ oxidoreductase
+DEFINITION  3-Mercaptolactate + NAD+ <=> Mercaptopyruvate + NADH + H+
+EQUATION    C05823 + C00003 <=> C00957 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP02764  C00957_C05823 main
+ENZYME      1.1.1.27
+PATHWAY     rn00270  Cysteine and methionine metabolism
+ORTHOLOGY   K00016  L-lactate dehydrogenase [EC:1.1.1.27]
+///
+ENTRY       R01513                      Reaction
+NAME        3-Phospho-D-glycerate:NAD+ 2-oxidoreductase
+DEFINITION  3-Phospho-D-glycerate + NAD+ <=> 3-Phosphonooxypyruvate + NADH + H+
+EQUATION    C00197 + C00003 <=> C03232 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP01565  C00197_C03232 main
+ENZYME      1.1.1.95
+PATHWAY     rn00260  Glycine, serine and threonine metabolism
+            rn00680  Methane metabolism
+            rn01100  Metabolic pathways
+            rn01120  Microbial metabolism in diverse environments
+            rn01200  Carbon metabolism
+            rn01230  Biosynthesis of amino acids
+ORTHOLOGY   K00058  D-3-phosphoglycerate dehydrogenase [EC:1.1.1.95]
+///
+ENTRY       R10120                      Reaction
+NAME        3-hydroxypimeloyl-[acp]-methyl-ester:NADP+ oxidoreductase
+DEFINITION  3-Ketopimeloyl-[acp] methyl ester + NADPH + H+ <=> 3-Hydroxypimeloyl-[acp] methyl ester + NADP+
+EQUATION    C20376 + C00005 + C00080 <=> C20377 + C00006
+RPAIR       RP00001  C00005_C00006 cofac
+            RP15926  C20376_C20377 main
+ENZYME      1.1.1.100
+PATHWAY     rn00780  Biotin metabolism
+            rn01100  Metabolic pathways
+ORTHOLOGY   K00059  3-oxoacyl-[acyl-carrier protein] reductase [EC:1.1.1.100]
+///
+ENTRY       R00844                      Reaction
+NAME        sn-Glycerol-3-phosphate:NADP+ 2-oxidoreductase
+DEFINITION  sn-Glycerol 3-phosphate + NADP+ <=> Glycerone phosphate + NADPH + H+
+EQUATION    C00093 + C00006 <=> C00111 + C00005 + C00080
+COMMENT     NAD+ (see R00842)
+RPAIR       RP00001  C00005_C00006 cofac
+            RP00077  C00093_C00111 main
+ENZYME      1.1.1.94
+PATHWAY     rn00564  Glycerophospholipid metabolism
+ORTHOLOGY   K00057  glycerol-3-phosphate dehydrogenase (NAD(P)+) [EC:1.1.1.94]
+///
+ENTRY       R05576                      Reaction
+NAME        (S)-3-Hydroxybutanoyl-CoA:NADP+ oxidoreductase
+DEFINITION  3-Hydroxybutanoyl-CoA + NADP+ <=> Acetoacetyl-CoA + NADPH + H+
+EQUATION    C05116 + C00006 <=> C00332 + C00005 + C00080
+RPAIR       RP00001  C00005_C00006 cofac
+            RP11083  C00332_C05116 main
+ENZYME      1.1.1.157
+ORTHOLOGY   K00074  3-hydroxybutyryl-CoA dehydrogenase [EC:1.1.1.157]
+///
+ENTRY       R05234                      Reaction
+NAME        cis-3-chloro-2-propene-1-ol:NAD+ oxidoreductase
+DEFINITION  cis-3-Chloro-2-propene-1-ol + NAD+ <=> cis-3-Chloroallyl aldehyde + NADH + H+
+EQUATION    C06612 + C00003 <=> C16348 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP11679  C06612_C16348 main
+ENZYME      1.1.1.1
+PATHWAY     rn00625  Chloroalkane and chloroalkene degradation
+            rn01100  Metabolic pathways
+            rn01120  Microbial metabolism in diverse environments
+ORTHOLOGY   K00001  alcohol dehydrogenase [EC:1.1.1.1]
+            K00121  S-(hydroxymethyl)glutathione dehydrogenase / alcohol dehydrogenase [EC:1.1.1.284 1.1.1.1]
+            K04072  acetaldehyde dehydrogenase / alcohol dehydrogenase [EC:1.2.1.10 1.1.1.1]
+            K13953  alcohol dehydrogenase, propanol-preferring [EC:1.1.1.1]
+            K13954  alcohol dehydrogenase [EC:1.1.1.1]
+///
+ENTRY       R00214                      Reaction
+NAME        (S)-malate:NAD+ oxidoreductase (decarboxylating)
+DEFINITION  (S)-Malate + NAD+ <=> Pyruvate + CO2 + NADH + H+
+EQUATION    C00149 + C00003 <=> C00022 + C00011 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00287  C00022_C00149 main
+            RP06101  C00011_C00149 leave
+ENZYME      1.1.1.38        1.1.1.39
+PATHWAY     rn00620  Pyruvate metabolism
+            rn00710  Carbon fixation in photosynthetic organisms
+            rn01100  Metabolic pathways
+            rn01120  Microbial metabolism in diverse environments
+            rn01200  Carbon metabolism
+ORTHOLOGY   K00027  malate dehydrogenase (oxaloacetate-decarboxylating) [EC:1.1.1.38]
+            K00028  malate dehydrogenase (decarboxylating) [EC:1.1.1.39]
+///
+ENTRY       R02413                      Reaction
+NAME        Shikimate:NADP+ 3-oxidoreductase
+DEFINITION  Shikimate + NADP+ <=> 3-Dehydroshikimate + NADPH + H+
+EQUATION    C00493 + C00006 <=> C02637 + C00005 + C00080
+COMMENT     3-Dehydroshikimate was formerly called "5-Dehydroshikimate" on old nomenclature system of numbering
+RPAIR       RP00001  C00005_C00006 cofac
+            RP00577  C00493_C02637 main
+ENZYME      1.1.1.25        1.1.1.282
+PATHWAY     rn00400  Phenylalanine, tyrosine and tryptophan biosynthesis
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+            rn01230  Biosynthesis of amino acids
+ORTHOLOGY   K00014  shikimate dehydrogenase [EC:1.1.1.25]
+            K05887  quinate/shikimate dehydrogenase [EC:1.1.1.282]
+            K13830  pentafunctional AROM polypeptide [EC:4.2.3.4 4.2.1.10 1.1.1.25 2.7.1.71 2.5.1.19]
+            K13832  3-dehydroquinate dehydratase / shikimate dehydrogenase [EC:4.2.1.10 1.1.1.25]
+///
+ENTRY       R01520                      Reaction
+NAME        beta-D-Glucose:NAD+ 1-oxoreductase
+DEFINITION  beta-D-Glucose + NAD+ <=> D-Glucono-1,5-lactone + NADH + H+
+EQUATION    C00221 + C00003 <=> C00198 + C00004 + C00080
+COMMENT     NADP+ (see R01521)
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00184  C00198_C00221 main
+ENZYME      1.1.1.47
+PATHWAY     rn00030  Pentose phosphate pathway
+            rn01120  Microbial metabolism in diverse environments
+            rn01200  Carbon metabolism
+ORTHOLOGY   K00034  glucose 1-dehydrogenase [EC:1.1.1.47]
+///
+ENTRY       R00746                      Reaction
+NAME        Ethanol:NADP+ oxidoreductase
+DEFINITION  Ethanol + NADP+ <=> Acetaldehyde + NADPH + H+
+EQUATION    C00469 + C00006 <=> C00084 + C00005 + C00080
+COMMENT     NAD+ (ec 1.1.1.71, see R00754)
+RPAIR       RP00001  C00005_C00006 cofac
+            RP00238  C00084_C00469 main
+ENZYME      1.1.1.2         1.1.1.71
+PATHWAY     rn00010  Glycolysis / Gluconeogenesis
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+            rn01120  Microbial metabolism in diverse environments
+ORTHOLOGY   K00002  alcohol dehydrogenase (NADP+) [EC:1.1.1.2]
+///
+ENTRY       R09951                      Reaction
+NAME        D-chiro-inositol:NAD+ oxidoreductase
+DEFINITION  D-chiro-Inositol + NAD+ <=> 1-Keto-D-chiro-inositol + NADH + H+
+EQUATION    C19891 + C00003 <=> C20251 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP15612  C19891_C20251 main
+ENZYME      1.1.1.18
+PATHWAY     rn00562  Inositol phosphate metabolism
+            rn01120  Microbial metabolism in diverse environments
+ORTHOLOGY   K00010  myo-inositol 2-dehydrogenase [EC:1.1.1.18]
+///
+ENTRY       R01745                      Reaction
+NAME        (R)-Glycerate:NAD+ oxidoreductase
+DEFINITION  D-Glycerate + NAD+ <=> 2-Hydroxy-3-oxopropanoate + NADH + H+
+EQUATION    C00258 + C00003 <=> C01146 + C00004 + C00080
+COMMENT     NADP+ (see R01747)
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00349  C00258_C01146 main
+ENZYME      1.1.1.60
+PATHWAY     rn00630  Glyoxylate and dicarboxylate metabolism
+            rn01100  Metabolic pathways
+ORTHOLOGY   K00042  2-hydroxy-3-oxopropionate reductase [EC:1.1.1.60]
+///
+ENTRY       R01183                      Reaction
+NAME        myo-Inositol:NAD+ 2-oxidoreductase
+DEFINITION  myo-Inositol + NAD+ <=> 2,4,6/3,5-Pentahydroxycyclohexanone + NADH + H+
+EQUATION    C00137 + C00003 <=> C00691 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP01347  C00137_C00691 main
+ENZYME      1.1.1.18
+PATHWAY     rn00521  Streptomycin biosynthesis
+            rn00562  Inositol phosphate metabolism
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+            rn01120  Microbial metabolism in diverse environments
+ORTHOLOGY   K00010  myo-inositol 2-dehydrogenase [EC:1.1.1.18]
+///
+ENTRY       R08306                      Reaction
+NAME        2-phenyl-1,3-propanediol monocarbamate:NAD+ oxidoreductase
+DEFINITION  2-Phenyl-1,3-propanediol monocarbamate + NAD+ <=> 3-Carbamoyl-2-phenylpropionaldehyde + NADH + H+
+EQUATION    C16586 + C00003 <=> C16587 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP13225  C16586_C16587 main
+ENZYME      1.1.1.1
+PATHWAY     rn00982  Drug metabolism - cytochrome P450
+ORTHOLOGY   K00001  alcohol dehydrogenase [EC:1.1.1.1]
+            K00121  S-(hydroxymethyl)glutathione dehydrogenase / alcohol dehydrogenase [EC:1.1.1.284 1.1.1.1]
+            K13951  alcohol dehydrogenase 1/7 [EC:1.1.1.1]
+            K13952  alcohol dehydrogenase 6 [EC:1.1.1.1]
+            K13953  alcohol dehydrogenase, propanol-preferring [EC:1.1.1.1]
+            K13980  alcohol dehydrogenase 4 [EC:1.1.1.1]
+///
+ENTRY       R02555                      Reaction
+NAME        D-Altronate:NAD+ 3-oxidoreductase
+DEFINITION  D-Altronate + NAD+ <=> D-Tagaturonate + NADH + H+
+EQUATION    C00817 + C00003 <=> C00558 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP02304  C00558_C00817 main
+ENZYME      1.1.1.58
+PATHWAY     rn00040  Pentose and glucuronate interconversions
+            rn01100  Metabolic pathways
+ORTHOLOGY   K00041  tagaturonate reductase [EC:1.1.1.58]
+///
+ENTRY       R08310                      Reaction
+NAME        4-hydroxy-5-phenyltetrahydro-1,3-oxazin-2-one:NAD+ oxidoreductase
+DEFINITION  4-Hydroxy-5-phenyltetrahydro-1,3-oxazin-2-one + NAD+ <=> 5-Phenyl-1,3-oxazinane-2,4-dione + NADH + H+
+EQUATION    C16595 + C00003 <=> C16596 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP13235  C16595_C16596 main
+ENZYME      1.1.1.1
+PATHWAY     rn00982  Drug metabolism - cytochrome P450
+ORTHOLOGY   K00001  alcohol dehydrogenase [EC:1.1.1.1]
+            K00121  S-(hydroxymethyl)glutathione dehydrogenase / alcohol dehydrogenase [EC:1.1.1.284 1.1.1.1]
+            K13951  alcohol dehydrogenase 1/7 [EC:1.1.1.1]
+            K13952  alcohol dehydrogenase 6 [EC:1.1.1.1]
+            K13953  alcohol dehydrogenase, propanol-preferring [EC:1.1.1.1]
+            K13980  alcohol dehydrogenase 4 [EC:1.1.1.1]
+///
+ENTRY       R05607                      Reaction
+NAME        D-sorbitol-6-phosphate:NAD 2-oxidoreductase
+DEFINITION  Sorbitol 6-phosphate + NAD+ <=> beta-D-Fructose 6-phosphate + NADH + H+
+EQUATION    C01096 + C00003 <=> C05345 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP05203  C01096_C05345 main
+ENZYME      1.1.1.140
+PATHWAY     rn00051  Fructose and mannose metabolism
+ORTHOLOGY   K00068  sorbitol-6-phosphate 2-dehydrogenase [EC:1.1.1.140]
+///
+ENTRY       R02736                      Reaction
+NAME        beta-D-Glucose-6-phosphate:NADP+ 1-oxoreductase
+DEFINITION  beta-D-Glucose 6-phosphate + NADP+ <=> D-Glucono-1,5-lactone 6-phosphate + NADPH + H+
+EQUATION    C01172 + C00006 <=> C01236 + C00005 + C00080
+COMMENT     irreversible
+RPAIR       RP00001  C00005_C00006 main
+            RP02450  C01172_C01236 main
+ENZYME      1.1.1.49
+PATHWAY     rn00030  Pentose phosphate pathway
+            rn00480  Glutathione metabolism
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+            rn01120  Microbial metabolism in diverse environments
+            rn01200  Carbon metabolism
+ORTHOLOGY   K00036  glucose-6-phosphate 1-dehydrogenase [EC:1.1.1.49]
+            K13937  hexose-6-phosphate dehydrogenase [EC:1.1.1.47 3.1.1.31]
+///
+ENTRY       R02703                      Reaction
+NAME        D-Mannitol-1-phosphate:NAD+ 5-oxidoreductase
+DEFINITION  D-Mannitol 1-phosphate + NAD+ <=> beta-D-Fructose 6-phosphate + NADH + H+
+EQUATION    C00644 + C00003 <=> C05345 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP02421  C00644_C05345 main
+ENZYME      1.1.1.17
+PATHWAY     rn00051  Fructose and mannose metabolism
+ORTHOLOGY   K00009  mannitol-1-phosphate 5-dehydrogenase [EC:1.1.1.17]
+///
+ENTRY       R02229                      Reaction
+NAME        cyclohexanol:NAD+ oxidoreductase
+DEFINITION  Cyclohexanone + NADH + H+ <=> Cyclohexanol + NAD+
+EQUATION    C00414 + C00004 + C00080 <=> C00854 + C00003
+RPAIR       RP00002  C00003_C00004 cofac
+            RP02054  C00414_C00854 main
+ENZYME      1.1.1.90        1.1.1.245
+PATHWAY     rn00930  Caprolactam degradation
+            rn01120  Microbial metabolism in diverse environments
+ORTHOLOGY   K00055  aryl-alcohol dehydrogenase [EC:1.1.1.90]
+///
+ENTRY       R04964                      Reaction
+NAME        (3R)-3-Hydroxydodecanoyl-[acyl-carrier-protein]:NADP+ oxidoreductase
+DEFINITION  (R)-3-Hydroxydodecanoyl-[acp] + NADP+ <=> 3-Oxododecanoyl-[acp] + NADPH + H+
+EQUATION    C05757 + C00006 <=> C05756 + C00005 + C00080
+RPAIR       RP00001  C00005_C00006 cofac
+            RP04575  C05756_C05757 main
+ENZYME      1.1.1.100       2.3.1.85        2.3.1.86
+PATHWAY     rn00061  Fatty acid biosynthesis
+            rn01100  Metabolic pathways
+ORTHOLOGY   K00059  3-oxoacyl-[acyl-carrier protein] reductase [EC:1.1.1.100]
+            K00667  fatty acid synthase subunit alpha, fungi type [EC:2.3.1.86]
+            K00668  fatty acid synthase subunit beta, fungi type [EC:2.3.1.86]
+            K11533  fatty acid synthase, bacteria type [EC:2.3.1.-]
+///
+ENTRY       R02611                      Reaction
+NAME        Phenylethylalcohol:NAD+ oxidoreductase
+DEFINITION  Phenylethyl alcohol + NAD+ <=> Phenylacetaldehyde + NADH + H+
+EQUATION    C05853 + C00003 <=> C00601 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP02352  C00601_C05853 main
+ENZYME      1.1.1.90
+PATHWAY     rn00360  Phenylalanine metabolism
+ORTHOLOGY   K00055  aryl-alcohol dehydrogenase [EC:1.1.1.90]
+///
+ENTRY       R02855                      Reaction
+NAME        (R)-Acetoin:NAD+ oxidoreductase
+DEFINITION  (R)-Acetoin + NAD+ <=> Diacetyl + NADH + H+
+EQUATION    C00810 + C00003 <=> C00741 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00574  C00741_C00810 main
+ENZYME      1.1.1.303
+PATHWAY     rn00650  Butanoate metabolism
+ORTHOLOGY   K00004  (R,R)-butanediol dehydrogenase / diacetyl reductase [EC:1.1.1.4 1.1.1.303]
+            K03366  (R,R)-butanediol dehydrogenase / diacetyl reductase [EC:1.1.1.4 1.1.1.303]
+///
+ENTRY       R02936                      Reaction
+NAME        (S)-Ureidoglycolate:NADP+ oxidoreductase
+DEFINITION  (-)-Ureidoglycolate + NADP+ <=> Oxalureate + NADPH + H+
+EQUATION    C00603 + C00006 <=> C00802 + C00005 + C00080
+COMMENT     NAD+ (see R02935)
+RPAIR       RP00001  C00005_C00006 cofac
+            RP00467  C00603_C00802 main
+ENZYME      1.1.1.154
+PATHWAY     rn00230  Purine metabolism
+            rn01120  Microbial metabolism in diverse environments
+ORTHOLOGY   K00073  ureidoglycolate dehydrogenase [EC:1.1.1.154]
+///
+ENTRY       R02935                      Reaction
+NAME        (S)-ureidoglycolate:NAD+ oxidoreductase
+DEFINITION  (-)-Ureidoglycolate + NAD+ <=> Oxalureate + NADH + H+
+EQUATION    C00603 + C00003 <=> C00802 + C00004 + C00080
+COMMENT     NADP+ (see R02936)
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00467  C00603_C00802 main
+ENZYME      1.1.1.154       1.1.1.350
+PATHWAY     rn00230  Purine metabolism
+            rn01120  Microbial metabolism in diverse environments
+ORTHOLOGY   K00073  ureidoglycolate dehydrogenase [EC:1.1.1.154]
+///
+ENTRY       R04304                      Reaction
+NAME        4-Hydroxyphenylethanol:NAD+ oxidoreductase
+DEFINITION  4-Hydroxyphenylethanol + NAD+ <=> 4-Hydroxyphenylacetaldehyde + NADH + H+
+EQUATION    C06044 + C00003 <=> C03765 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP03937  C03765_C06044 main
+ENZYME      1.1.1.90
+PATHWAY     rn00350  Tyrosine metabolism
+ORTHOLOGY   K00055  aryl-alcohol dehydrogenase [EC:1.1.1.90]
+///
+ENTRY       R00709                      Reaction
+NAME        Isocitrate:NAD+ oxidoreductase (decarboxylating)
+DEFINITION  Isocitrate + NAD+ <=> 2-Oxoglutarate + CO2 + NADH + H+
+EQUATION    C00311 + C00003 <=> C00026 + C00011 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00305  C00026_C00311 main
+            RP05857  C00011_C00311 leave
+ENZYME      1.1.1.41        1.1.1.286
+PATHWAY     rn00020  Citrate cycle (TCA cycle)
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+            rn01120  Microbial metabolism in diverse environments
+            rn01200  Carbon metabolism
+            rn01210  2-Oxocarboxylic acid metabolism
+            rn01230  Biosynthesis of amino acids
+ORTHOLOGY   K00030  isocitrate dehydrogenase (NAD+) [EC:1.1.1.41]
+///
+ENTRY       R05069                      Reaction
+NAME        (S)-2-Aceto-2-hydroxybutanoate:NADP+ oxidoreductase (isomerizing)
+DEFINITION  (S)-2-Aceto-2-hydroxybutanoate <=> (R)-3-Hydroxy-3-methyl-2-oxopentanoate
+EQUATION    C06006 <=> C14463
+RPAIR       RP10179  C06006_C14463 main
+ENZYME      1.1.1.86        5.4.99.3
+PATHWAY     rn00290  Valine, leucine and isoleucine biosynthesis
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+            rn01210  2-Oxocarboxylic acid metabolism
+            rn01230  Biosynthesis of amino acids
+ORTHOLOGY   K00053  ketol-acid reductoisomerase [EC:1.1.1.86]
+///
+ENTRY       R00268                      Reaction
+NAME        oxalosuccinate carboxy-lyase (2-oxoglutarate-forming)
+DEFINITION  Oxalosuccinate <=> 2-Oxoglutarate + CO2
+EQUATION    C05379 <=> C00026 + C00011
+COMMENT     the second step of two-step reaction (see R00267, R01899+R00268)
+            following after R01899
+RPAIR       RP04494  C00026_C05379 main
+            RP08484  C00011_C05379 leave
+ENZYME      1.1.1.42
+PATHWAY     rn00020  Citrate cycle (TCA cycle)
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+            rn01120  Microbial metabolism in diverse environments
+            rn01210  2-Oxocarboxylic acid metabolism
+ORTHOLOGY   K00031  isocitrate dehydrogenase [EC:1.1.1.42]
+///
+ENTRY       R04953                      Reaction
+NAME        (3R)-3-Hydroxyhexanoyl-[acyl-carrier-protein]:NADP+ oxidoreductase
+DEFINITION  (R)-3-Hydroxyhexanoyl-[acp] + NADP+ <=> 3-Oxohexanoyl-[acp] + NADPH + H+
+EQUATION    C05747 + C00006 <=> C05746 + C00005 + C00080
+RPAIR       RP00001  C00005_C00006 cofac
+            RP04564  C05746_C05747 main
+ENZYME      1.1.1.100       2.3.1.85        2.3.1.86
+PATHWAY     rn00061  Fatty acid biosynthesis
+            rn01100  Metabolic pathways
+ORTHOLOGY   K00059  3-oxoacyl-[acyl-carrier protein] reductase [EC:1.1.1.100]
+            K00665  fatty acid synthase, animal type [EC:2.3.1.85]
+            K00667  fatty acid synthase subunit alpha, fungi type [EC:2.3.1.86]
+            K11533  fatty acid synthase, bacteria type [EC:2.3.1.-]
+///
+ENTRY       R10052                      Reaction
+NAME        (2R,3S)-3-isopropylmalate:NAD+ oxidoreductase
+DEFINITION  (2R,3S)-3-Isopropylmalate + NAD+ <=> 4-Methyl-2-oxopentanoate + CO2 + NADH + H+
+EQUATION    C04411 + C00003 <=> C00233 + C00011 + C00004 + C00080
+COMMENT     two-step reaction (see R04426+R01652)
+RPAIR       RP00002  C00003_C00004 cofac
+            RP15842  C00233_C04411 main
+            RP15843  C00011_C04411 leave
+ENZYME      1.1.1.85
+PATHWAY     rn01210  2-Oxocarboxylic acid metabolism
+            rn01230  Biosynthesis of amino acids
+ORTHOLOGY   K00052  3-isopropylmalate dehydrogenase [EC:1.1.1.85]
+///
+ENTRY       R01392                      Reaction
+NAME        D-Glycerate:NADP+ 2-oxidoreductase
+DEFINITION  D-Glycerate + NADP+ <=> Hydroxypyruvate + NADPH + H+
+EQUATION    C00258 + C00006 <=> C00168 + C00005 + C00080
+COMMENT     NAD+ (see R01388)
+RPAIR       RP00001  C00005_C00006 cofac
+            RP00299  C00168_C00258 main
+ENZYME      1.1.1.79        1.1.1.81
+PATHWAY     rn00260  Glycine, serine and threonine metabolism
+            rn00630  Glyoxylate and dicarboxylate metabolism
+            rn01100  Metabolic pathways
+ORTHOLOGY   K00049  glyoxylate/hydroxypyruvate reductase [EC:1.1.1.79 1.1.1.81]
+            K00050  hydroxypyruvate reductase [EC:1.1.1.81]
+            K12972  gyoxylate/hydroxypyruvate reductase A [EC:1.1.1.79 1.1.1.81]
+///
+ENTRY       R02777                      Reaction
+NAME        dTDP-6-deoxy-L-mannose:NADP+ 4-oxidoreductase
+DEFINITION  dTDP-6-deoxy-L-mannose + NADP+ <=> dTDP-4-dehydro-6-deoxy-beta-L-mannose + NADPH + H+
+EQUATION    C03319 + C00006 <=> C00688 + C00005 + C00080
+RPAIR       RP00001  C00005_C00006 cofac
+            RP02491  C00688_C03319 main
+ENZYME      1.1.1.133
+PATHWAY     rn00521  Streptomycin biosynthesis
+            rn00523  Polyketide sugar unit biosynthesis
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+ORTHOLOGY   K00067  dTDP-4-dehydrorhamnose reductase [EC:1.1.1.133]
+///
+ENTRY       R04543                      Reaction
+NAME        (3R)-3-Hydroxypalmitoyl-[acyl-carrier-protein]:NADP+ oxidoreductase
+DEFINITION  (3R)-3-Hydroxypalmitoyl-[acyl-carrier protein] + NADP+ <=> 3-Oxohexadecanoyl-[acp] + NADPH + H+
+EQUATION    C04633 + C00006 <=> C05762 + C00005 + C00080
+RPAIR       RP00001  C00005_C00006 cofac
+            RP04187  C04633_C05762 main
+ENZYME      1.1.1.100       2.3.1.85        2.3.1.86
+PATHWAY     rn00061  Fatty acid biosynthesis
+            rn01100  Metabolic pathways
+ORTHOLOGY   K00059  3-oxoacyl-[acyl-carrier protein] reductase [EC:1.1.1.100]
+            K00665  fatty acid synthase, animal type [EC:2.3.1.85]
+            K00667  fatty acid synthase subunit alpha, fungi type [EC:2.3.1.86]
+            K11533  fatty acid synthase, bacteria type [EC:2.3.1.-]
+///
+ENTRY       R00267                      Reaction
+NAME        Isocitrate:NADP+ oxidoreductase (decarboxylating)
+DEFINITION  Isocitrate + NADP+ <=> 2-Oxoglutarate + CO2 + NADPH + H+
+EQUATION    C00311 + C00006 <=> C00026 + C00011 + C00005 + C00080
+COMMENT     two-step reaction (see R01899+R00268)
+RPAIR       RP00001  C00005_C00006 cofac
+            RP00305  C00026_C00311 main
+            RP05857  C00011_C00311 main
+ENZYME      1.1.1.42
+PATHWAY     rn00480  Glutathione metabolism
+            rn00720  Carbon fixation pathways in prokaryotes
+            rn01100  Metabolic pathways
+            rn01120  Microbial metabolism in diverse environments
+            rn01200  Carbon metabolism
+            rn01210  2-Oxocarboxylic acid metabolism
+            rn01230  Biosynthesis of amino acids
+ORTHOLOGY   K00031  isocitrate dehydrogenase [EC:1.1.1.42]
+///
+ENTRY       R07763                      Reaction
+DEFINITION  3-Oxostearoyl-[acp] + NADPH + H+ <=> 3-Hydroxyoctadecanoyl-[acp] + NADP+
+EQUATION    C16219 + C00005 + C00080 <=> C16220 + C00006
+RPAIR       RP00001  C00005_C00006 cofac
+            RP12111  C16219_C16220 main
+ENZYME      1.1.1.100
+PATHWAY     rn00061  Fatty acid biosynthesis
+            rn01040  Biosynthesis of unsaturated fatty acids
+ORTHOLOGY   K00059  3-oxoacyl-[acyl-carrier protein] reductase [EC:1.1.1.100]
+            K11533  fatty acid synthase, bacteria type [EC:2.3.1.-]
+///
+ENTRY       R01976                      Reaction
+NAME        (S)-3-Hydroxybutanoyl-CoA:NADP+ oxidoreductase
+DEFINITION  (S)-3-Hydroxybutanoyl-CoA + NADP+ <=> Acetoacetyl-CoA + NADPH + H+
+EQUATION    C01144 + C00006 <=> C00332 + C00005 + C00080
+RPAIR       RP00001  C00005_C00006 cofac
+            RP00314  C00332_C01144 main
+ENZYME      1.1.1.157
+PATHWAY     rn00362  Benzoate degradation
+            rn00650  Butanoate metabolism
+            rn01100  Metabolic pathways
+            rn01120  Microbial metabolism in diverse environments
+ORTHOLOGY   K00074  3-hydroxybutyryl-CoA dehydrogenase [EC:1.1.1.157]
+///
+ENTRY       R01747                      Reaction
+NAME        (R)-Glycerate:NADP+ oxidoreductase
+DEFINITION  D-Glycerate + NADP+ <=> 2-Hydroxy-3-oxopropanoate + NADPH + H+
+EQUATION    C00258 + C00006 <=> C01146 + C00005 + C00080
+COMMENT     NAD+ (see R01745)
+RPAIR       RP00001  C00005_C00006 cofac
+            RP00349  C00258_C01146 main
+ENZYME      1.1.1.60
+PATHWAY     rn00630  Glyoxylate and dicarboxylate metabolism
+            rn01100  Metabolic pathways
+ORTHOLOGY   K00042  2-hydroxy-3-oxopropionate reductase [EC:1.1.1.60]
+///
+ENTRY       R01034                      Reaction
+NAME        glycerol:NAD+ 2-oxidoreductase
+DEFINITION  Glycerol + NAD+ <=> Glycerone + NADH + H+
+EQUATION    C00116 + C00003 <=> C00184 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00157  C00116_C00184 main
+ENZYME      1.1.1.6
+PATHWAY     rn00561  Glycerolipid metabolism
+            rn01100  Metabolic pathways
+ORTHOLOGY   K00005  glycerol dehydrogenase [EC:1.1.1.6]
+///
+ENTRY       R01041                      Reaction
+NAME        Glycerol:NADP+ oxidoreductase
+DEFINITION  Glycerol + NADP+ <=> D-Glyceraldehyde + NADPH + H+
+EQUATION    C00116 + C00006 <=> C00577 + C00005 + C00080
+COMMENT     NAD+ (see R01041)
+RPAIR       RP00001  C00005_C00006 cofac
+            RP00374  C00116_C00577 main
+ENZYME      1.1.1.2         1.1.1.21        1.1.1.72
+PATHWAY     rn00561  Glycerolipid metabolism
+ORTHOLOGY   K00002  alcohol dehydrogenase (NADP+) [EC:1.1.1.2]
+            K00011  aldehyde reductase [EC:1.1.1.21]
+///
+ENTRY       R05071                      Reaction
+NAME        (S)-2-Acetolactate methylmutase
+DEFINITION  (S)-2-Acetolactate <=> 3-Hydroxy-3-methyl-2-oxobutanoic acid
+EQUATION    C06010 <=> C04181
+RPAIR       RP10166  C04181_C06010 main
+ENZYME      1.1.1.86        5.4.99.3
+PATHWAY     rn00290  Valine, leucine and isoleucine biosynthesis
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+            rn01210  2-Oxocarboxylic acid metabolism
+            rn01230  Biosynthesis of amino acids
+ORTHOLOGY   K00053  ketol-acid reductoisomerase [EC:1.1.1.86]
+///
+ENTRY       R01361                      Reaction
+NAME        (R)-3-Hydroxybutanoate:NAD+ oxidoreductase
+DEFINITION  (R)-3-Hydroxybutanoate + NAD+ <=> Acetoacetate + NADH + H+
+EQUATION    C01089 + C00003 <=> C00164 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP01458  C00164_C01089 main
+ENZYME      1.1.1.30
+PATHWAY     rn00072  Synthesis and degradation of ketone bodies
+            rn00650  Butanoate metabolism
+            rn01100  Metabolic pathways
+ORTHOLOGY   K00019  3-hydroxybutyrate dehydrogenase [EC:1.1.1.30]
+///
+ENTRY       R06917                      Reaction
+NAME        1-hydroxymethylnaphthalene:NAD+ oxidoreductase
+DEFINITION  1-Hydroxymethylnaphthalene + NAD+ <=> 1-Naphthaldehyde + NADH + H+
+EQUATION    C14089 + C00003 <=> C14090 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP09622  C14089_C14090 main
+ENZYME      1.1.1.1
+PATHWAY     rn00626  Naphthalene degradation
+            rn01120  Microbial metabolism in diverse environments
+ORTHOLOGY   K00001  alcohol dehydrogenase [EC:1.1.1.1]
+            K00121  S-(hydroxymethyl)glutathione dehydrogenase / alcohol dehydrogenase [EC:1.1.1.284 1.1.1.1]
+            K04072  acetaldehyde dehydrogenase / alcohol dehydrogenase [EC:1.2.1.10 1.1.1.1]
+            K13953  alcohol dehydrogenase, propanol-preferring [EC:1.1.1.1]
+            K13954  alcohol dehydrogenase [EC:1.1.1.1]
+///
+ENTRY       R00842                      Reaction
+NAME        sn-Glycerol-3-phosphate:NAD+ 2-oxidoreductase
+DEFINITION  sn-Glycerol 3-phosphate + NAD+ <=> Glycerone phosphate + NADH + H+
+EQUATION    C00093 + C00003 <=> C00111 + C00004 + C00080
+COMMENT     NADP+ (ec 1.1.1.94, see R00844)
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00077  C00093_C00111 main
+ENZYME      1.1.1.8         1.1.1.94
+PATHWAY     rn00564  Glycerophospholipid metabolism
+ORTHOLOGY   K00006  glycerol-3-phosphate dehydrogenase (NAD+) [EC:1.1.1.8]
+            K00057  glycerol-3-phosphate dehydrogenase (NAD(P)+) [EC:1.1.1.94]
+///
+ENTRY       R01163                      Reaction
+NAME        L-histidinal:NAD+ oxidoreductase
+DEFINITION  L-Histidinal + H2O + NAD+ <=> L-Histidine + NADH + H+
+EQUATION    C01929 + C00001 + C00003 <=> C00135 + C00004 + C00080
+COMMENT     second step of two-step reaction (R01158, R03012+R01163)
+            following after R03012
+RPAIR       RP00002  C00003_C00004 cofac
+            RP01340  C00135_C01929 main
+            RP05888  C00001_C00135 leave
+ENZYME      1.1.1.23
+PATHWAY     rn00340  Histidine metabolism
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+ORTHOLOGY   K00013  histidinol dehydrogenase [EC:1.1.1.23]
+            K14152  phosphoribosyl-ATP pyrophosphohydrolase / phosphoribosyl-AMP cyclohydrolase / histidinol dehydrogenase [EC:3.6.1.31 3.5.4.19 1.1.1.23]
+///
+ENTRY       R01388                      Reaction
+NAME        D-Glycerate:NAD+ 2-oxidoreductase
+DEFINITION  D-Glycerate + NAD+ <=> Hydroxypyruvate + NADH + H+
+EQUATION    C00258 + C00003 <=> C00168 + C00004 + C00080
+COMMENT     NADP+ (see R01392)
+RPAIR       RP00002  C00003_C00004 cofac
+            RP00299  C00168_C00258 main
+ENZYME      1.1.1.26        1.1.1.29        1.1.1.81
+PATHWAY     rn00260  Glycine, serine and threonine metabolism
+            rn00630  Glyoxylate and dicarboxylate metabolism
+            rn00680  Methane metabolism
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+            rn01120  Microbial metabolism in diverse environments
+            rn01200  Carbon metabolism
+ORTHOLOGY   K00015  glyoxylate reductase [EC:1.1.1.26]
+            K00018  glycerate dehydrogenase [EC:1.1.1.29]
+            K00049  glyoxylate/hydroxypyruvate reductase [EC:1.1.1.79 1.1.1.81]
+            K00050  hydroxypyruvate reductase [EC:1.1.1.81]
+            K12972  gyoxylate/hydroxypyruvate reductase A [EC:1.1.1.79 1.1.1.81]
+            K15893  hydroxypyruvate reductase 1
+            K15919  hydroxypyruvate reductase 2
+///
+ENTRY       R04426                      Reaction
+NAME        (2R,3S)-3-isopropylmalate:NAD+ oxidoreductase
+DEFINITION  (2R,3S)-3-Isopropylmalate + NAD+ <=> (2S)-2-Isopropyl-3-oxosuccinate + NADH + H+
+EQUATION    C04411 + C00003 <=> C04236 + C00004 + C00080
+COMMENT     subsequently R01652
+RPAIR       RP00002  C00003_C00004 cofac
+            RP04067  C04236_C04411 main
+ENZYME      1.1.1.85
+PATHWAY     rn00290  Valine, leucine and isoleucine biosynthesis
+            rn01100  Metabolic pathways
+            rn01110  Biosynthesis of secondary metabolites
+            rn01210  2-Oxocarboxylic acid metabolism
+ORTHOLOGY   K00052  3-isopropylmalate dehydrogenase [EC:1.1.1.85]
+///
+ENTRY       R05348                      Reaction
+DEFINITION  2-Methylbenzyl alcohol + NAD+ <=> 2-Methylbenzaldehyde + NADH + H+
+EQUATION    C07213 + C00003 <=> C07214 + C00004 + C00080
+RPAIR       RP00002  C00003_C00004 cofac
+            RP04946  C07213_C07214 main
+ENZYME      1.1.1.90
+PATHWAY     rn00622  Xylene degradation
+            rn01100  Metabolic pathways
+            rn01120  Microbial metabolism in diverse environments
+            rn01220  Degradation of aromatic compounds
+ORTHOLOGY   K00055  aryl-alcohol dehydrogenase [EC:1.1.1.90]
+///
+ENTRY       R01158                      Reaction
+NAME        L-histidinol:NAD+ oxidoreductase
+DEFINITION  L-Histidinol + 2 NAD+ + H2O <=> L-Histidine + 2 NADH + 2 H+
+EQUATION    C00860 + 2 C00003 + C00001 <=> C00135 + 2 C00004 + 2 C00080
+COMMENT     two-step reaction (see R03012+R01163)
+RPAIR       RP00002  C00003_C00004 cofac
+            RP01336  C00135_C00860 main
+            RP05888  C00001_C00135 leave
+ENZYME      1.1.1.23
+PATHWAY     rn01230  Biosynthesis of amino acids
+ORTHOLOGY   K00013  histidinol dehydrogenase [EC:1.1.1.23]
+            K14152  phosphoribosyl-ATP pyrophosphohydrolase / phosphoribosyl-AMP cyclohydrolase / histidinol dehydrogenase [EC:3.6.1.31 3.5.4.19 1.1.1.23]
+///
+ENTRY       R04534                      Reaction
+NAME        (3R)-3-Hydroxydecanoyl-[acyl-carrier-protein]:NADP+ oxidoreductase
+DEFINITION  (3R)-3-Hydroxydecanoyl-[acyl-carrier protein] + NADP+ <=> 3-Oxodecanoyl-[acp] + NADPH
+EQUATION    C04619 + C00006 <=> C05753 + C00005
+RPAIR       RP00001  C00005_C00006 cofac
+            RP12495  C04619_C05753 main
+ENZYME      1.1.1.100       2.3.1.85        2.3.1.86
+PATHWAY     rn00061  Fatty acid biosynthesis
+            rn01100  Metabolic pathways
+ORTHOLOGY   K00059  3-oxoacyl-[acyl-carrier protein] reductase [EC:1.1.1.100]
+            K00665  fatty acid synthase, animal type [EC:2.3.1.85]
+            K00667  fatty acid synthase subunit alpha, fungi type [EC:2.3.1.86]
+            K11533  fatty acid synthase, bacteria type [EC:2.3.1.-]
+///

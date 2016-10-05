@@ -20,5 +20,6 @@ Imports:
 Suggests:
     KEGGREST,
     ggplot2,
-    readr
+    readr,
+    testthat
 RoxygenNote: 5.0.1

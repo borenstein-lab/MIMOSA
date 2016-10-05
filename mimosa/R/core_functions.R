@@ -212,9 +212,9 @@ generate_genomic_network = function(kos, keggSource = "KeggTemplate", degree_fil
     rxn_table[,ReacProd:=NULL]
     rxn_table[,Rxn:=NULL]
     rxn_table = unique(rxn_table)
+    cmpds = unique(c(rxn_table[,Prod], rxn_table[,Reac]))
     if(degree_filter != 0){
       #cat("Filtering currency metabolites\n")
-      cmpds = unique(c(rxn_table[,Prod], rxn_table[,Reac]))
       degree = sapply(cmpds, function(x){
         rxn_table[Prod==x | Reac==x, length(unique(KO))]
       })
