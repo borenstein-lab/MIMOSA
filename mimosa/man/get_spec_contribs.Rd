@@ -5,8 +5,7 @@
 \title{Perform a series of steps related to identifying single-species contributors.}
 \usage{
 get_spec_contribs(contrib_file, data_dir, results_file, out_dir, otu_id,
-  otu_file, valueVar, make_unnormalized, sum_to_genus, cmps, contributions,
-  rxn_table)
+  otu_file, valueVar, make_unnormalized, sum_to_genus, cmps, contributions)
 }
 \arguments{
 \item{contrib_file}{File where metagenome_contributions PICRUSt output is located}

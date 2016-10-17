@@ -103,7 +103,8 @@ if(!runmet2){
 ### Get potential key species contributors, assumes PICRUSt was used to generate metagenome predictions
 if(!is.null(opt$contribs_file)){
   cat("Getting potential species contributors to metabolite variation\n")
-  get_spec_contribs(opt$contribs_file, data_dir = getwd(), results_file = paste0(file_prefix, "_out.rda"), out_dir = getwd(), otu_file = "Dataset2_otu_table.txt", otu_id = "all", valueVar = "singleMusicc", make_unnormalized = F, sum_to_genus = F, cmps = T, contributions = T)
+  get_spec_contribs(opt$contribs_file, data_dir = getwd(), results_file = paste0(file_prefix, "_out.rda"), out_dir = getwd(), otu_id = "all", valueVar = "singleMusicc",
+                    make_unnormalized = F, sum_to_genus = F, cmps = T, contributions = T)
 }
 
 ### Get key gene/reaction contributors across all species

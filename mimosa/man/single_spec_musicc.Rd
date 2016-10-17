@@ -4,12 +4,10 @@
 \alias{single_spec_musicc}
 \title{Get contributors for every metabolite and save}
 \usage{
-single_spec_musicc(contribs, otu_file)
+single_spec_musicc(contribs)
 }
 \arguments{
 \item{contribs}{data.table of OTU, genes, samples and abundances}
-
-\item{otu_file}{File path to OTU abundance matrix}
 }
 \value{
 contribs with abundances normalized to copy number

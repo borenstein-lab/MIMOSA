@@ -7,28 +7,6 @@
 ##Revision 4/20/2016: single species MUSiCC
 #NOTE: need to use OTUs normalized by 16S copy #
 #Reorganization: making each of these a function in core_functions
-#options(stringsAsFactors = F)
-#library(data.table)
-#library(reshape2)
-#library(ggplot2)
-#library(getopt)
-#source("core_functions.R")
-
-# args = commandArgs(trailingOnly=T)
-#
-# contrib_file = args[1] #"CD_mice_data/mice_metagenome_contributions.txt" #
-# data_dir = args[2] #"CD_mice_data/"
-# results_file = args[3] #"runs_nz4_noMP/mice_AB_out.rda"
-# out_dir = args[4]
-# otu_id = args[5] #Usually all
-# otu_file = args[6] ##Needs to be normalized for 16S copy number!
-# valueVar = args[7] #RelAbundSample or singleMusicc, can also be determined/reset by previous variables
-# #data_dir = "BV_data/"
-# #results_file = "runs_nz4_noMP/bv_val_picrust_out.rda"
-#
-# cat(paste(otu_id, "\n"))
-# cat(paste(contrib_file, "\n"))
-# cat(paste(data_dir, "\n"))
 
 #' Evaluate species contributors for a single metabolite with qPCR/species abundance data
 #'
@@ -122,19 +100,17 @@ cmp_species_contributions_picrust = function(j, cmps_sub_good, all_rxns, subject
 #' Get contributors for every metabolite and save
 #'
 #' @param contribs data.table of OTU, genes, samples and abundances
-#' @param otu_file File path to OTU abundance matrix
 #' @return contribs with abundances normalized to copy number
 #' @export
-single_spec_musicc = function(contribs, otu_file){
-  otus = data.table::fread(otu_file)
-  if("#OTU ID" %in% names(otus)) setnames(otus, "#OTU ID", "OTU")
-  if("OTU_ID" %in% names(otus)) setnames(otus, "OTU_ID", "OTU")
-  otus_rel_abund = otus[,lapply(.SD, function(x){ x/sum(x)})]
-  otus_rel_abund[,OTU:=otus[,OTU]]
-  otus_rel_abund_melt = data.table::melt(otus_rel_abund, id.var = "OTU", variable.name = "Sample", value.name = "OTURelAbund")
+single_spec_musicc = function(contribs){
+  ##Get OTU abundances from single-copy contribs for consistency
+  otus = contribs[GeneCountPerGenome == 1, list(OTU, Sample, CountContributedByOTU)]
+  setkey(otus, NULL)
+  otus = unique(otus)
+  otus[,OTURelAbund:=CountContributedByOTU/sum(CountContributedByOTU), by = Sample]
+  otus[,CountContributedByOTU:=NULL]
   all_samps = unique(contribs[,Sample])
-  #contribs[,RelAbundSample:=CountContributedByOTU/sum(CountContributedByOTU),by=Sample] #relative abundance of this gene from this taxon in all the genes
-  contribs = merge(contribs, otus_rel_abund_melt, by=c("OTU", "Sample"), all.x=T)
+  contribs = merge(contribs, otus, by=c("OTU", "Sample"), all.x=T)
   all_otus = sort(unique(contribs[,OTU]))
   cat(all_otus)
   all_koAbunds_byOTU = vector("list", length(all_otus))
@@ -178,9 +154,6 @@ make_unnormalized_single_spec = function(contribs, otu_id = "all", out_dir){
 #' @return contribs added to the genus level
 #' @export
 sum_to_genus = function(contribs, valueVar){ #Value var is relAbundSample or singleMusicc
-  taxonomy = data.table::fread("97_otu_taxonomy.txt")
-  taxonomy[,Genus:=gsub("; s__.*", "", V2)]
-  data.table::setnames(taxonomy, c("OTU", "Taxonomy", "Genus"))
   contribs = merge(contribs, taxonomy, by="OTU", all.x=T, all.y=F)
   contribs = contribs[,sum(get(valueVar)), by=list(Gene, Sample, Genus)]
   data.table::setnames(contribs, "Genus", "OTU") #now just treat genera like otus
@@ -254,8 +227,8 @@ get_all_singleSpec_cmps = function(all_otus, valueVar, out_dir, rxn_table){
 #' @examples
 #' read_files(gene_file, met_file)
 #' @export
-get_spec_contribs = function(contrib_file, data_dir, results_file, out_dir, otu_id, otu_file, valueVar, make_unnormalized, sum_to_genus, cmps, contributions, rxn_table){
-  devtools::load_all()
+get_spec_contribs = function(contrib_file, data_dir, results_file, out_dir, otu_id, otu_file, valueVar, make_unnormalized, sum_to_genus, cmps, contributions){
+  #devtools::load_all()
   contribs = data.table::fread(contrib_file, stringsAsFactors = F) #To avoid reading in multiple times
   all_otus = sort(unique(contribs[,OTU]))
   if(make_unnormalized){ #Using relative abundance out of all genes
@@ -269,56 +242,42 @@ get_spec_contribs = function(contrib_file, data_dir, results_file, out_dir, otu_
   }
 
   if(valueVar == "singleMusicc"){
-    contribs = single_spec_musicc(contribs, otu_file)
+    contribs = single_spec_musicc(contribs)
     if(sum_to_genus){
-      cat("Summing to genus level, need GG taxonomy file in same directory\n")
-      sum_to_genus(contribs, valueVar = valueVar)
+      cat("Summing to genus level\n")
+      contribs = sum_to_genus(contribs, valueVar = valueVar)
+      all_otus = sort(unique(contribs[,OTU]))
     }
 
     save_contribs_by_species(contribs, valueVar = valueVar, out_dir)
 
-    #Comparing this value with MUSiCC values is very close
-    #   musicc_genes[KO==ko]
-    #   test1 = contribs[Gene==ko,sum(singleMusicc), by=Sample] #Compare this with total. then this value is what we use?
-    #   test1 = merge(test1, melt(musicc_genes[KO==ko], variable.name="Sample"), by="Sample", all=T)
-    #   test1[is.na(V1), V1:=0]
-    #   ggplot(test1, aes(x=value, y=V1, label=Sample)) + geom_text()
   }
 
   if(cmps){ #Basically just runs get_cmp_scores
     if(otu_id != "all"){
       kos_alone = data.table::fread(paste0(data_dir, otu_id, "_KOabund.txt"))
-      #kos_alone = data.table::fread(paste0(data_dir,otu_id, "_KOabund_musicc.txt"))
       kos_alone = kos_alone[,c(names(kos_alone)[names(kos_alone)!="KO"],"KO"),with=F]
-      #load("runs_nz4_noMP/bv_val_picrust_out.rda")
-      #load(results_file)
-      #Best just to regenerate network
-      sub_ko_net = generate_genomic_network(kos_alone[,KO], keggSource = "labKegg",degree_filter = 30)
-      cmps_alone = get_cmp_scores(sub_ko_net[[1]], kos_alone)
+      load(results_file)
+      cmps_alone = get_cmp_scores(ko_net[[1]], kos_alone)
       write.table(cmps_alone, file = paste0(data_dir, otu_id, "_cmps.txt"), quote=F, row.names=F, sep = "\t")
     }else{
-      get_all_singleSpec_cmps(all_otus, valueVar, out_dir = out_dir, rxn_table = rxn_table)
+      load(results_file)
+      get_all_singleSpec_cmps(all_otus, valueVar, out_dir = out_dir, rxn_table = ko_net[[3]]) #ko_net from results file
     }
   }
 
   if((contributions == T) & otu_id=="all"){
-    load(results_file)
     subjects = names(norm_kos)[names(norm_kos)!="KO"]
     cmps_sub_good = get_cmp_scores(ko_net[[1]], norm_kos) # Full community cmp scores
     cmp_sub_good = cmps_sub_good[node_data[,compound]]
     all_rxns = lapply(node_data[,compound], function(x){ return(ko_net[[3]][Reac==x|Prod==x])})
     all_rxns = lapply(all_rxns,get_non_rev_rxns)
     #  if(!all(is.na(match(c("cmps_alone", "all_otus"),ls())))){ #If all of these do not already exist
-    load(paste0(out_dir, "all_cmpsAlone_byOTU_",valueVar,".rda"))
+    load(paste0(out_dir, "all_cmpsAlone_byOTU_",valueVar,".rda")) #Loads "cmps_alone" from get_single_spec_cmps
     #contribs = data.table::fread(contrib_file)
     all_otus = sort(unique(contribs[,OTU]))
-    # }
-    #for mice abx only - subject id change
-    #   for(j in 1:length(cmps_alone)){
-    #     setnames(cmps_alone[[j]], gsub("NoAbx6wkrec","NoAbx6wk", names(cmps_alone[[j]])))
-    #   }
     spec_contrib=lapply(1:length(node_data[,compound]),cmp_species_contributions_picrust, cmps_sub_good = cmp_sub_good, all_rxns = all_rxns, subjects = subjects, norm_kos = norm_kos, ko_net = ko_net, all_taxa = all_otus, single_spec_cmps = cmps_alone, cor_with=T)
-
+    ## Save output
     save(spec_contrib, file = paste0(out_dir, "/picrust_spec_contrib_",valueVar,".rda"))
   }
   return(NULL)
