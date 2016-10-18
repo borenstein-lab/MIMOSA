@@ -16,10 +16,12 @@ Imports:
     qvalue,
     reshape2,
     permute,
-    devtools
+    devtools,
+    Rcpp
 Suggests:
     KEGGREST,
     ggplot2,
     readr,
     testthat
 RoxygenNote: 5.0.1
+LinkingTo: Rcpp

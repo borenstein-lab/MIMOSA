@@ -9,6 +9,9 @@
 #' @examples
 #' read_files(gene_file, met_file)
 #' @export
+#'
+#' @useDynLib mimosa
+#' @importFrom Rcpp sourceCpp
 read_files = function(genefile, metfile){
   genes = fread(genefile, header=T, sep="\t")
   setkey(genes,KO)
@@ -145,7 +148,8 @@ mantel_2sided = function (xdis, ydis, method = "pearson", permutations = 999,
       arg <- if (missing(strata))
         NULL
       else strata
-      permat <- t(replicate(permutations, permute::shuffle(N)))
+      permat = make_perm_mat(N, permutations)
+      #permat <- t(replicate(permutations, permute::shuffle(N)))
       #permat <- t(replicate(permutations, permuted.index(N, strata = arg)))
     }
   }

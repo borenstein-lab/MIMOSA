@@ -525,7 +525,7 @@ run_all_metabolites = function(genes, mets, file_prefix = 'net1', correction = "
     }else{
       met_mat = make_pairwise_met_matrix(shared_mets[j], cmp_mat[,c(good_subs, "compound"),with=F])
       metabol_mat = make_pairwise_met_matrix(shared_mets[j], mets[,c(good_subs,"KEGG"),with=F])
-      test = vegan::mantel(met_mat,metabol_mat,method=cor_method,permutations = nperm)
+      test = mantel_2sided(met_mat,metabol_mat,method=cor_method,permutations = nperm, direction = "pos")
       test_n = mantel_2sided(met_mat,metabol_mat,method=cor_method,permutations = nperm,
                              direction = "neg")
       all_comparisons[[j]] = list(ID = shared_mets[j], cmp = met_mat, Mets = metabol_mat, Mantel = list(test,test_n))
@@ -813,7 +813,7 @@ compare_met = function(met_met, met_cmp, met_all, cmp_all, posneg="pos", cor_met
   good_subs = names(met_all)[which(!is.na(unlist(met_all[met_met])) & names(met_all)!="KEGG")]
   met_mat = make_pairwise_met_matrix(met_cmp, cmp_all[,c(good_subs,"compound"),with=F])
   metabol_mat = make_pairwise_met_matrix(met_met, met_all[,c(good_subs,"KEGG"),with=F])
-  if(posneg=="pos") test = vegan::mantel(met_mat,metabol_mat,method=cor_method,permutations = nperm)
+  if(posneg=="pos") test = mantel_2sided(met_mat,metabol_mat,method=cor_method,permutations = nperm, direction = "pos")
   else test = mantel_2sided(met_mat,metabol_mat,method=cor_method,permutations = nperm, direction = "neg")
   return(test$signif)
 }
