@@ -133,6 +133,9 @@ mantel_2sided = function (xdis, ydis, method = "pearson", permutations = 999,
   #direction must be either "pos","neg", or "two-sided"
   xdis <- as.dist(xdis)
   ydis <- as.vector(as.dist(ydis))
+  if(all(as.vector(xdis) == 0)|all(ydis == 0)){
+    stop("All values are 0 for one distance matrix")
+  }
   if (na.rm)
     use <- "complete.obs"
   else use <- "all.obs"
@@ -229,37 +232,36 @@ met_names = function(met_ids){
   #   return(sapply(met_ids, function(x){ return(all_met_names[match(x,names(all_met_names))][[1]][1])}))
 }
 
-#' Function for getting ko abundances from BV qPCR data
+#' Function for getting ko abundances from species abundance data and table of reference genomes
 #'
 #' @import data.table
-#' @param qpcr qPCR species abundance data across samples
+#' @param spec_abunds Species abundance data table across samples
 #' @param ref_kos gene content of every species
 #' @param scale_factor Scale abundances by a factor
 #' @return gene abundances across samples
 #' @examples
 #' kos_from_species(bv_qpcr, genome_content)
 #' @export
-kos_from_species = function(qpcr, ref_kos, scale_factor = 1){
-  #kos_by_sample=list(NULL) ##kos by ksample and species - have qpcr for 14 species but genomes for only 11 of them
-  ref_names = unique(ref_kos[,species])
-  spec_names = names(qpcr)[!names(qpcr) %in% c("ID", "Sample")]
+kos_from_species = function(spec_abunds, ref_kos, scale_factor = 1){
+  ref_names = unique(ref_kos[,Species])
+  spec_names = spec_abunds[,unique(Species)]
   spec_names = spec_names[!is.na(spec_names)]
+  samp_names = spec_abunds[,unique(Sample)]
   kolist=data.table()
-  for(j in 1:nrow(qpcr)){
+  for(j in 1:length(samp_names)){
     for(i in spec_names){
-      #ind=grep(names(qpcr)[i],ref_names,ignore.case=T)
-      if(any(grepl(i, ref_names)) & !is.na(unlist(qpcr[j,i,with=F]))){
-        amt=as.numeric(qpcr[j,i,with=F]) #amount in that sample
+      if(i %in% ref_names & nrow(spec_abunds[Sample==samp_names[j] & Species == i]) > 0){
+        amt=as.numeric(spec_abunds[Sample==samp_names[j] & Species == i, value]) #amount in that sample
         if(amt>0){
-          kolist=rbind(kolist, data.table(KO=as.character(ref_kos[species==i,KO]),Abund=ref_kos[species==i,CopyNum]*amt/scale_factor, Species=i, Sample=qpcr[j,ID]))
+          kolist=rbind(kolist, data.table(KO=as.character(ref_kos[Species==i,KO]),Abund=ref_kos[Species==i,as.numeric(CopyNum)]*amt/scale_factor, Species=i, Sample=samp_names[j]))
           ##scale by 1000 to make numbers more manageable
         }
       } #else kos_by_sample[[j]]=NULL
     }
   }
-  BV_kos = kolist[,sum(Abund),by=list(KO,Sample)]
-  BV_kos = dcast.data.table(BV_kos,KO~Sample, value.var="V1")
-  return(BV_kos)
+  all_kos = kolist[,sum(Abund),by=list(KO,Sample)]
+  all_kos = dcast.data.table(all_kos,KO~Sample, value.var="V1")
+  return(all_kos)
 }
 
 

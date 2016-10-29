@@ -208,9 +208,10 @@ generate_genomic_network = function(kos, keggSource = "KeggTemplate", degree_fil
       rxn_table = rbind(rxn_table2, rxn_table_extra)
     }
     #No longer need extra info
-    rxn_table[,Path:=NULL]
-    rxn_table[,ReacProd:=NULL]
-    rxn_table[,Rxn:=NULL]
+    if("Path" %in% names(rxn_table)) rxn_table[,Path:=NULL]
+    if("ReacProd" %in% names(rxn_table)) rxn_table[,ReacProd:=NULL]
+    if("Rxn" %in% names(rxn_table)) rxn_table[,Rxn:=NULL]
+    setkey(rxn_table, NULL)
     rxn_table = unique(rxn_table)
     cmpds = unique(c(rxn_table[,Prod], rxn_table[,Reac]))
     if(degree_filter != 0){
@@ -410,7 +411,7 @@ get_cmp_scores = function(emm, norm_kos){
   norm_kos_sub = norm_kos[KO %in% names(emm)]
   subjects = names(norm_kos)[names(norm_kos)!="KO"]
   cmp = matrix(rep(NA),nrow = metlen,ncol = nsamp)
-  emm = emm[,match(norm_kos_sub[,KO], names(emm))]
+  emm = emm[,match(norm_kos_sub[,KO], names(emm)), drop = F]
   if(all(names(emm)==norm_kos_sub[,KO])){
     for(m in 1:nsamp){
       cmp[,m] =  as.matrix(emm) %*% unlist(norm_kos_sub[,subjects[m],with=F])
@@ -539,11 +540,11 @@ run_all_metabolites = function(genes, mets, file_prefix = 'net1', correction = "
   #whole set analysis
   cors_s = sapply(all_comparisons,function(x){return(x$Mantel[[1]]$statistic)})
   pvals_s = sapply(all_comparisons,function(x){return(x$Mantel[[1]]$signif)})
-  pvals2_s = correct(pvals_s, method = correction)
+  if(length(pvals_s) > 1) pvals2_s = correct(pvals_s, method = correction) else pvals2_s = pvals_s
 
   cors_n = sapply(all_comparisons,function(x){return(x$Mantel[[2]]$statistic)})
   pvals_n = sapply(all_comparisons,function(x){return(x$Mantel[[2]]$signif)})
-  pvals2_n = correct(pvals_n, method = correction)
+  if(length(pvals_n) > 1) pvals2_n = correct(pvals_n, method = correction) else pvals2_n = pvals_n
 
   node_data = data.table(compound = shared_mets, CorrS = cors_s, PValS = pvals_s, QValS = pvals2_s,
                          CorrN = cors_n, PValN = pvals_n, QValN = pvals2_n)

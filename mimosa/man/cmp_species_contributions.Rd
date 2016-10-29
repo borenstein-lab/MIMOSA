@@ -5,7 +5,7 @@
 \title{Evaluate species contributors for a single metabolite with qPCR/species abundance data}
 \usage{
 cmp_species_contributions(j, cmps_sub_good, all_rxns, subjects, norm_kos,
-  ko_net, qpcr, ref_kos, cor_with = F)
+  ko_net, spec_abunds, ref_kos, cor_with = T)
 }
 \arguments{
 \item{j}{metabolite # (usually from lapply/sapply)}
@@ -20,7 +20,7 @@ cmp_species_contributions(j, cmps_sub_good, all_rxns, subjects, norm_kos,
 
 \item{ko_net}{network created by generate_genomic_network}
 
-\item{qpcr}{original species abundances}
+\item{spec_abunds}{original species abundances}
 
 \item{ref_kos}{gene abundances for each species}
 

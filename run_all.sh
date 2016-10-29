@@ -20,7 +20,7 @@ metagenome_contributions.py -i "$DATADIR1/Dataset2_normalized_otus.biom" -o "$DA
 gene_file="$DATADIR1/Dataset2_metagenome_predictions.txt"
 met_file="$DATADIR1/Dataset2_mets.txt"
 
-run_musicc.py "$gene_file" -o "$DATADIR1/Dataset2_picrust_musicc.txt" -n -c learn_model -v
+run_musicc.py "$gene_file" -o "$DATADIR1/Dataset2_picrust_musicc.txt" -n -v
 
 #Using KEGGREST to build KEGG community network, can be slow
 Rscript runMimosa.R --genefile="$DATADIR1/Dataset2_picrust_musicc.txt" -m "$met_file" -w -p "$RUNDIR/Dataset2_bv" -n KeggTemplate -f 30 -z 4 -e "$HOMEDIR/reaction_mapformula.lst"

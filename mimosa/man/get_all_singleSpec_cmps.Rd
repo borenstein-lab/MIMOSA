@@ -4,19 +4,26 @@
 \alias{get_all_singleSpec_cmps}
 \title{Get single-species CMP scores for every OTU and metabolite}
 \usage{
-get_all_singleSpec_cmps(all_otus, valueVar, out_dir, rxn_table)
+get_all_singleSpec_cmps(all_otus, all_koAbunds_byOTU, valueVar, out_dir,
+  rxn_table, degree_filter = 30, write_out = T)
 }
 \arguments{
 \item{all_otus}{vector of OTUs or taxa}
+
+\item{all_koAbunds_byOTU}{list of KO abundances for each OTU}
 
 \item{valueVar}{"relAbundSample" or "singleMusicc", abundance metric to use for single taxon gene abundances}
 
 \item{out_dir}{Path of directory for loading and saving output}
 
 \item{rxn_table}{Community network template}
+
+\item{degree_filter}{Filter compounds connected to more than this number of KOs in the metabolic network model (default 30)}
+
+\item{write_out}{Whether to save output}
 }
 \value{
-Null, saves to Rdata file
+list of matrices of cmp scores for each taxon
 }
 \description{
 Get single-species CMP scores for every OTU and metabolite

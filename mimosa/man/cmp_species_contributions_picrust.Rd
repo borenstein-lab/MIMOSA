@@ -2,13 +2,13 @@
 % Please edit documentation in R/singleSpec_contributions.R
 \name{cmp_species_contributions_picrust}
 \alias{cmp_species_contributions_picrust}
-\title{Evaluate species contributors for a single metabolite with OTU and PICRUSt data}
+\title{Evaluate species contributors for a single metabolite with OTU and PICRUSt data, typically called by get_spec_contribs}
 \usage{
 cmp_species_contributions_picrust(j, cmps_sub_good, all_rxns, subjects,
-  norm_kos, ko_net, all_taxa, single_spec_cmps, cor_with = F)
+  norm_kos, ko_net, all_taxa, single_spec_cmps, cor_with = T)
 }
 \arguments{
-\item{j}{metabolite # (usually from lapply/sapply)}
+\item{j}{metabolite ID # (usually from lapply/sapply)}
 
 \item{cmps_sub_good}{CMP scores for metabolites with abundance data}
 
@@ -30,10 +30,10 @@ cmp_species_contributions_picrust(j, cmps_sub_good, all_rxns, subjects,
 list of 2-item lists for every metabolite - 1st item is data.table of OTUs and correlations, second item is vector of OTUs with correlations > 0.5
 }
 \description{
-Evaluate species contributors for a single metabolite with OTU and PICRUSt data
+Evaluate species contributors for a single metabolite with OTU and PICRUSt data, typically called by get_spec_contribs
 }
 \examples{
-sapply(1:length(metabolites), cmp_species_contributions_picrust, cmp_scores, all_rxns,
+lapply(1:length(metabolites), cmp_species_contributions_picrust, cmp_scores, all_rxns,
 all_subjects, ko_abunds, ko_net, spec_abunds, ref_kos)
 }
 

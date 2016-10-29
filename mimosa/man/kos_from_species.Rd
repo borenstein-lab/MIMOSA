@@ -2,12 +2,12 @@
 % Please edit documentation in R/misc_helper_functions.R
 \name{kos_from_species}
 \alias{kos_from_species}
-\title{Function for getting ko abundances from BV qPCR data}
+\title{Function for getting ko abundances from species abundance data and table of reference genomes}
 \usage{
-kos_from_species(qpcr, ref_kos, scale_factor = 1)
+kos_from_species(spec_abunds, ref_kos, scale_factor = 1)
 }
 \arguments{
-\item{qpcr}{qPCR species abundance data across samples}
+\item{spec_abunds}{Species abundance data table across samples}
 
 \item{ref_kos}{gene content of every species}
 
@@ -17,7 +17,7 @@ kos_from_species(qpcr, ref_kos, scale_factor = 1)
 gene abundances across samples
 }
 \description{
-Function for getting ko abundances from BV qPCR data
+Function for getting ko abundances from species abundance data and table of reference genomes
 }
 \examples{
 kos_from_species(bv_qpcr, genome_content)
