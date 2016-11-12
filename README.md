@@ -21,7 +21,20 @@ devtools::install_github("borenstein-lab/MIMOSA/mimosa")
 ## Using MIMOSA
 
 You can run a full MIMOSA analysis by running the script runMimosa.R from the command line with additional arguments and the output will be saved to multiple files. You can also run any of the individual steps in R. 
-You can see example file formatting in the `tests/testthat` directory.
+
+You can see example data file formatting in the `tests/testthat` directory.
+
+The analysis consists of the following main steps:
+
+1. Construct a community-specific metabolic network model linking genes, reactions, and metabolites.
+
+2. Use the above model to calculate community metabolic potential scores for each sample and metabolite and compare those using Mantel tests with metabolite concentrations.
+
+3. Identify using a heuristic approach which genes and reactions were important contributors to variation in community metabolic potential scores.
+
+4. Identify taxa that are consistent with contributing to metabolic potential scores.
+
+5. Optionally, perform a permutation test of the metabolic network to quantify how much the network model strengthens associations between the two data types.
 
 
 ### Required arguments for runMimosa.R
@@ -60,6 +73,13 @@ Rscript runMimosa.R --genefile="Dataset2_picrust_musicc.txt" --metfile="Dataset2
 Rscript runMimosa.R --genefile="Dataset2_picrust_musicc.txt" -m "Dataset2_mets.txt" --contribs_file="Dataset2_metagenome_contributions.txt" --file_prefix="Dataset2_bv" --mapformula_file="keggPath/reaction_mapformula.lst" --nonzero_filt=4 
 ```
 
+**You can test that the package is installed and working using the test data: 
+
+```bash
+Rscript runMimosa.R --genefile="mimosa/tests/testthat/test_genes.txt" --metfile="mimosa/tests/testthat/test_mets.txt" --contribs_file="mimosa/tests/testthat/test_contributions.txt" --mapformula_file="mimosa/tests/testthat/test_mapformula.txt" --file_prefix="test1" --ko_rxn_file="mimosa/tests/testthat/test_ko_reaction.txt" --rxn_annots_file="mimosa/tests/testthat/test_reaction.txt"
+```
+
+
 ### Output of runMimosa.R
 
 Core comparison analysis:
@@ -68,10 +88,11 @@ Core comparison analysis:
 - **file_prefix_signifPos.txt/file_prefix_signifNeg.txt**: subsets of the "nodes" file that were significant at an FDR of 0.1.
 - **file_prefix_cmpAll.txt**: Table of metabolic potential scores across all samples and metabolites.
 - **file_prefix_out.rda**: all of output of the run_all_metabolites for the core comparison analysis that can be loaded into an R session.
+- **full_network_template_all_info.txt**: Table of the full KEGG community network model template combining information on gene families, reactions, and stoichiometry.
 
 Potential taxonomic contributor analysis:
 - **file_prefix_specContrib.txt**: Table of results of analysis of potential taxonomic contributors for each metabolite (correlations of single-species scores with full community score).
-- **file_prefix__allKOAbundsByOTU.rda, file_prefix_allCMPsAloneByOTU.rda**: Rdata files with gene abundances and metabolic potential scores for each species alone.
+- **file_prefix__allKOAbundsByOTU.rda, file_prefix_allCMPsAloneByOTU.rda**: Intermediate Rdata files with gene abundances and metabolic potential scores for each species alone.
 
 
 Potential gene/species contributor analysis:
