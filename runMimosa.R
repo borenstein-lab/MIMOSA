@@ -38,20 +38,23 @@ opt = getopt(spec, opt = commandArgs(TRUE))
 datasets = read_files(opt$genefile, opt$metfile)
 genes = datasets[[1]]
 mets = datasets[[2]]
-if(opt$write_net) write_net = T else write_net = F
-cat(paste("Write_net is ",write_net,"\n"))
+write_net = T
+# if(opt$write_net) write_net = T else write_net = F
+# cat(paste("Write_net is ",write_net,"\n"))
 if(!is.null(opt$file_prefix)) file_prefix = opt$file_prefix else file_prefix = 'net1'
 cat(paste("File prefix is ", file_prefix,"\n"))
 #if(!is.null(opt$dir_method)) dir_method = opt$dir_method else dir_method = 'standard' #standard or minpath
 #cat(paste("Dir method is ", dir_method,"\n"))
-if(!is.null(opt$net_method)) net_method = opt$net_method else net_method = 'load' #loadNet or KeggTemplate
+if(!is.null(opt$net_method)) net_method = opt$net_method else net_method = 'KeggTemplate' #loadNet or KeggTemplate
 cat(paste("Net method is ", net_method,"\n"))
-if(!is.null(opt$degree_filter)) degree_filter = opt$degree_filter else degree_filter = 0
+if(!is.null(opt$degree_filter)) degree_filter = opt$degree_filter else degree_filter = 30
 cat(paste("Degree filter is", degree_filter,"\n"))
-if(!is.null(opt$met_id_file)) met_id_file = opt$met_id_file else met_id_file = ''
-cat(paste("Met id file is ", met_id_file,"\n"))
-if(!is.null(opt$minpath_file)) minpath_file = opt$minpath_file else minpath_file = ''
-cat(paste("Minpath file is ", minpath_file,"\n"))
+#if(!is.null(opt$met_id_file)) met_id_file = opt$met_id_file else met_id_file = ''
+#cat(paste("Met id file is ", met_id_file,"\n"))
+#if(!is.null(opt$minpath_file)) minpath_file = opt$minpath_file else minpath_file = ''
+#cat(paste("Minpath file is ", minpath_file,"\n"))
+met_id_file = ""
+minpath_file = ''
 if(!is.null(opt$cor_method)) cor_method = opt$cor_method else cor_method = "spearman"
 cat(paste("Mantel correlation method is ",cor_method,"\n"))
 if(net_method == "loadNet"){
@@ -62,20 +65,22 @@ if(net_method == "loadNet"){
     stop("Need mapformula file!")
   } else{
     #Set up generic network info
-    cat("Generating network template from KEGG...\n")
-    if(is.null(opt$ko_rxn_file) & is.null(opt$keggFile)){ ##Use KEGGREST
-      all_kegg = get_kegg_reaction_info("KEGGREST", kolist = genes[,KO])
+    if(!is.null(opt$keggFile)){
+      rxn_table = fread(opt$keggFile) #should be correctly formatted reaction table
     } else{
-      if(!is.null(opt$keggFile)){
-        load(opt$keggFile) #should include correctly formatted object named "all_kegg"
-      } else if(is.null(opt$rxn_annots_file)){
-        stop("If using downloaded KEGG files for reaction info, must provide a file linking KOs to reactions and a file with reaction annotations")
+      cat("Generating network template from KEGG...\n")
+      if(is.null(opt$ko_rxn_file) & is.null(opt$keggFile)){ ##Use KEGGREST
+        all_kegg = get_kegg_reaction_info("KEGGREST", kolist = genes[,KO])
       } else{
-        all_kegg = get_kegg_reaction_info(opt$ko_rxn_file, opt$rxn_annots_file)
+        if(is.null(opt$rxn_annots_file)){
+          stop("If using downloaded KEGG files for reaction info, must provide a file linking KOs to reactions and a file with reaction annotations")
+        } else{
+          all_kegg = get_kegg_reaction_info(opt$ko_rxn_file, opt$rxn_annots_file)
+        }
       }
+      rxn_table = generate_network_template_kegg(opt$mapformula_file, all_kegg, write_out = T)
+      cat("Got community network!\n")
     }
-    rxn_table = generate_network_template_kegg(opt$mapformula_file, all_kegg)
-    cat("Got community network!\n")
   }
 }
 if(!is.null(opt$num_permute)) num_permute = opt$num_permute else num_permute = 20000
@@ -101,10 +106,10 @@ if(!runmet2){
 }
 
 ### Get potential key species contributors, assumes PICRUSt was used to generate metagenome predictions
+## If using Greengenes, can change to sum_to_genus = T and will evaluate at the genus level instead of the OTU level
 if(!is.null(opt$contribs_file)){
   cat("Getting potential species contributors to metabolite variation\n")
-  spec_contribs = get_spec_contribs(opt$contribs_file, data_dir = getwd(), results_file = paste0(file_prefix, "_out.rda"), out_dir = getwd(), otu_id = "all", valueVar = "singleMusicc",
-                                    sum_to_genus = F, write_out = T) #will also save to file
+  spec_contribs = get_spec_contribs(opt$contribs_file, data_dir = getwd(), results_file = paste0(file_prefix, "_out.rda"), out_prefix = file_prefix, otu_id = "all", valueVar = "singleMusicc", sum_to_genus = F, write_out = T) #will also save to file
 }
 
 ### Get key gene/reaction contributors across all species
@@ -117,10 +122,14 @@ cmps_sub_good = cmps[compound %in% good_mets]
 all_rxns = lapply(good_mets, function(x){ return(get_non_rev_rxns(ko_net[[3]][Reac==x | Prod==x]))})
 all_gene_contribs = lapply(1:length(good_mets), gene_contributions, cmps_sub_good = cmps_sub_good, all_rxns = all_rxns,
        subjects=subjects, norm_kos = norm_kos, ko_net = ko_net)
+all_ko_cors = rbindlist(lapply(all_gene_contribs, function(x){ return(x[[1]])}))
+all_comp_info = rbindlist(lapply(all_gene_contribs, function(x){ return(x[[2]])}))
+write.table(all_ko_cors, file = paste0(file_prefix, "_geneContribAnalysis.txt"), quote = F, row.names = F, sep = "\t")
+write.table(all_comp_info, file = paste0(file_prefix, "_geneContribCompoundSummary.txt"), quote = F, row.names = F, sep = "\t")
 save(all_gene_contribs, file = paste0(file_prefix, "_geneContribs.rda"))
 
-### Run 500 network shuffling tests
-for(j in 1:500){
-  cat(paste0("Running network shuffling test, iteration ", j ,"\n"))
-  run_shuffle(paste0(file_prefix, "_out.rda"), id_num = j)
-}
+### Run 500 network shuffling tests to evaluate information gained from network structure
+# for(j in 1:500){
+#   cat(paste0("Running network shuffling test, iteration ", j ,"\n"))
+#   run_shuffle(paste0(file_prefix, "_out.rda"), id_num = j)
+# }

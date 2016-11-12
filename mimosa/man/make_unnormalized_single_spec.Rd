@@ -4,14 +4,14 @@
 \alias{make_unnormalized_single_spec}
 \title{Get functional relative abundances from a single species' abundances over time}
 \usage{
-make_unnormalized_single_spec(contribs, otu_id = "all", out_dir)
+make_unnormalized_single_spec(contribs, otu_id = "all", out_prefix)
 }
 \arguments{
 \item{contribs}{metagenome_contributions output of PICRUSt}
 
 \item{otu_id}{specific OTU ID or "all"}
 
-\item{out_dir}{directory to write to}
+\item{out_prefix}{file path to write to}
 }
 \value{
 gene abundance matrix based on that species only

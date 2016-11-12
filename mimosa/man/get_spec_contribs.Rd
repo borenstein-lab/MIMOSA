@@ -4,7 +4,7 @@
 \alias{get_spec_contribs}
 \title{Perform a series of steps related to identifying single-species contributors.}
 \usage{
-get_spec_contribs(contrib_file, data_dir, results_file, out_dir,
+get_spec_contribs(contrib_file, data_dir, results_file, out_prefix,
   otu_id = "all", otu_file, valueVar = "singleMusicc", sum_to_genus,
   write_out = T)
 }
@@ -15,7 +15,7 @@ get_spec_contribs(contrib_file, data_dir, results_file, out_dir,
 
 \item{results_file}{File where run_all_metabolites output is located}
 
-\item{out_dir}{Directory where output will be written too}
+\item{out_prefix}{File path where output will be written too}
 
 \item{otu_id}{"All" to evaluate all detected OTUs, otherwise, a vector of OTU IDs to test for contribution}
 

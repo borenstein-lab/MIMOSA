@@ -4,14 +4,14 @@
 \alias{contribs_by_species_list}
 \title{Get a list of relevant gene abundances for each species and each metabolite, optionally save}
 \usage{
-contribs_by_species_list(contribs, valueVar, out_dir, write_out = T)
+contribs_by_species_list(contribs, valueVar, out_prefix, write_out = T)
 }
 \arguments{
 \item{contribs}{data.table of OTU, genes, samples and abundances}
 
 \item{valueVar}{"relAbundSample" or "singleMusicc", abundance metric to use for single taxon gene abundances}
 
-\item{out_dir}{directory to write to}
+\item{out_prefix}{directory to write to}
 }
 \value{
 list of relevant gene abundances for each species and each metabolite

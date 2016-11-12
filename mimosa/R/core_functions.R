@@ -63,7 +63,7 @@ get_kegg_reaction_info = function(kos_to_rxns_method, reaction_info_file = "", s
     })
   }
   all_kegg$kos_to_rxns = kos_to_rxns
-  if(save_out) save(all_kegg, file = "KeggReactions.rda")
+  #if(save_out) save(all_kegg, file = "KeggReactions.rda")
   return(all_kegg)
 }
 
@@ -72,11 +72,12 @@ get_kegg_reaction_info = function(kos_to_rxns_method, reaction_info_file = "", s
 #' @import data.table
 #' @param mapformula_file file path to "reaction_mapformula.lst" from the KEGG database, specifying reaction IDs annotated in pathways
 #' @param all_kegg Output of get_kegg_reaction_info
+#' @param write_out Whether to save template to file
 #' @return A table specifying a community metabolic network based on KEGG pathways with the following columns: Rxn (reaction ID),	KO (Gene ID),	Reac (Reactant ID),	Prod (Product ID),	Path (Pathway ID),	ReacProd (Original reaction specification),	stoichReac (Reactant stoichiometry coefficient),	stoichProd (Product stoichiometry coefficient)
 #' @examples
 #' generate_network_template_kegg("KEGG/ligand/reaction/reaction_mapformula.lst", all_kegg)
 #' @export
-generate_network_template_kegg = function(mapformula_file, all_kegg, save_out = F){
+generate_network_template_kegg = function(mapformula_file, all_kegg, write_out = T){
   mapformula = fread(mapformula_file, colClasses = "character") #get mapformula pathway annotations of reactions
   setnames(mapformula, c("Rxn","Path","ReacProd"))
   #Process Reacs and Prods, flip reversible reactions, etc
@@ -164,7 +165,7 @@ generate_network_template_kegg = function(mapformula_file, all_kegg, save_out = 
   rxn_table[,stoichReac:=stoichReac]
   rxn_table[,stoichProd:=stoichProd]
   rxn_table[,Path:=gsub(" ","",Path)]
-  if(save_out) write.table(rxn_table, file = "mapformula_all_info.txt", quote=F, row.names = F, sep = "\t")
+  if(write_out) write.table(rxn_table, file = "full_network_template_all_info.txt", quote=F, row.names = F, sep = "\t")
   return(rxn_table)
 }
 
@@ -791,9 +792,12 @@ gene_contributions = function(j, cmps_sub_good, all_rxns, subjects, norm_kos, ko
       nkey_prod = length(unique(net_primary[Reversible==0 & compound==Prod, KO]))
       nkey_reac = length(unique(net_primary[Reversible==0 & compound==Reac, KO]))
     }
-    write.table(ko_cors, file = paste0("geneContribAnalysis_", compound, ".txt", ))
-    return(list(ko_cors, net_primary, primary_make, c(nKOReac = nreac, nKOProd = nprod, nkeyKOReac = nkey_reac, nkeyKOProd = nkey_prod)))
-  } else return(NULL)
+    #write.table(ko_cors, file = paste0("geneContribAnalysis_", compound, ".txt", ))
+    ko_cors = merge(ko_cors,  all_rxns[[j]][KO %in% kos_involved & Reversible==0], by = "KO")
+    ko_cors[,compound:=compound]
+    compound_info = data.table(compound = compound, PrimaryMake = primary_make, nKOReac = nreac, nKOProd = nprod, nkeyKOReac = nkey_reac, nkeyKOProd = nkey_prod)
+    return(list(ko_cors, compound_info))
+  } else stop(paste0("No reactions for compound ", j))
 }
 
 #' Compare a single set each of CMP scores and metabolite concentrations

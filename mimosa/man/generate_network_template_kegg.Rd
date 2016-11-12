@@ -4,12 +4,14 @@
 \alias{generate_network_template_kegg}
 \title{Generate community metabolic network template from the KEGG database, using reaction_mapformula.lst and}
 \usage{
-generate_network_template_kegg(mapformula_file, all_kegg, save_out = F)
+generate_network_template_kegg(mapformula_file, all_kegg, write_out = T)
 }
 \arguments{
 \item{mapformula_file}{file path to "reaction_mapformula.lst" from the KEGG database, specifying reaction IDs annotated in pathways}
 
 \item{all_kegg}{Output of get_kegg_reaction_info}
+
+\item{write_out}{Whether to save template to file}
 }
 \value{
 A table specifying a community metabolic network based on KEGG pathways with the following columns: Rxn (reaction ID),	KO (Gene ID),	Reac (Reactant ID),	Prod (Product ID),	Path (Pathway ID),	ReacProd (Original reaction specification),	stoichReac (Reactant stoichiometry coefficient),	stoichProd (Product stoichiometry coefficient)
