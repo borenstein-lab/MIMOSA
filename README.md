@@ -49,8 +49,8 @@ The analysis consists of the following main steps:
 ### Optional arguments for runMimosa.R
 
 The following two files are required for full reaction information and stoichiometry, if you are using a downloaded version of KEGG. If they are not provided, MIMOSA will try to use the KEGGREST package to get the same information from the KEGG API.
-- **-r,--ko_rxn_file** File path to links between KO gene families and reactions (called ko_reaction.list and found in xxx)
-- **-x,--rxn_annots_file** File path to full KEGG Reaction annotations (called reaction and found in xxx)
+- **-r,--ko_rxn_file** File path to links between KO gene families and reactions (found at genes/ko/ko_reaction.list in the KEGG FTP download)
+- **-x,--rxn_annots_file** File path to full KEGG Reaction annotations (found at ligand/reaction/reaction in the KEGG FTP download)
 
 Other optional arguments:
 
