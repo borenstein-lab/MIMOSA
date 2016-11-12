@@ -70,7 +70,9 @@ Core comparison analysis:
 - **file_prefix_out.rda**: all of output of the run_all_metabolites for the core comparison analysis that can be loaded into an R session.
 
 Potential taxonomic contributor analysis:
-- **file_prefix_specContrib.txt**: Table of results of analysis of potential taxonomic contributors for each metabolite
+- **file_prefix_specContrib.txt**: Table of results of analysis of potential taxonomic contributors for each metabolite (correlations of single-species scores with full community score).
+- **file_prefix__allKOAbundsByOTU.rda, file_prefix_allCMPsAloneByOTU.rda**: Rdata files with gene abundances and metabolic potential scores for each species alone.
+
 
 Potential gene/species contributor analysis:
 - **file_prefix_geneContribAnalysis.txt**: Table of results of contribution analysis of most relevant potential gene and reaction contributors for each metabolite (correlations indicate how much removing the reactions associated with that gene affected metabolite potential scores).
