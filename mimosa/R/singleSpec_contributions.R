@@ -87,7 +87,9 @@ cmp_species_contributions_picrust = function(j, cmps_sub_good, all_rxns, subject
       compound = cmps_sub_good[j,compound]
       kos_involved = unique(all_rxns[[j]][Reversible==0,KO])
       species_cmp_cors = sapply(1:length(all_taxa), function(x){
-        return(cor(as.vector(unlist(cmps_sub_good[compound,subjects,with=F])),as.vector(unlist(single_spec_cmps[[x]][compound,subjects,with=F])), method="pearson"))
+        if(!is.na(single_spec_cmps[[x]])){
+          return(cor(as.vector(unlist(cmps_sub_good[compound,subjects,with=F])),as.vector(unlist(single_spec_cmps[[x]][compound,subjects,with=F])), method="pearson"))
+      } else { return(NA)}
       })
       spec_cors = data.table(Species=all_taxa, Cor=species_cmp_cors, compound = compound)
       spec_cors[,Pass:=ifelse(Cor > 0.5, 1, 0)]
@@ -209,8 +211,12 @@ get_all_singleSpec_cmps = function(all_otus, all_koAbunds_byOTU, valueVar, out_p
   if(length(all_otus) != length(all_koAbunds_byOTU)) stop("Problem! OTU lists don't match")
   cmps_alone = vector("list", length(all_otus))
   for(k in 1:length(all_otus)){
-    sub_ko_net = generate_genomic_network(all_koAbunds_byOTU[[k]][,KO], keggSource = "KeggTemplate", degree_filter = degree_filter, rxn_table = rxn_table)
-    cmps_alone[[k]] = get_cmp_scores(sub_ko_net[[1]], all_koAbunds_byOTU[[k]])
+    if(nrow(rxn_table[KO %in% all_koAbunds_byOTU[[k]][,KO]]) > 0){
+      sub_ko_net = try(generate_genomic_network(all_koAbunds_byOTU[[k]][,KO], keggSource = "KeggTemplate", degree_filter = degree_filter, rxn_table = rxn_table))
+      cmps_alone[[k]] = get_cmp_scores(sub_ko_net[[1]], all_koAbunds_byOTU[[k]])
+    } else {
+      cmps_alone[[k]] = NA
+    }
   }
   if(write_out) save(cmps_alone, file = paste0(out_prefix, "_allCMPsAloneByOTU.rda"))
   return(cmps_alone)
@@ -234,20 +240,17 @@ get_spec_contribs = function(contrib_file, data_dir, results_file, out_prefix, o
   #devtools::load_all()
   if(!valueVar %in% c("RelAbundSample", "singleMusicc")) stop("Invalid abundance metric, must be RelAbundSample or singleMusicc")
   contribs = data.table::fread(contrib_file, stringsAsFactors = F)
+  contribs = contribs[CountContributedByOTU != 0]
   all_otus = sort(unique(contribs[,OTU]))
   if(valueVar == "RelAbundSample"){ #Using relative abundance out of all genes
     valueVar = "RelAbundSample"
     contribs = make_unnormalized_single_spec(contribs, otu_id, out_prefix)
-    if("sum_to_genus" %in% args){
-      contribs = sum_to_genus(contribs, valueVar = valueVar)
-      all_otus = sort(unique(contribs[,OTU]))
-    }
+    if(sum_to_genus) contribs = sum_to_genus(contribs, valueVar = valueVar)
     all_koAbunds_byOTU = contribs_by_species_list(contribs, valueVar = valueVar, out_prefix, write_out)
   } else if(valueVar == "singleMusicc"){
     contribs = single_spec_musicc(contribs)
     if(sum_to_genus){
       contribs = sum_to_genus(contribs, valueVar = valueVar)
-      all_otus = sort(unique(contribs[,OTU]))
     }
     all_koAbunds_byOTU = contribs_by_species_list(contribs, valueVar = valueVar, out_prefix, write_out)
   }
@@ -266,7 +269,7 @@ get_spec_contribs = function(contrib_file, data_dir, results_file, out_prefix, o
 
   ##Analyze contributions
   subjects = names(norm_kos)[names(norm_kos)!="KO"]
-  if(!identical(sort(subjects), sort(unique(contribs[,Sample])))){ stop("Samples not consistent between contributions and genes/metabolites")}
+  if(!identical(sort(subjects), sort(unique(as.character(contribs[,Sample]))))){ stop("Samples not consistent between contributions and genes/metabolites")}
   cmps_sub_good = get_cmp_scores(ko_net[[1]], norm_kos) # Full community cmp scores
   cmp_sub_good = cmps_sub_good[node_data[,compound]]
   all_rxns = lapply(node_data[,compound], function(x){ return(ko_net[[3]][Reac==x|Prod==x])})

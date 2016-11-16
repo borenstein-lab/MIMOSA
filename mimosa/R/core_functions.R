@@ -198,6 +198,9 @@ generate_genomic_network = function(kos, keggSource = "KeggTemplate", degree_fil
     }
     #rxn_table = fread("ko_rxn_map_all_info_filtered.txt", colClasses = c(rep("character",6), rep("numeric",2)))
     rxn_table = rxn_table[KO %in% kos]
+    if(nrow(rxn_table) == 0){
+      stop("No reactions for this KO set")
+    }
     #rxn_table[,rxn_id:=rxn_ids2]
     if(minpath_file!=''){
       minpaths = fread(minpath_file, colClasses="character")
