@@ -1,6 +1,6 @@
 Package: mimosa
 Title: Model-based Integration of Metabolite Observations and Species Abundances
-Version: 0.0.0.9000
+Version: 1.0.0
 Authors@R: person("Cecilia", "Noecker", email = "cnoecker@uw.edu", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
 Depends:

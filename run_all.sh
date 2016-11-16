@@ -15,6 +15,10 @@ normalize_by_copy_number.py -f -i "$DATADIR1/Dataset2_otu_table.txt" -o "$DATADI
 predict_metagenomes.py -f -i "$DATADIR1/Dataset2_normalized_otus.biom" -o "$DATADIR1/Dataset2_metagenome_predictions.txt"
 metagenome_contributions.py -i "$DATADIR1/Dataset2_normalized_otus.biom" -o "$DATADIR1/Dataset2_metagenome_contributions.txt"
 
+###Remove extra column of annotations
+rev Dataset2_metagenome_predictions.txt | cut -d "  " -f 2- | rev > tmp
+mv tmp Dataset2_metagenome_predictions.txt
+
 ##2 normalize gene abundances with MUSiCC
 
 gene_file="$DATADIR1/Dataset2_metagenome_predictions.txt"
@@ -23,10 +27,10 @@ met_file="$DATADIR1/Dataset2_mets.txt"
 run_musicc.py "$gene_file" -o "$DATADIR1/Dataset2_picrust_musicc.txt" -n -v
 
 #Using KEGGREST to build KEGG community network, can be slow
-Rscript runMimosa.R --genefile="$DATADIR1/Dataset2_picrust_musicc.txt" -m "$met_file" -w -p "$RUNDIR/Dataset2_bv" -n KeggTemplate -f 30 -z 4 -e "$HOMEDIR/reaction_mapformula.lst"
+Rscript runMimosa.R --genefile="Dataset2_picrust_musicc.txt" -m "Dataset2_mets.txt" --contribs_file="Dataset2_metagenome_contributions.txt" --file_prefix="Dataset2_bv" --mapformula_file="keggPath/reaction_mapformula.lst" --nonzero_filt=4 
 
 #OR Using downloaded KEGG files to build community network
-Rscript runMimosa.R --genefile="$DATADIR1/Dataset2_picrust_musicc.txt" -m "$met_file" -w -p "$RUNDIR/Dataset2_bv" -n KeggTemplate -f 30 -z 4 -e "$HOMEDIR/reaction_mapformula.lst" -r "ko_reaction.list" -x "reaction"
+Rscript runMimosa.R --genefile="Dataset2_picrust_musicc.txt" --metfile="Dataset2_mets.txt" --contribs_file="Dataset2_metagenome_contributions.txt" --file_prefix="Dataset2_bv" --mapformula_file="keggPath/reaction_mapformula.lst" --ko_rxn_file="keggPath/ko_reaction.list" --rxn_annots_file="keggPath/reaction" --nonzero_filt=4 
 
 
 ### Options for runMimosa.R:
