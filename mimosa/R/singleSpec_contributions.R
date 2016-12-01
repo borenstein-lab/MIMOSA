@@ -245,12 +245,16 @@ get_spec_contribs = function(contrib_file, data_dir, results_file, out_prefix, o
   if(valueVar == "RelAbundSample"){ #Using relative abundance out of all genes
     valueVar = "RelAbundSample"
     contribs = make_unnormalized_single_spec(contribs, otu_id, out_prefix)
-    if(sum_to_genus) contribs = sum_to_genus(contribs, valueVar = valueVar)
+    if(sum_to_genus){
+      contribs = sum_to_genus(contribs, valueVar = valueVar)
+      all_otus = sort(contribs[,unique(OTU)]) #Get new set of OTUs
+    }
     all_koAbunds_byOTU = contribs_by_species_list(contribs, valueVar = valueVar, out_prefix, write_out)
   } else if(valueVar == "singleMusicc"){
     contribs = single_spec_musicc(contribs)
     if(sum_to_genus){
       contribs = sum_to_genus(contribs, valueVar = valueVar)
+      all_otus = sort(contribs[,unique(OTU)]) #Get new set of OTUs
     }
     all_koAbunds_byOTU = contribs_by_species_list(contribs, valueVar = valueVar, out_prefix, write_out)
   }

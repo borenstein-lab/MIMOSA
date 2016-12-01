@@ -75,8 +75,12 @@ test_that("Run all metabolites function works", {
 
 spec_contribs = get_spec_contribs(test_contrib_file, data_dir = getwd(), results_file = "test_out.rda", out_prefix = "test", otu_id = "all", valueVar = "singleMusicc",
                                   sum_to_genus = T, write_out = T)
+spec_contribs2 = get_spec_contribs(test_contrib_file, data_dir = getwd(), results_file = "test_out.rda", out_prefix = "test", otu_id = "all", valueVar = "RelAbundSample", sum_to_genus = T, write_out = T)
+
 
 test_that("Species contributions work", {
   expect_gt(nrow(spec_contribs), 0)
   expect_gt(nrow(spec_contribs[!is.na(Cor)]), 0)
+  expect_gt(nrow(spec_contribs2), 0)
+  expect_gt(nrow(spec_contribs2[!is.na(Cor)]), 0)
 })

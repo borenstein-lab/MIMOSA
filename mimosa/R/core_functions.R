@@ -524,8 +524,8 @@ run_all_metabolites = function(genes, mets, file_prefix = 'net1', correction = "
     good_subs = intersect(names(mets)[which(!is.na(unlist(mets[shared_mets[j],subjects,with=F])))], names(cmp_mat)[which(!is.na(unlist(cmp_mat[shared_mets[j],subjects,with=F])))])
     cmp_vector = unlist(cmp_mat[shared_mets[j],good_subs,with=F])
     met_vector = unlist(mets[shared_mets[j],good_subs,with=F])
-    #check for too many 0s
-    if(length(met_vector[met_vector!=0]) < nonzero_filter | length(cmp_vector[cmp_vector!=0]) < nonzero_filter){
+    #check for too many 0s or all equal values
+    if(length(met_vector[met_vector!=0]) < nonzero_filter | length(cmp_vector[cmp_vector!=0]) < nonzero_filter | length(unique(met_vector)) < 2 | length(unique(cmp_vector)) < 2){
       all_comparisons[[j]] = NA
     }else{
       met_mat = make_pairwise_met_matrix(shared_mets[j], cmp_mat[,c(good_subs, "compound"),with=F])
@@ -550,8 +550,7 @@ run_all_metabolites = function(genes, mets, file_prefix = 'net1', correction = "
   pvals_n = sapply(all_comparisons,function(x){return(x$Mantel[[2]]$signif)})
   if(length(pvals_n) > 1) pvals2_n = correct(pvals_n, method = correction) else pvals2_n = pvals_n
 
-  node_data = data.table(compound = shared_mets, CorrS = cors_s, PValS = pvals_s, QValS = pvals2_s,
-                         CorrN = cors_n, PValN = pvals_n, QValN = pvals2_n)
+  node_data = data.table(compound = shared_mets, Correlation = cors_s, PValPos = pvals_s, QValPos = pvals2_s, PValNeg = pvals_n, QValNeg = pvals2_n, Metabolite = met_names(shared_mets))
   setkey(node_data,compound)
 
   #save everything
@@ -560,8 +559,8 @@ run_all_metabolites = function(genes, mets, file_prefix = 'net1', correction = "
   #write node attribute file
   write.table(node_data,file = paste(file_prefix,'_nodes.txt',sep=''),sep="\t",quote=F,row.names=F)
 
-  signif_pos = node_data[!is.na(node_data$QValS) & (node_data$QValS < cutoff) & node_data$PValS < 0.05,]
-  signif_neg = node_data[!is.na(node_data$QValN) & node_data$QValN < cutoff & node_data$PValN < 0.05,]
+  signif_pos = node_data[!is.na(node_data$QValPos) & (node_data$QValPos < cutoff) & node_data$PValS < 0.05,]
+  signif_neg = node_data[!is.na(node_data$QValNeg) & node_data$QValNeg < cutoff & node_data$PValN < 0.05,]
   write.table(signif_pos, file = paste(file_prefix,'_signifPos.txt',sep = ''), sep = "\t", quote = F, row.names = F)
   write.table(signif_neg, file = paste(file_prefix,'_signifNeg.txt',sep = ''), sep = "\t", quote = F, row.names = F)
   write.table(cmp_mat, file = paste0(file_prefix, '_cmpAll.txt'), quote=F, row.names = F, sep = "\t")
@@ -687,17 +686,17 @@ run_all_metabolites2 = function(genes, mets, file_prefix = 'net1', correction = 
   pvals_nc = correct(pvals_n, method = correction)
   accuracy = 1 - sapply(all_comparisons, function(x){ return(x$Error)})
 
-  node_data = data.table(compound = shared_mets, PValS = pvals, QValS = pvals_c,
+  node_data = data.table(compound = shared_mets, PValS = pvals, QValPos = pvals_c,
                          #CorrP = cors_p, PValP = pvals_p, QValP = pvals2_p,
-                         PValN = pvals_n, QValN = pvals_nc, Accuracy = accuracy, Sensitivity = sensitivity, Specificity = specificity, Precision = precision)
+                         PValN = pvals_n, QValNeg = pvals_nc, Accuracy = accuracy, Sensitivity = sensitivity, Specificity = specificity, Precision = precision)
   setkey(node_data,compound)
   #write to network file
   write.table(ko_net_table,file=paste(file_prefix,'_edges.txt',sep=''),sep="\t",quote=F,row.names=F)
   #write node attribute file
   write.table(node_data,file = paste(file_prefix,'_nodes2.txt',sep=''),sep="\t",quote=F,row.names=F)
   #plot_mantel_results(all_comparisons, node_data, file_prefix)
-  signif_pos = node_data[!is.na(node_data$QValS) & (node_data$QValS < cutoff),]
-  signif_neg = node_data[!is.na(node_data$QValN) & node_data$QValN < cutoff,]
+  signif_pos = node_data[!is.na(node_data$QValPos) & (node_data$QValPos < cutoff),]
+  signif_neg = node_data[!is.na(node_data$QValNeg) & node_data$QValNeg < cutoff,]
   #write.table(signif_pos, file = paste(file_prefix,'_signifPos.txt',sep = ''), sep = "\t", quote = F, row.names = F)
   #write.table(signif_neg, file = paste(file_prefix,'_signifNeg.txt',sep = ''), sep = "\t", quote = F, row.names = F)
   save(norm_kos, mets, ko_net, all_comparisons, node_data, file = paste(file_prefix,'_out2.rda',sep=''))
@@ -709,11 +708,11 @@ run_all_metabolites2 = function(genes, mets, file_prefix = 'net1', correction = 
 plot_mantel_results = function(metabolite_list, node_data, file_prefix){
   pdf(file = paste(file_prefix,"_qval_hist.pdf", sep = ''), width = 10)
   par(mfrow = c(1,3))
-  hist(node_data$QValS, main = "Spearman correlation Mantel", ylim = c(0, 0.6*length(metabolite_list)), breaks = 25)
+  hist(node_data$QValPos, main = "Spearman correlation Mantel", ylim = c(0, 0.6*length(metabolite_list)), breaks = 25)
   abline(v = 0.05, col = "red")
   #hist(node_data$QValP, main = "Pearson correlation Mantel", ylim = c(0, 0.6*length(metabolite_list)), breaks = 25)
   #abline(v = 0.05, col = "red")
-  hist(node_data$QValN, main = "Negative correlation Mantel", ylim = c(0, 0.6*length(metabolite_list)), breaks = 25)
+  hist(node_data$QValNeg, main = "Negative correlation Mantel", ylim = c(0, 0.6*length(metabolite_list)), breaks = 25)
   abline(v = 0.05, col = "red")
   dev.off()
 }
