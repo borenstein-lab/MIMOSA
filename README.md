@@ -1,7 +1,7 @@
 # MIMOSA
 Model-based Integration of Metabolite Observations and Species Abundances
 
-A pipeline for joint metabolic model-based analysis of metabolomics measurements and taxonomic composition from microbial communities. Includes an R package that implements the core integrative analysis functions as well as example pre-processing and analysis scripts. MIMOSA is under active development. See http://elbo.gs.washington.edu/download.html for a previous version of the code, used to produce the results in (Noecker et al, 2016).
+A pipeline for joint metabolic model-based analysis of metabolomics measurements and taxonomic composition from microbial communities. Includes an R package that implements the core integrative analysis functions as well as example pre-processing and analysis scripts. MIMOSA is under active development, but version 1.0.0 is a general implementation of the methods described and used in (Noecker et al, mSystems 2016). See http://elbo.gs.washington.edu/download.html for a previous version of the code initially used to produce the results in that work.
 
 ## Contents
 
