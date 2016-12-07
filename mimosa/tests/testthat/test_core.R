@@ -33,19 +33,27 @@ test_that("Network data looks normal", {
 })
 
 ko_net = generate_genomic_network(datasets[[1]][,KO], keggSource = "KeggTemplate", rxn_table = rxn_table)
+ko_net2 = generate_genomic_network(datasets[[1]][,KO], keggSource = "KeggTemplate", rxn_table = rxn_table, normalize = F)
 
-test_that("Network generated successfully", {
+test_that("Networks generated successfully", {
   expect_length(ko_net, 3)
   expect_equal(names(ko_net[[3]]), c("KO", "Reac", "Prod", "stoichReac", "stoichProd"))
   expect_equal(sort(unique(names(ko_net[[1]]))), sort(unique(ko_net[[3]][,KO])))
   expect_equal(sort(unique(row.names(ko_net[[1]]))), sort(unique(c(ko_net[[3]][,Prod], ko_net[[3]][,Reac]))))
+  expect_length(ko_net2, 3)
+  expect_equal(names(ko_net2[[3]]), c("KO", "Reac", "Prod", "stoichReac", "stoichProd"))
+  expect_equal(sort(unique(names(ko_net2[[1]]))), sort(unique(ko_net2[[3]][,KO])))
+  expect_equal(sort(unique(row.names(ko_net2[[1]]))), sort(unique(c(ko_net2[[3]][,Prod], ko_net2[[3]][,Reac]))))
 })
 
 cmp_scores = get_cmp_scores(ko_net[[1]], datasets[[1]])
+cmp_scores2 = get_cmp_scores(ko_net2[[1]], datasets[[1]])
 
 test_that("CMP scores can be calculated from network", {
   expect_gt(nrow(cmp_scores), 0)
   expect_equal(ncol(cmp_scores), ncol(datasets[[1]]))
+  expect_gt(nrow(cmp_scores2), 0)
+  expect_equal(ncol(cmp_scores2), ncol(datasets[[1]]))
 })
 
 shared_mets = intersect(datasets[[2]][,KEGG], cmp_scores[,compound])

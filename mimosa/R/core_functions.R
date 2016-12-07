@@ -480,6 +480,7 @@ make_pairwise_met_matrix = function(metabolite, met_mat, diff_function = "differ
 #' @param net_file file containing network template to use
 #' @param nperm Number of permutations for Mantel test, default is 20000
 #' @param nonzero_filter Minimum number of samples required to have nonzero concentrations and nonzero metabolic potential scores in order for metabolite to be evaluated, default is 3
+#' @param norm Whether to normalize the network model coefficients by the total number of synthesis and degradation reactions for each metabolite
 #' @return No return, writes output to files.
 #' @examples
 #'
@@ -487,7 +488,7 @@ make_pairwise_met_matrix = function(metabolite, met_mat, diff_function = "differ
 run_all_metabolites = function(genes, mets, file_prefix = 'net1', correction = "fdr", cutoff = 0.1,
                                net_method = "load", rxn_table_source = "", id_met = F, met_id_file = '',
                                degree_filter = 0, minpath_file = '', cor_method = "spearman",
-                               net_file = "", nperm = 20000, nonzero_filter=3){
+                               net_file = "", nperm = 20000, nonzero_filter=3, norm = T){
   #must be data.tables keyed by KOs/KEGG IDs in first column, all other columns are subject IDs
   #correction must be either "bonferroni" or "fdr", cutoff is q value cutoff
   #id_mets specifies whether to use network for improved metabolite identification (i.e. for Braun datasets)
@@ -495,7 +496,7 @@ run_all_metabolites = function(genes, mets, file_prefix = 'net1', correction = "
   kos = genes[,KO]
   nsamp = dim(genes)[2] - 1
   subjects = intersect(names(genes), names(mets))
-  ko_net = generate_genomic_network(kos, keggSource = net_method, degree_filter = degree_filter, minpath_file = minpath_file, rxn_table = rxn_table_source, networkFile = net_file)
+  ko_net = generate_genomic_network(kos, keggSource = net_method, degree_filter = degree_filter, minpath_file = minpath_file, rxn_table = rxn_table_source, networkFile = net_file, normalize = norm)
   ko_network_mat = ko_net[[1]]
   stoich_mat = ko_net[[2]]
   ko_net_table = ko_net[[3]]
