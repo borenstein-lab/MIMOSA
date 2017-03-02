@@ -76,21 +76,37 @@ cmp_species_contributions = function(j, cmps_sub_good, all_rxns, subjects, norm_
 #' @param all_taxa vector of OTUs
 #' @param single_spec_cmps single-species CMP scores calculated from get_spec_contribs function
 #' @param cor_with whether to look at the correlation of CMP scores of each species by itself with the metabolite, or of the whole community with that species removed
+#' @param comparison "mets" or "cmps"; whether to compare with community CMPs or metabolites themselves
+#' @param met_data Optional, metabolite concentration table if comparison = "mets"
 #' @return list of 2-item lists for every metabolite - 1st item is data.table of OTUs and correlations, second item is vector of OTUs with correlations > 0.5
 #' @examples
 #' lapply(1:length(metabolites), cmp_species_contributions_picrust, cmp_scores, all_rxns,
 #' all_subjects, ko_abunds, ko_net, spec_abunds, ref_kos)
 #' @export
-cmp_species_contributions_picrust = function(j, cmps_sub_good, all_rxns, subjects, norm_kos, ko_net, all_taxa, single_spec_cmps, cor_with=T){
+cmp_species_contributions_picrust = function(j, cmps_sub_good, all_rxns, subjects, norm_kos, ko_net, all_taxa, single_spec_cmps, cor_with=T, comparison = "cmps", met_data = ""){
   if(!is.null(all_rxns[[j]])){
     if(cor_with){
       compound = cmps_sub_good[j,compound]
       kos_involved = unique(all_rxns[[j]][Reversible==0,KO])
-      species_cmp_cors = sapply(1:length(all_taxa), function(x){
-        if(!is.na(single_spec_cmps[[x]])){
-          return(cor(as.vector(unlist(cmps_sub_good[compound,subjects,with=F])),as.vector(unlist(single_spec_cmps[[x]][compound,subjects,with=F])), method="pearson"))
-      } else { return(NA)}
-      })
+      if(comparison == "cmps"){
+
+      }
+      if(comparison == "cmps"){
+        species_cmp_cors = sapply(1:length(all_taxa), function(x){
+          if(!is.na(single_spec_cmps[[x]])){
+            return(cor(as.vector(unlist(cmps_sub_good[compound,subjects,with=F])),as.vector(unlist(single_spec_cmps[[x]][compound,subjects,with=F])), method="pearson"))
+          } else { return(NA)}
+        })
+      } else {
+        if(identical(met_data, "")) stop("Need to supply metabolite data!")
+        if("KEGG" %in% names(met_data)) setnames(met_data, "KEGG", "compound")
+        setkey(met_data, "compound")
+        species_cmp_cors = sapply(1:length(all_taxa), function(x){
+          if(!is.na(single_spec_cmps[[x]])){
+            return(cor(as.vector(unlist(met_data[compound,subjects,with=F])),as.vector(unlist(single_spec_cmps[[x]][compound,subjects,with=F])), method="pearson"))
+          } else { return(NA)}
+        })
+      }
       spec_cors = data.table(Species=all_taxa, Cor=species_cmp_cors, compound = compound)
       spec_cors[,Pass:=ifelse(Cor > 0.5, 1, 0)]
       return(spec_cors)
@@ -232,11 +248,13 @@ get_all_singleSpec_cmps = function(all_otus, all_koAbunds_byOTU, valueVar, out_p
 #' @param otu_file OTU abundances file
 #' @param valueVar type of functional abundances to use for single species calculations - either "singleMusicc" or "RelAbundSample"
 #' @param sum_to_genus Whether to sum over OTUs to the genus level (requires Greengenes taxonomy info)
+#' @param comparison "mets" or "cmps"; whether to compare with community CMPs or metabolites themselves
+#' @param met_data Optional, metabolite concentration table if comparison = "mets"
 #' @return table of species, metabolites, whether that species is a contributor for that metabolite and the correlation strength
 #' @examples
 #' read_files(gene_file, met_file)
 #' @export
-get_spec_contribs = function(contrib_file, data_dir, results_file, out_prefix, otu_id = "all", otu_file, valueVar = "singleMusicc", sum_to_genus, write_out = T){
+get_spec_contribs = function(contrib_file, data_dir, results_file, out_prefix, otu_id = "all", otu_file, valueVar = "singleMusicc", sum_to_genus, write_out = T, comparison = "cmps", met_data = ""){
   #devtools::load_all()
   if(!valueVar %in% c("RelAbundSample", "singleMusicc")) stop("Invalid abundance metric, must be RelAbundSample or singleMusicc")
   contribs = data.table::fread(contrib_file, stringsAsFactors = F)
@@ -274,13 +292,13 @@ get_spec_contribs = function(contrib_file, data_dir, results_file, out_prefix, o
   ##Analyze contributions
   subjects = names(norm_kos)[names(norm_kos)!="KO"]
   if(!identical(sort(subjects), sort(unique(as.character(contribs[,Sample]))))){ stop("Samples not consistent between contributions and genes/metabolites")}
-  cmps_sub_good = get_cmp_scores(ko_net[[1]], norm_kos) # Full community cmp scores
-  cmp_sub_good = cmps_sub_good[node_data[,compound]]
-  all_rxns = lapply(node_data[,compound], function(x){ return(ko_net[[3]][Reac==x|Prod==x])})
-  all_rxns = lapply(all_rxns,get_non_rev_rxns)
+    cmps_sub_good = get_cmp_scores(ko_net[[1]], norm_kos) # Full community cmp scores
+    cmp_sub_good = cmps_sub_good[node_data[,compound]]
+    all_rxns = lapply(node_data[,compound], function(x){ return(ko_net[[3]][Reac==x|Prod==x])})
+    all_rxns = lapply(all_rxns,get_non_rev_rxns)
   #  if(!all(is.na(match(c("cmps_alone", "all_otus"),ls())))){ #If all of these do not already exist
   #contribs = data.table::fread(contrib_file)
-  spec_contrib=rbindlist(lapply(1:length(node_data[,compound]),cmp_species_contributions_picrust, cmps_sub_good = cmp_sub_good, all_rxns = all_rxns, subjects = subjects, norm_kos = norm_kos, ko_net = ko_net, all_taxa = all_otus, single_spec_cmps = cmps_alone, cor_with=T))
+  spec_contrib=rbindlist(lapply(1:length(node_data[,compound]),cmp_species_contributions_picrust, cmps_sub_good = cmp_sub_good, all_rxns = all_rxns, subjects = subjects, norm_kos = norm_kos, ko_net = ko_net, all_taxa = all_otus, single_spec_cmps = cmps_alone, cor_with=T, comparison, met_data))
   spec_contrib = spec_contrib[!is.na(Cor)]
   ## Save output
   if(write_out) write.table(spec_contrib, file = paste0(out_prefix, "_specContrib.txt"), quote=F, row.names = F, sep = "\t")
