@@ -9,4 +9,3 @@ single_gene_cmp(compound, gene, norm_kos, ko_net)
 \description{
 Calculate scores based on only a single gene.
 }
-

@@ -24,4 +24,3 @@ Get network distances between 2 compounds
 \examples{
 get_net_dist("C00001", "C00002", allnet)
 }
-

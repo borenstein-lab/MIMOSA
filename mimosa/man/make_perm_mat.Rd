@@ -14,4 +14,3 @@ make_perm_mat(nSamples, nPerm)
 \description{
 Make matrix of permutations for mantel test with a row for each permutation and a column for each sample
 }
-

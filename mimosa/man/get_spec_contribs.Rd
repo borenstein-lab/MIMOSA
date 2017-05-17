@@ -6,7 +6,7 @@
 \usage{
 get_spec_contribs(contrib_file, data_dir, results_file, out_prefix,
   otu_id = "all", otu_file, valueVar = "singleMusicc", sum_to_genus,
-  write_out = T)
+  write_out = T, comparison = "cmps", met_data = "", taxonomy_file = "")
 }
 \arguments{
 \item{contrib_file}{File where metagenome_contributions PICRUSt output is located}
@@ -24,6 +24,10 @@ get_spec_contribs(contrib_file, data_dir, results_file, out_prefix,
 \item{valueVar}{type of functional abundances to use for single species calculations - either "singleMusicc" or "RelAbundSample"}
 
 \item{sum_to_genus}{Whether to sum over OTUs to the genus level (requires Greengenes taxonomy info)}
+
+\item{comparison}{"mets" or "cmps"; whether to compare with community CMPs or metabolites themselves}
+
+\item{met_data}{Optional, metabolite concentration table if comparison = "mets"}
 }
 \value{
 table of species, metabolites, whether that species is a contributor for that metabolite and the correlation strength
@@ -34,4 +38,3 @@ Perform a series of steps related to identifying single-species contributors.
 \examples{
 read_files(gene_file, met_file)
 }
-

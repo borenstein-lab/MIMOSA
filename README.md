@@ -59,7 +59,7 @@ Other optional arguments:
 - **-c,--cor_method**: Whether to use Spearman or Pearson correlations for the Mantel test (default and recommended: Spearman)
 - **-f,--degree_filter**: Connectivity threshold filter. Metabolites connected in the community network model to this number of KOs or higher are considered currency metabolites and are filtered from the analysis (default: 30).
 - **-z,--nonzero_filt**: Metabolites found to have a nonzero concentration or nonzero metabolic potential scores in this number of samples or fewer are filtered from the analysis (default: 3)
-- **-t,--taxonomy_file**: File path to taxonomic information for each OTU. Include if you would like to evaluate contributions at the genus level rather than the OTU level. The file must include a column named "Genus" and a column named "OTU" that matches the OTUs in the contributions file.
+- **-t,--taxonomy_file**: File path to taxonomic information for each OTU. Include if you would like to evaluate contributions at the genus level rather than the OTU level. The file must include a column named "OTU" that matches the OTUs in the contributions file. It can also include either a column named "Genus" or a second column that contains a full 7-level taxonomy in the Greengenes format (e.g. "k__Bacteria; p__Bacteroidetes; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Prevotella; s__")
 
 ### Example usage of runMimosa.R
 

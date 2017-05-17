@@ -172,6 +172,7 @@ make_unnormalized_single_spec = function(contribs, otu_id = "all", out_prefix){
 #'
 #' @param contribs metagenome_contributions output of PICRUSt
 #' @param valueVar "relAbundSample" or "singleMusicc", abundance metric to use for single taxon gene abundances
+#' @param taxonomy table of taxonomic classifications for OTUs, with either a "Genus" column or a Greengenes-formatted taxonomy column
 #' @return contribs added to the genus level
 #' @export
 sum_to_genus = function(contribs, valueVar, taxonomy){ #Value var is relAbundSample or singleMusicc

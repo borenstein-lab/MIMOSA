@@ -50,4 +50,3 @@ Runall function to do complete predictions and comparison for all shared metabol
 \examples{
 
 }
-

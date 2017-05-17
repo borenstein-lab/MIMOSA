@@ -50,4 +50,3 @@ Runall function to do complete predictions and evaluate classification of metabo
 \examples{
 
 }
-

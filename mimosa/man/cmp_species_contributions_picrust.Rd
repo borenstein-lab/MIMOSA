@@ -5,7 +5,8 @@
 \title{Evaluate species contributors for a single metabolite with OTU and PICRUSt data, typically called by get_spec_contribs}
 \usage{
 cmp_species_contributions_picrust(j, cmps_sub_good, all_rxns, subjects,
-  norm_kos, ko_net, all_taxa, single_spec_cmps, cor_with = T)
+  norm_kos, ko_net, all_taxa, single_spec_cmps, cor_with = T,
+  comparison = "cmps", met_data = "")
 }
 \arguments{
 \item{j}{metabolite ID # (usually from lapply/sapply)}
@@ -25,6 +26,10 @@ cmp_species_contributions_picrust(j, cmps_sub_good, all_rxns, subjects,
 \item{single_spec_cmps}{single-species CMP scores calculated from get_spec_contribs function}
 
 \item{cor_with}{whether to look at the correlation of CMP scores of each species by itself with the metabolite, or of the whole community with that species removed}
+
+\item{comparison}{"mets" or "cmps"; whether to compare with community CMPs or metabolites themselves}
+
+\item{met_data}{Optional, metabolite concentration table if comparison = "mets"}
 }
 \value{
 list of 2-item lists for every metabolite - 1st item is data.table of OTUs and correlations, second item is vector of OTUs with correlations > 0.5
@@ -36,4 +41,3 @@ Evaluate species contributors for a single metabolite with OTU and PICRUSt data,
 lapply(1:length(metabolites), cmp_species_contributions_picrust, cmp_scores, all_rxns,
 all_subjects, ko_abunds, ko_net, spec_abunds, ref_kos)
 }
-

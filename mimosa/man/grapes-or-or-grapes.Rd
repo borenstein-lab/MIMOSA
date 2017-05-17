@@ -9,4 +9,3 @@ a \%||\% b
 \description{
 Defaults for NULL values
 }
-

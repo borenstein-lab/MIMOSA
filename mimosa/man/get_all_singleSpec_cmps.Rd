@@ -28,4 +28,3 @@ list of matrices of cmp scores for each taxon
 \description{
 Get single-species CMP scores for every OTU and metabolite
 }
-

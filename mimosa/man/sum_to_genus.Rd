@@ -4,7 +4,7 @@
 \alias{sum_to_genus}
 \title{Sum OTU data to the genus level}
 \usage{
-sum_to_genus(contribs, valueVar)
+sum_to_genus(contribs, valueVar, taxonomy)
 }
 \arguments{
 \item{contribs}{metagenome_contributions output of PICRUSt}
@@ -17,4 +17,3 @@ contribs added to the genus level
 \description{
 Needs Greengenes 97_otu_taxonomy.txt to be in the same directory
 }
-

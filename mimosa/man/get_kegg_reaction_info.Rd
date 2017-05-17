@@ -26,4 +26,3 @@ Get basic KEGG reaction and KO info in a unified format
 get_kegg_reaction_info("KEGGREST")
 get_kegg_reaction_info("KEGG/genes/ko/ko_reaction.list", "KEGG/ligand/reaction/reaction")
 }
-

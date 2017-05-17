@@ -20,4 +20,3 @@ Get non-reverible reactions of network.
 \examples{
 get_non_rev_rxns(rxn_table)
 }
-

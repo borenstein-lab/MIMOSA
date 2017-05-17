@@ -22,4 +22,3 @@ Generate community metabolic network template from the KEGG database, using reac
 \examples{
 generate_network_template_kegg("KEGG/ligand/reaction/reaction_mapformula.lst", all_kegg)
 }
-

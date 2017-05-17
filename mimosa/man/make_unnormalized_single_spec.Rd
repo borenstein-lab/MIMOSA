@@ -19,4 +19,3 @@ gene abundance matrix based on that species only
 \description{
 Get functional relative abundances from a single species' abundances over time
 }
-

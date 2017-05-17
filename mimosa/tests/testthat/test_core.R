@@ -82,8 +82,8 @@ test_that("Run all metabolites function works", {
 })
 
 spec_contribs = get_spec_contribs(test_contrib_file, data_dir = getwd(), results_file = "test_out.rda", out_prefix = "test", otu_id = "all", valueVar = "singleMusicc",
-                                  sum_to_genus = T, write_out = T)
-spec_contribs2 = get_spec_contribs(test_contrib_file, data_dir = getwd(), results_file = "test_out.rda", out_prefix = "test", otu_id = "all", valueVar = "RelAbundSample", sum_to_genus = T, write_out = T)
+                                  sum_to_genus = T, write_out = T, taxonomy_file = "test_taxonomy.txt")
+spec_contribs2 = get_spec_contribs(test_contrib_file, data_dir = getwd(), results_file = "test_out.rda", out_prefix = "test", otu_id = "all", valueVar = "RelAbundSample", sum_to_genus = T, write_out = T, taxonomy_file = "test_taxonomy.txt")
 
 
 test_that("Species contributions work", {

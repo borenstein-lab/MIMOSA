@@ -22,4 +22,3 @@ Function for getting ko abundances from species abundance data and table of refe
 \examples{
 kos_from_species(bv_qpcr, genome_content)
 }
-

@@ -22,4 +22,3 @@ Make a data vector into a pairwise difference matrix (can be used for either cmp
 \examples{
 
 }
-

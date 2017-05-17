@@ -25,4 +25,3 @@ Modification of vegan mantel test to test 2-sided or significantly less than
 \examples{
 
 }
-

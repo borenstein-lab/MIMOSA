@@ -32,4 +32,3 @@ Create a community metabolic network model using a few different methods.
 \examples{
 generate_genomic_network(kos, "KeggTemplate", degree_filter = 30)
 }
-

@@ -20,4 +20,3 @@ Calculate CMP scores based on community network and gene abundances
 \examples{
 get_cmp_scores(ko_net[[1]], gene_abunds)
 }
-

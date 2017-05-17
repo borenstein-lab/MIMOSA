@@ -19,4 +19,3 @@ list of relevant gene abundances for each species and each metabolite
 \description{
 Get a list of relevant gene abundances for each species and each metabolite, optionally save
 }
-

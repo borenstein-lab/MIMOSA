@@ -15,4 +15,3 @@ contribs with abundances normalized to copy number
 \description{
 Get contributors for every metabolite and save
 }
-

@@ -29,4 +29,3 @@ Identify potential important gene contributors for each metabolite.
 lapply(1:length(good_mets), cmp_contributions, cmps_sub_good = cmps_sub_good, all_rxns = all_rxns[[j]],
 subjects=subjects, norm_kos = norm_kos, ko_net = ko_net)
 }
-

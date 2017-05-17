@@ -36,4 +36,3 @@ Evaluate species contributors for a single metabolite with qPCR/species abundanc
 sapply(1:length(metabolites), cmp_species_contributions, cmp_scores, all_rxns,
 all_subjects, ko_abunds, ko_net, spec_abunds, ref_kos)
 }
-

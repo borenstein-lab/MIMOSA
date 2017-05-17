@@ -27,4 +27,3 @@ Run one iteration of MIMOSA analysis with a randomized metabolic network. Run th
 \examples{
 run_shuffle("Dataset2_bv_out.rda", id_num = 1)
 }
-

@@ -20,4 +20,3 @@ Multiple hypothesis correction
 \examples{
 
 }
-

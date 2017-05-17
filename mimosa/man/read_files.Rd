@@ -20,4 +20,3 @@ Read in processed files and assign keys to datasets. Sets NA metabolite values t
 \examples{
 read_files(gene_file, met_file)
 }
-

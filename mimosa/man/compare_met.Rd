@@ -31,4 +31,3 @@ Compare a single set each of CMP scores and metabolite concentrations
 \examples{
 compare_met("C00001", "C00002", mets, cmp_mat, "pos")
 }
-
