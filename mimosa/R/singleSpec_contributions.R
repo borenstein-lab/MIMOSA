@@ -84,7 +84,7 @@ cmp_species_contributions = function(j, cmps_sub_good, all_rxns, subjects, norm_
 #' all_subjects, ko_abunds, ko_net, spec_abunds, ref_kos)
 #' @export
 cmp_species_contributions_picrust = function(j, cmps_sub_good, all_rxns, subjects, norm_kos, ko_net, all_taxa, single_spec_cmps, cor_with=T, comparison = "cmps", met_data = ""){
-  if(!is.null(all_rxns[[j]])){
+  if(!is.null(all_rxns[[j]]) & !is.null(single_spec_cmps[[j]])){
     if(cor_with){
       compound = cmps_sub_good[j,compound]
       kos_involved = unique(all_rxns[[j]][Reversible==0,KO])
@@ -174,7 +174,11 @@ make_unnormalized_single_spec = function(contribs, otu_id = "all", out_prefix){
 #' @param valueVar "relAbundSample" or "singleMusicc", abundance metric to use for single taxon gene abundances
 #' @return contribs added to the genus level
 #' @export
-sum_to_genus = function(contribs, valueVar){ #Value var is relAbundSample or singleMusicc
+sum_to_genus = function(contribs, valueVar, taxonomy){ #Value var is relAbundSample or singleMusicc
+  if(!"Genus" %in% names(taxonomy) & ncol(taxonomy)==2){ #Must be unprocessed file
+    setnames(taxonomy, c("OTU", "Taxonomy"))
+    taxonomy[,Genus:=gsub("; s__*","", Taxonomy)]
+  }
   contribs = merge(contribs, taxonomy, by="OTU", all.x=T, all.y=F)
   contribs = contribs[,sum(get(valueVar)), by=list(Gene, Sample, Genus)]
   data.table::setnames(contribs, "Genus", "OTU") #now just treat genera like otus
@@ -197,8 +201,9 @@ contribs_by_species_list = function(contribs, valueVar, out_prefix, write_out = 
   all_koAbunds_byOTU = vector("list", length(all_otus))
   for(k in 1:length(all_otus)){
     contribs_sub = contribs[OTU==all_otus[k]]
-    contribs_sub = data.table::dcast.data.table(contribs_sub, Gene~Sample, value.var = valueVar, fill = 0)
+    contribs_sub = data.table::dcast.data.table(contribs_sub, Gene~Sample, value.var = valueVar, fill = 0, fun.aggregate = sum)
     #contribs_sub = dcast.data.table(contribs_sub, Gene~Sample, value.var = "ContributionPercentOfSample")
+    #Add in any samples that are all 0 for this taxon
     for(j in 1:length(all_samps)){
       if(!(all_samps[j] %in% names(contribs_sub))){
         contribs_sub[,(as.character(all_samps[j])):=rep(0)]
@@ -254,7 +259,7 @@ get_all_singleSpec_cmps = function(all_otus, all_koAbunds_byOTU, valueVar, out_p
 #' @examples
 #' read_files(gene_file, met_file)
 #' @export
-get_spec_contribs = function(contrib_file, data_dir, results_file, out_prefix, otu_id = "all", otu_file, valueVar = "singleMusicc", sum_to_genus, write_out = T, comparison = "cmps", met_data = ""){
+get_spec_contribs = function(contrib_file, data_dir, results_file, out_prefix, otu_id = "all", otu_file, valueVar = "singleMusicc", sum_to_genus, write_out = T, comparison = "cmps", met_data = "", taxonomy_file = ""){
   #devtools::load_all()
   if(!valueVar %in% c("RelAbundSample", "singleMusicc")) stop("Invalid abundance metric, must be RelAbundSample or singleMusicc")
   contribs = data.table::fread(contrib_file, stringsAsFactors = F)
@@ -264,14 +269,20 @@ get_spec_contribs = function(contrib_file, data_dir, results_file, out_prefix, o
     valueVar = "RelAbundSample"
     contribs = make_unnormalized_single_spec(contribs, otu_id, out_prefix)
     if(sum_to_genus){
-      contribs = sum_to_genus(contribs, valueVar = valueVar)
+      if(taxonomy_file == "") stop("Must provide taxonomy file") else {
+        taxonomy = fread(taxonomy_file, fill = T) #In case of blank taxa
+      }
+      contribs = sum_to_genus(contribs, valueVar = valueVar, taxonomy)
       all_otus = sort(contribs[,unique(OTU)]) #Get new set of OTUs
     }
     all_koAbunds_byOTU = contribs_by_species_list(contribs, valueVar = valueVar, out_prefix, write_out)
   } else if(valueVar == "singleMusicc"){
     contribs = single_spec_musicc(contribs)
     if(sum_to_genus){
-      contribs = sum_to_genus(contribs, valueVar = valueVar)
+      if(taxonomy_file == "") stop("Must provide taxonomy file") else {
+        taxonomy = fread(taxonomy_file)
+      }
+      contribs = sum_to_genus(contribs, valueVar = valueVar, taxonomy)
       all_otus = sort(contribs[,unique(OTU)]) #Get new set of OTUs
     }
     all_koAbunds_byOTU = contribs_by_species_list(contribs, valueVar = valueVar, out_prefix, write_out)

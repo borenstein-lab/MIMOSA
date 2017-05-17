@@ -22,7 +22,7 @@ devtools::install_github("borenstein-lab/MIMOSA/mimosa")
 
 You can run a full MIMOSA analysis by running the script runMimosa.R from the command line with additional arguments and the output will be saved to multiple files. You can also run any of the individual steps in R. 
 
-You can see example data file formatting in the `tests/testthat` directory.
+You can see example data file formatting in the `tests/testthat` directory. Gene and metabolite abundance files should be formatted like the example files, and sample IDs need to be consistent between the two files.
 
 The analysis consists of the following main steps:
 
@@ -59,7 +59,7 @@ Other optional arguments:
 - **-c,--cor_method**: Whether to use Spearman or Pearson correlations for the Mantel test (default and recommended: Spearman)
 - **-f,--degree_filter**: Connectivity threshold filter. Metabolites connected in the community network model to this number of KOs or higher are considered currency metabolites and are filtered from the analysis (default: 30).
 - **-z,--nonzero_filt**: Metabolites found to have a nonzero concentration or nonzero metabolic potential scores in this number of samples or fewer are filtered from the analysis (default: 3)
-
+- **-t,--taxonomy_file**: File path to taxonomic information for each OTU. Include if you would like to evaluate contributions at the genus level rather than the OTU level. The file must include a column named "Genus" and a column named "OTU" that matches the OTUs in the contributions file.
 
 ### Example usage of runMimosa.R
 

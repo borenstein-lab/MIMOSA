@@ -32,7 +32,8 @@ spec = matrix(c('genefile','g',1,"character",
               'ko_rxn_file','r',2, "character",
               'rxn_annots_file','x', 2, "character",
               'contribs_file', 'o', 2, "character",
-              'keggFile', 'b', 2, "character"), byrow=T, ncol=4)
+              'keggFile', 'b', 2, "character",
+              'taxonomyFile', 't', 2, "character"), byrow=T, ncol=4)
 
 opt = getopt(spec, opt = commandArgs(TRUE))
 datasets = read_files(opt$genefile, opt$metfile)
@@ -55,6 +56,7 @@ cat(paste("Degree filter is", degree_filter,"\n"))
 #cat(paste("Minpath file is ", minpath_file,"\n"))
 met_id_file = ""
 minpath_file = ''
+
 if(!is.null(opt$cor_method)) cor_method = opt$cor_method else cor_method = "spearman"
 cat(paste("Mantel correlation method is ",cor_method,"\n"))
 if(net_method == "loadNet"){
@@ -92,6 +94,7 @@ if(!is.null(opt$classification)) {
 } else runmet2 = F
 if(!is.null(opt$nonzero_filt)) nonzero_filt = opt$nonzero_filt else nonzero_filt = 3
 cat(paste("Nonzero filter is ", nonzero_filt,"\n"))
+if(!is.null(opt$taxonomy_file)) tax_file = opt$taxonomy_file else tax_file = ""
 
 cat("Running main MIMOSA analysis\n")
 if(!runmet2){
@@ -109,7 +112,7 @@ if(!runmet2){
 ## If using Greengenes, can change to sum_to_genus = T and will evaluate at the genus level instead of the OTU level
 if(!is.null(opt$contribs_file)){
   cat("Getting potential species contributors to metabolite variation\n")
-  spec_contribs = get_spec_contribs(opt$contribs_file, data_dir = getwd(), results_file = paste0(file_prefix, "_out.rda"), out_prefix = file_prefix, otu_id = "all", valueVar = "singleMusicc", sum_to_genus = F, write_out = T) #will also save to file
+  spec_contribs = get_spec_contribs(opt$contribs_file, data_dir = getwd(), results_file = paste0(file_prefix, "_out.rda"), out_prefix = file_prefix, otu_id = "all", valueVar = "singleMusicc", sum_to_genus = F, write_out = T, taxonomy_file = tax_file) #will also save to file
 }
 
 ### Get key gene/reaction contributors across all species
