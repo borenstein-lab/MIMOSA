@@ -19,6 +19,9 @@ read_files = function(genefile, metfile){
   if("KEGG" %in% names(mets)) setkey(mets,KEGG) #2 possibilities for metabolite file format
   #save only samples that have both kinds of data and put datasets in the same order of subjects/samples
   subjects = sort(intersect(names(genes), names(mets)))
+  if(length(subjects) < length(names(genes))-1 | length(subjects) < length(names(mets))-1){
+    cat("Only using sample IDs found for both genes and metabolites\n")
+  }
   genes = genes[,c("KO", subjects), with=F]
   if("KEGG" %in% names(mets)) mets = mets[,c(subjects,"KEGG"), with=F]
   else mets = mets[,c("Mass", subjects), with=F]

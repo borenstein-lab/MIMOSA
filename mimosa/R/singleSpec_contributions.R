@@ -302,8 +302,13 @@ get_spec_contribs = function(contrib_file, data_dir, results_file, out_prefix, o
   }
 
   ##Analyze contributions
-  subjects = names(norm_kos)[names(norm_kos)!="KO"]
-  if(!identical(sort(subjects), sort(unique(as.character(contribs[,Sample]))))){ stop("Samples not consistent between contributions and genes/metabolites")}
+  subjects_ko = names(norm_kos)[names(norm_kos)!="KO"]
+  subjects = intersect(subjects_ko, unique(as.character(contribs[,Sample])))
+  if(length(subjects)==0){ stop("Sample IDs not consistent between contributions and genes/metabolites")}
+#  if(!identical(sort(subjects), sort(unique(as.character(contribs[,Sample]))))){ stop("Samples not consistent between contributions and genes/metabolites")}
+  if(length(subjects) != length(subjects_ko)){ cat("Non-matching sample IDs between genes/metabolites and contributions, only using consensus\n")
+    contribs = contribs[Sample %in% subjects]
+    }
     cmps_sub_good = get_cmp_scores(ko_net[[1]], norm_kos) # Full community cmp scores
     cmp_sub_good = cmps_sub_good[node_data[,compound]]
     all_rxns = lapply(node_data[,compound], function(x){ return(ko_net[[3]][Reac==x|Prod==x])})
