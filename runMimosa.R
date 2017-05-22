@@ -94,7 +94,13 @@ if(!is.null(opt$classification)) {
 } else runmet2 = F
 if(!is.null(opt$nonzero_filt)) nonzero_filt = opt$nonzero_filt else nonzero_filt = 3
 cat(paste("Nonzero filter is ", nonzero_filt,"\n"))
-if(!is.null(opt$taxonomy_file)) tax_file = opt$taxonomy_file else tax_file = ""
+if(!is.null(opt$taxonomy_file)){
+  tax_file = opt$taxonomy_file
+  sum_to_genus = T
+}  else{
+  tax_file = ""
+  sum_to_genus = F
+}
 
 cat("Running main MIMOSA analysis\n")
 if(!runmet2){
@@ -112,7 +118,7 @@ if(!runmet2){
 ## If using Greengenes, can change to sum_to_genus = T and will evaluate at the genus level instead of the OTU level
 if(!is.null(opt$contribs_file)){
   cat("Getting potential species contributors to metabolite variation\n")
-  spec_contribs = get_spec_contribs(opt$contribs_file, data_dir = getwd(), results_file = paste0(file_prefix, "_out.rda"), out_prefix = file_prefix, otu_id = "all", valueVar = "singleMusicc", sum_to_genus = F, write_out = T, taxonomy_file = tax_file) #will also save to file
+  spec_contribs = get_spec_contribs(opt$contribs_file, data_dir = getwd(), results_file = paste0(file_prefix, "_out.rda"), out_prefix = file_prefix, otu_id = "all", valueVar = "singleMusicc", sum_to_genus = sum_to_genus, write_out = T, taxonomy_file = tax_file) #will also save to file
 }
 
 ### Get key gene/reaction contributors across all species

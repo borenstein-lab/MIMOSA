@@ -84,17 +84,19 @@ cmp_species_contributions = function(j, cmps_sub_good, all_rxns, subjects, norm_
 #' all_subjects, ko_abunds, ko_net, spec_abunds, ref_kos)
 #' @export
 cmp_species_contributions_picrust = function(j, cmps_sub_good, all_rxns, subjects, norm_kos, ko_net, all_taxa, single_spec_cmps, cor_with=T, comparison = "cmps", met_data = ""){
-  if(!is.null(all_rxns[[j]]) & !is.null(single_spec_cmps[[j]])){
+  if(!is.null(all_rxns[[j]])){
     if(cor_with){
       compound = cmps_sub_good[j,compound]
       kos_involved = unique(all_rxns[[j]][Reversible==0,KO])
       if(comparison == "cmps"){
-
-      }
-      if(comparison == "cmps"){
         species_cmp_cors = sapply(1:length(all_taxa), function(x){
+          if(nrow(cmps_sub_good[compound]) > 1){stop("Duplicate metabolite IDs, please fix")}
           if(!is.na(single_spec_cmps[[x]])){
-            return(cor(as.vector(unlist(cmps_sub_good[compound,subjects,with=F])),as.vector(unlist(single_spec_cmps[[x]][compound,subjects,with=F])), method="pearson"))
+            if(compound %in% single_spec_cmps[[x]][,compound]){
+              return(cor(as.vector(unlist(cmps_sub_good[compound,subjects,with=F])),as.vector(unlist(single_spec_cmps[[x]][compound,subjects,with=F])), method="pearson", use = "complete.obs"))
+            } else {
+              return(NA)
+            }
           } else { return(NA)}
         })
       } else {
@@ -234,7 +236,7 @@ get_all_singleSpec_cmps = function(all_otus, all_koAbunds_byOTU, valueVar, out_p
   cmps_alone = vector("list", length(all_otus))
   for(k in 1:length(all_otus)){
     if(nrow(rxn_table[KO %in% all_koAbunds_byOTU[[k]][,KO]]) > 0){
-      sub_ko_net = try(generate_genomic_network(all_koAbunds_byOTU[[k]][,KO], keggSource = "KeggTemplate", degree_filter = degree_filter, rxn_table = rxn_table))
+      sub_ko_net = generate_genomic_network(all_koAbunds_byOTU[[k]][,KO], keggSource = "KeggTemplate", degree_filter = degree_filter, rxn_table = rxn_table)
       cmps_alone[[k]] = get_cmp_scores(sub_ko_net[[1]], all_koAbunds_byOTU[[k]])
     } else {
       cmps_alone[[k]] = NA
@@ -275,6 +277,7 @@ get_spec_contribs = function(contrib_file, data_dir, results_file, out_prefix, o
       }
       contribs = sum_to_genus(contribs, valueVar = valueVar, taxonomy)
       all_otus = sort(contribs[,unique(OTU)]) #Get new set of OTUs
+      out_prefix = paste0(out_prefix, "_genus_") #For automatic file saving
     }
     all_koAbunds_byOTU = contribs_by_species_list(contribs, valueVar = valueVar, out_prefix, write_out)
   } else if(valueVar == "singleMusicc"){
@@ -285,7 +288,8 @@ get_spec_contribs = function(contrib_file, data_dir, results_file, out_prefix, o
       }
       contribs = sum_to_genus(contribs, valueVar = valueVar, taxonomy)
       all_otus = sort(contribs[,unique(OTU)]) #Get new set of OTUs
-    }
+      out_prefix = paste0(out_prefix, "_genus_") #For automatic file saving
+      }
     all_koAbunds_byOTU = contribs_by_species_list(contribs, valueVar = valueVar, out_prefix, write_out)
   }
 

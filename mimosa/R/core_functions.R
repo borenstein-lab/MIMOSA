@@ -560,8 +560,8 @@ run_all_metabolites = function(genes, mets, file_prefix = 'net1', correction = "
   #write node attribute file
   write.table(node_data,file = paste(file_prefix,'_nodes.txt',sep=''),sep="\t",quote=F,row.names=F)
 
-  signif_pos = node_data[!is.na(node_data$QValPos) & (node_data$QValPos < cutoff) & node_data$PValS < 0.05,]
-  signif_neg = node_data[!is.na(node_data$QValNeg) & node_data$QValNeg < cutoff & node_data$PValN < 0.05,]
+  signif_pos = node_data[!is.na(QValPos) & QValPos < cutoff & PValPos < 0.05]
+  signif_neg = node_data[!is.na(QValNeg) & QValNeg < cutoff & PValNeg < 0.05]
   write.table(signif_pos, file = paste(file_prefix,'_signifPos.txt',sep = ''), sep = "\t", quote = F, row.names = F)
   write.table(signif_neg, file = paste(file_prefix,'_signifNeg.txt',sep = ''), sep = "\t", quote = F, row.names = F)
   write.table(cmp_mat, file = paste0(file_prefix, '_cmpAll.txt'), quote=F, row.names = F, sep = "\t")
