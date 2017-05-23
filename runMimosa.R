@@ -33,7 +33,7 @@ spec = matrix(c('genefile','g',1,"character",
               'rxn_annots_file','x', 2, "character",
               'contribs_file', 'o', 2, "character",
               'keggFile', 'b', 2, "character",
-              'taxonomyFile', 't', 2, "character"), byrow=T, ncol=4)
+              'taxonomy_file', 't', 2, "character"), byrow=T, ncol=4)
 
 opt = getopt(spec, opt = commandArgs(TRUE))
 datasets = read_files(opt$genefile, opt$metfile)
