@@ -289,6 +289,75 @@ test_met_enrichment = function(node_data, met_list){
   }
 }
 
+
+#' Convert edge list and node list to class network object for plotting with ggnetwork
+#'
+#' @import data.table
+#' @import network
+#' @param gene_contribs output of gene_contributions
+#' @param node_data output of run_all_metabolites
+#' @param node_attrs vector of node attributes to include in network
+#' @param edge_attrs vector of edge attributes to include in network
+#' @return network object
+#' @examples
+#' make_contrib_network(gene_contribs_all, node_data, c("Dataset", "Correlation", "Metabolite", "PredictionType2", "SuperPath"), c("KO", "Cor", "Dataset", "stoichReac", "stoichProd"))
+#' @export
+make_contrib_network = function(gene_contribs, node_data, node_attrs, edge_attrs){
+  vertices = unique(c(gene_contribs[,Reac], gene_contribs[,Prod]))
+  gene_contribs[,ReacNum:=factor(Reac, levels = vertices)] #Separate by dataset
+  gene_contribs[,ProdNum:=factor(Prod, levels = vertices)]
+  edge_data = unique(gene_contribs[,list(as.numeric(ReacNum),as.numeric(ProdNum))])#, KO, Cor, stoichReac, stoichProd, Dataset)]) #,compound, Dataset)
+  node_data[,nodeNum:=factor(compound, levels = vertices)]
+  net1 = network(edge_data, directed = T)
+
+  #Set relevant node attributes
+  for(attr in node_attrs){
+    if(node_data[,is.factor(get(attr))]){
+      set.vertex.attribute(net1, attrname = attr, value = node_data[,as.character(get(attr))], v = node_data[,as.numeric(nodeNum)])
+    }else{
+      set.vertex.attribute(net1, attrname = attr, value = node_data[,get(attr)], v = node_data[,as.numeric(nodeNum)])
+    }
+  }
+  # all_vertex_ids = unlist(lapply(net1$val, function(x){ return(x$vertex.names)}))
+  # all_edge_ids = unique(unlist(sapply(all_vertex_ids, get.edgeIDs, x=net1)))
+  for(edge_attr in edge_attrs){
+    for(j in 1:nrow(gene_contribs)){
+      edgeID = unlist(get.dyads.eids(net1, gene_contribs[j,as.numeric(ReacNum)], gene_contribs[j,as.numeric(ProdNum)]))
+      if(!edge_attr %in% names(net1$mel[[edgeID]]$atl)){
+        set.edge.attribute(net1, attrname = edge_attr, e=edgeID, value = gene_contribs[j,get(edge_attr)])
+      } else{
+        old_edge_attr = get.edge.attribute(net1, edge_attr, unlist = F)[[edgeID]]
+        if(is.character(old_edge_attr)){
+          new_edge_attr = paste0(old_edge_attr, " ", gene_contribs[j,get(edge_attr)])
+        } else {
+          new_edge_attr = paste0(round(old_edge_attr, 3), " ", round(gene_contribs[j,get(edge_attr)]))
+        }
+        set.edge.value(net1, attrname = edge_attr, e=edgeID, value = new_edge_attr)
+      }
+    }
+  }
+  return(net1)
+}
+
+#' Convert edge list and node list to class network object for plotting with ggnetwork
+#'
+#' @import data.table
+#' @import network
+#' @import ggplot2
+#' @import ggnetwork
+#' @param gene_contribs output of gene_contributions
+#' @param node_data output of run_all_metabolites
+#' @param node_attrs vector of node attributes to include in network
+#' @param edge_attrs vector of edge attributes to include in network
+#' @return network object
+#' @examples
+#' make_contrib_network(gene_contribs_all, node_data, c("Dataset", "Correlation", "Metabolite", "PredictionType2", "SuperPath"), c("KO", "Cor", "Dataset", "stoichReac", "stoichProd"))
+#' @export
+plot_contrib_net = function(net_obj, col_attr, node_size_attr, edge_size_attr, node_lab, edge_lab){
+  net_plot = ggplot(ggnetwork(net_obj,layout = "fruchtermanreingold", cell.jitter = 0.75, niter=1000, repulse.rad = 16000), aes(x=x, y = y, xend=xend, yend=yend)) + geom_edges(arrow = arrow(length = unit(6, "pt"), type = "closed")) + geom_nodes(aes_string(col = col_attr, size = node_size_attr)) + theme_blank() + geom_nodetext_repel(aes_string(label=node_lab), size=3) + geom_edgetext_repel(aes_string(label = edge_lab), size=2, label.padding = unit(0.1, "lines"))
+  return(net_plot)
+}
+
 ##Functions for selecting approximate compound identifications based on MetaboSearch output
 select_best_id2 = function(met_table2, met_data, net_compounds, final_method = "first"){ ###no retention time, swedish data format
   met_table2[,Mass:=as.character(Mass)]

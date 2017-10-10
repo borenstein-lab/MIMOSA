@@ -21,6 +21,8 @@ Imports:
 Suggests:
     KEGGREST,
     ggplot2,
+    network,
+    ggnetwork,
     readr,
     testthat
 RoxygenNote: 6.0.1

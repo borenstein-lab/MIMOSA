@@ -10,6 +10,8 @@ sum_to_genus(contribs, valueVar, taxonomy)
 \item{contribs}{metagenome_contributions output of PICRUSt}
 
 \item{valueVar}{"relAbundSample" or "singleMusicc", abundance metric to use for single taxon gene abundances}
+
+\item{taxonomy}{table of taxonomic classifications for OTUs, with either a "Genus" column or a Greengenes-formatted taxonomy column}
 }
 \value{
 contribs added to the genus level

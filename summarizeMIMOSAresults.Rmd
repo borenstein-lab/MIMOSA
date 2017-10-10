@@ -1,0 +1,223 @@
+---
+title: "Generic MIMOSA Summary"
+author: 
+date: 
+output:
+  html_notebook: 
+    df_print: kable
+  html_document:
+    df_print: kable
+    theme: flatly
+  pdf_document: default
+---
+
+```{r, echo=F, message=F, warning=F, results = "hide"}
+options(stringsAsFactors = F, scipen = 20)
+
+library(data.table)
+library(mimosa)
+library(ggplot2)
+#library(GGally)
+library(network)
+#library(igraph)
+library(sna)
+library(cowplot)
+library(RColorBrewer)
+
+run_prefix = "" #Output prefix for MIMOSA output
+contribs_file = "" #Species-specific function contributions file from PICRUSt
+load("../MIMOSA/mimosa/R/sysdata.rda") #Data in MIMOSA R package - Taxonomy and metabolite key
+met_file = "" #File of metabolite concentrations used to run MIMOSA
+metadata_file = "" #Metadata file that uses same sample names
+metadata_var = "" #Column of metadata file you would like to use for enrichment analyses
+
+#Two different significance thresholds - we almost always report the stricter 1% level 
+threshold1 = 0.01
+threshold2 = 0.01
+threshold_hi1 = 0.1
+threshold_hi2 = 0.1
+prediction_colors=c("#1B9E77","lightgrey","#F46D43")
+
+display_prefix = run_prefix
+
+species_ref = unique(fread(contribs_file)[,list(Gene,OTU)])
+setnames(species_ref, c("KO", "Species"))
+species_ref = merge(species_ref, taxonomy, by.x = "Species", by.y = "OTU", all.x = T, all.y = F)
+
+
+#Read in results and organize
+
+#MIMOSA results
+node_data = fread(paste0(run_prefix, "_nodes.txt"))
+node_data[,Consistent:=ifelse(QValPos < threshold1 & PValPos < threshold2, 1,0)]
+node_data[,Contrasting:=ifelse(QValNeg < threshold1 & PValNeg < threshold2, 1,0)]
+node_data[,PredictionType:=ifelse(Consistent==1, "Consistent", "Inconsistent")]
+node_data[,PredictionType:=ifelse(Contrasting==1, "Contrasting", PredictionType)]
+node_data[,PredictionType2:=ifelse(PValPos < threshold_hi1 & QValPos < threshold_hi2, "Consistent", "Inconsistent")]
+node_data[,PredictionType2:=ifelse(PValNeg < threshold_hi1 & QValNeg < threshold_hi2, "Contrasting", PredictionType2)]
+node_data[,PredictionType2:=factor(PredictionType2, levels = c("Inconsistent", "Contrasting", "Consistent"))]
+node_data[,PredictionType:=factor(PredictionType, levels = c("Inconsistent", "Contrasting", "Consistent"))]
+
+#Species contribution results
+species_data = fread(paste0(run_prefix,"_specContrib.txt"))
+node_data_spec = merge(node_data, species_data[Pass==1 & !is.na(Pass)], by="compound", all.x = T, all.y = F) # Integrate species data into same table
+setnames(node_data_spec, "Cor", "SpeciesCor")
+node_data_spec = merge(node_data_spec, unique(species_ref[,list(Species,Taxonomy, Genus)]), by = "Species", all.x = T, all.y = F)
+
+#Gene contribution results
+ko_summary = fread(paste0(run_prefix, "_geneContribCompoundSummary.txt"))
+node_data = merge(node_data, ko_summary, by="compound", all.x = T, all.y = F)
+node_data[,Dataset:=display_prefix]
+node_data_spec[,Dataset:=display_prefix]
+#Process gene contributions analysis to only include the "important" genes:
+geneContribs = fread(paste0(run_prefix,"_geneContribAnalysis.txt"))
+#geneContribs = geneContribs[Cor < 0.5|is.na(Cor)] #This will retain only potential "key contributor" genes using the same threshold heuristic we used in our paper
+geneContribs = merge(geneContribs, node_data, by = "compound", all.x = T)
+geneContribs[,Contrib:=ifelse(is.na(Cor)|Cor < 0.5, 1, 0)]
+noContribs = geneContribs[,sum(Contrib),by=compound][V1==0,compound]
+geneContribs[compound %in% noContribs, Contrib:=2] #Mark contributors of compounds with no notable ones
+
+##You can also merge this into the main table above, but have to first make it species-specific:
+geneContribs2 = merge(geneContribs, species_ref, by = "KO", all.x = T, all.y = F) #Get all species that have that gene
+node_data_spec = node_data_spec[!is.na(Species)]
+gene_species = merge(node_data_spec, geneContribs2, by = intersect(names(node_data_spec), names(geneContribs2)), all.x = T, all.y = F, allow.cartesian = T)
+setnames(gene_species, "Cor", "GeneCor")
+
+#Add metabolite categories
+node_data = merge(node_data, path_key, by ="compound", all.x = T, all.y = F)
+node_data_spec = merge(node_data_spec, path_key, by = "compound", all.x = T, all.y = F)
+gene_species = merge(gene_species, path_key, by = "compound", all.x = T, all.y = F)
+geneContribs = merge(geneContribs, path_key, by = "compound", all.x = T, all.y = F)
+
+node_data_spec[,GenusShort:=gsub("k__.*f__","", Genus)]
+node_data_spec[GenusShort=="; g__", GenusShort:=gsub("k__.*p__", "", Genus)]
+node_data_spec = node_data_spec[!is.na(Species)] #these are weird
+
+###Identify metabolites that are enriched or depleted in different groups based on selected metadata variable (using Wilcoxon rank-sum test)
+mets = melt(fread(met_file), variable.name = "Sample")
+metadata = fread(metadata_file)
+mets = merge(mets, metadata[,c("Sample", metadata_var), with=F], all.x = T)
+bad_mets = mets[!is.na(value), length(Sample),by=c("KEGG",metadata_var)][V1 < 2, unique(KEGG)]
+
+mets_summary = mets[!is.na(value) & !KEGG %in% bad_mets,list(mean(value[get(metadata_var)==1])-mean(value[get(metadata_var)==0]),wilcox.test(value[get(metadata_var)==1],value[get(metadata_var)==0])$p.value),by=KEGG]
+mets_summary[,Dataset:=display_prefix]
+setnames(mets_summary, c("V1", "V2"), c("MetDiff", "MetPVal"))
+node_data = merge(node_data, mets_summary, by.x = c("compound","Dataset"), by.y = c("KEGG","Dataset"), all.x = T, all.y = F)
+
+node_data[,Enriched:=ifelse(MetDiff > 0 & MetPVal < 0.1,1,0)]
+node_data[,Depleted:=ifelse(MetDiff < 0 & MetPVal < 0.1,1,0)]
+node_data[,Status:=ifelse(Enriched, "Enriched", "None")]
+node_data[,Status:=ifelse(Depleted, "Depleted", Status)]
+
+
+node_data[,PrimaryMake2:=ifelse(PrimaryMake==1, "Synthesis", "Combination")]
+node_data[,PrimaryMake2:=ifelse(PrimaryMake==-1, "Degradation", PrimaryMake2)]
+node_data[,PrimaryMake2:=factor(PrimaryMake2, levels = c("Synthesis", "Combination", "Degradation"))]
+
+node_data[CompoundName=="D-Galactose", SuperPath:="Carbohydrate"]
+node_data[CompoundName=="Serotonin", SuperPath:="Amino acid"]
+node_data[CompoundName=="alpha,alpha-Trehalose", SuperPath:="Carbohydrate"]
+
+
+geneContribs = merge(geneContribs, node_data[,list(compound,Dataset,MetDiff, MetPVal, Status)], by = c("compound", "Dataset"))
+node_data_spec = merge(node_data_spec, node_data[,list(compound,Dataset,MetDiff, MetPVal, Status, PrimaryMake, PrimaryMake2, nkeyKOReac, nkeyKOProd)], by = c("compound", "Dataset"))
+
+#met_order = node_data[,mean(MetDiff),by=Metabolite][order(V1),Metabolite]
+met_order = node_data[order(Correlation, decreasing = F),Metabolite]
+node_data[,Metabolite:=factor(Metabolite, levels = met_order)]
+node_data_spec[,Metabolite:=factor(Metabolite, levels = met_order)]
+
+mets[,Sample:=factor(Sample, levels = sort(unique(as.character(Sample))))]
+
+
+```
+
+## Plot of metabolites:
+(Sanity check)
+```{r, echo=F, message=F, warning=F, fig.height = 3}
+
+ggplot(mets[KEGG %in% node_data[,compound]], aes(x=Sample, y = ifelse(is.na(met_names(KEGG)), KEGG, met_names(KEGG)), fill = value)) + geom_tile() + theme(axis.ticks = element_blank(), legend.position = "bottom", axis.text.x = element_text(angle =90, hjust=0), axis.text.y = element_text(size=6)) + ylab("")+ scale_fill_gradient(low = brewer.pal(9, "Blues")[1], high = brewer.pal(9, "Blues")[6])
+
+```
+
+```{r, echo=F, message=F, warning=F}
+totalAnalyzed = node_data[,length(unique(compound))]
+totConsistent = node_data[PredictionType2=="Consistent",length(unique(compound))]
+percConsistent = round(node_data[,length(unique(compound[PredictionType2=="Consistent"]))/length(unique(compound))],3)*100
+totContrasting = node_data[PredictionType2=="Contrasting",length(unique(compound))]
+percContrasting = round(node_data[,length(unique(compound[PredictionType2=="Contrasting"]))/length(unique(compound))],3)*100
+
+
+```
+
+## MIMOSA metabolite results
+
+Overall, `r totConsistent` out of `r totalAnalyzed` metabolites were significantly (FDR 0.1) consistent with metabolic potential (`r percConsistent`%), and `r totContrasting` were significantly contrasting (`r percContrasting`%).
+
+### Metabolite Predictions by Category
+```{r, echo=F, message=F, warning=F}
+ggplot(node_data, aes(x=SuperPath, fill = PredictionType2)) + geom_bar(stat="count") + scale_fill_manual(values = c("white", prediction_colors[c(3,1)])) + theme_cowplot() + ylab("Number of metabolites") + theme(legend.title = element_blank(), axis.text.x = element_text(angle=90, hjust=1), axis.ticks = element_blank()) + xlab("") #+ facet_wrap(~Dataset)
+```
+
+### Metabolite Predictions by Disease Association (Wilcoxon rank test p < 0.1)
+```{r, echo=F, message=F, warning=F}
+ggplot(node_data, aes(x=factor(Status, levels = c("Enriched", "None", "Depleted")), fill = PredictionType2)) + geom_bar(stat="count") + scale_fill_manual(values = c("white", prediction_colors[c(3,1)])) + theme_cowplot() + ylab("Number of metabolites") + theme(legend.title = element_blank()) + xlab("Enrichment status")#+ facet_wrap(~Dataset) + xlab("ASD Status")
+```
+
+### Metabolite Predictions by Reaction Basis
+```{r, echo=F, message=F, warning=F}
+ggplot(node_data, aes(x=PrimaryMake2, fill = PredictionType2)) + geom_bar(stat="count") + scale_fill_manual(values = c("white", prediction_colors[c(3,1)])) + theme_cowplot() + ylab("Number of metabolites") + theme(legend.title = element_blank()) +xlab("Primarily Predicted By") #+ facet_wrap(~Dataset) 
+
+
+```
+
+### Table of metabolites consistent with metabolic potential
+Including correlation magnitude, significance, enrichment status, primary reaction basis for predictions, and taxonomic assignments of OTU contributors.
+(Scroll to see all columns)
+```{r, echo=F, message=F, warning=F}
+
+#node_data[PredictionType2=="Consistent", ]
+unique(node_data_spec[PredictionType2=="Consistent", list(Correlation = round(Correlation, 3), QValPos = round(QValPos,3), PredType = PredictionType2, Status, Primary = PrimaryMake2, TaxaContrib = paste0(unique(GenusShort), collapse = " ")), by=Metabolite])[order(Correlation, decreasing = T)]
+
+```
+
+## Contributing OTUs for each metabolite
+
+```{r, echo=F, message=F, warning=F, fig.height = 5}
+
+pred_grid1 = ggplot(node_data, aes(x=1, y = Metabolite, fill = Correlation)) + geom_tile(col="black") + theme(axis.line=element_blank(), axis.title=element_blank(), axis.ticks=element_blank(), legend.position="bottom", panel.border=element_blank(), axis.text=element_blank()) +scale_fill_gradientn(colours=rev(prediction_colors), limits = c(-0.6,0.6))+ scale_x_discrete( expand = c(0, 0)) + guides(size=F, col=F, fill = guide_colourbar(title="Prediction Level", title.position="top")) #+ facet_wrap(~Dataset, nrow = 2)
+
+
+spec_order = node_data_spec[,length(Metabolite), by=GenusShort][order(V1, decreasing=T)][,GenusShort]
+
+#Count number of passing species
+spec_data_counts = node_data_spec[,length(unique(Species)),by=list(Metabolite,GenusShort,PredictionType,PredictionType2)]
+
+tot_species = unique(node_data_spec[,list(Species,Metabolite)])[,length(unique(Species)), by=Metabolite] #what's the share from this taxon for this metabolite
+spec_data_counts = merge(spec_data_counts, tot_species, by="Metabolite")
+spec_data_counts[,OTUShare:=V1.x/V1.y]
+spec_data_counts = melt(dcast(spec_data_counts, Metabolite+PredictionType+PredictionType2~GenusShort,value.var="OTUShare", fill = 0), id.vars = c("Metabolite", "PredictionType", "PredictionType2"), variable.name = "GenusShort") #fill in missing 0s
+spec_data_counts[,GenusShort:=factor(GenusShort, levels = spec_order)]
+spec_grid = ggplot(spec_data_counts, aes(y=Metabolite, x = GenusShort, fill = value)) + geom_tile(col="grey") + scale_fill_gradient(low = "white", high = brewer.pal(9, "Blues")[9]) + theme(axis.ticks= element_blank(), axis.title = element_blank(), axis.text.x = element_text(angle = 90, hjust=1, size=7), axis.text.y = element_text(size=7), plot.background = element_rect(color = "grey"), panel.grid = element_line(color="gray"), panel.ontop = T) + scale_y_discrete(drop = T) + scale_x_discrete(drop = T) + guides(fill = guide_legend(title = "Share of Contributing OTUs")) #  facet_wrap(~Dataset+PredictionType2, scales = "free_x")
+#save_plot(spec_grid, file = "speciesContrib.png", base_width = 11, base_height = 18)
+
+plot_grid(plot_grid(pred_grid1, ggplot()+geom_blank(), ncol = 1, rel_heights = c(3.62,1)), spec_grid, rel_widths = c(1,9))
+
+
+
+```
+
+## Metabolic network of major gene/reaction contributors
+
+```{r, echo=F, message=F, warning=F, fig.height = 4}
+node_attrs = c("Dataset", "Correlation", "Metabolite", "PredictionType2", "SuperPath", "Status")
+edge_attrs = c("KO", "Cor", "Dataset", "stoichReac", "stoichProd")
+
+net1 = make_contrib_network(geneContribs[Contrib > 0], node_data, node_attrs, edge_attrs)
+plot_contrib_net(net1, col_attr = "PredictionType2", node_size_attr = "Correlation", edge_size_attr = "Cor", node_lab = "Metabolite", edge_lab = "KO") + scale_color_manual(values = prediction_colors[c(1,3,2)])
+
+
+
+```
+
+
