@@ -18,6 +18,8 @@ devtools::install_github("borenstein-lab/MIMOSA/mimosa")
 
 - **run_all.sh**: example usage of `runMimosa.R` to regenerate results from one of the datasets described in Noecker et al, 2016. You can download these files from [here](http://elbo.gs.washington.edu/download.html). This script uses the Python modules [`picrust`](http://picrust.github.io/picrust/)(Langille et al, 2013) and [`MUSiCC`](http://elbo.gs.washington.edu/software_musicc.html)(Manor and Borenstein, 2015) to process and prepare the datasets. 
 
+- **summarizeMIMOSAresults.Rmd** and **processMimosaOut.R**: example scripts for summarizing and plotting the output of MIMOSA.
+
 ## Using MIMOSA
 
 You can run a full MIMOSA analysis by running the script runMimosa.R from the command line with additional arguments and the output will be saved to multiple files. You can also run any of the individual steps in R. 
