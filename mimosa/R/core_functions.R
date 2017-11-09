@@ -116,7 +116,7 @@ generate_network_template_kegg = function(mapformula_file, all_kegg, write_out =
     }
   }
   mapformula = new_mapformula
-  mapformula = mapformula[Path!=" 01100"]
+  mapformula = mapformula[Path!=" 01100" & Path != 1100 & Path !="01100"] #If numeric
   mapformula = merge(mapformula, all_kegg$kos_to_rxns, by="Rxn", all.x=T, all.y=F, allow.cartesian=T)
   mapformula = mapformula[!is.na(KO)]
   setkey(mapformula, NULL)
