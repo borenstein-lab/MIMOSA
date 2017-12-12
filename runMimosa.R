@@ -11,6 +11,7 @@ library(getopt)
 library(ggplot2)
 library(reshape2)
 library(mimosa)
+library(rmarkdown)
 options(stringsAsFactors=F, curl_interrupt = F)
 #source("core_functions.R")
 
@@ -33,9 +34,12 @@ spec = matrix(c('genefile','g',1,"character",
               'rxn_annots_file','x', 2, "character",
               'contribs_file', 'o', 2, "character",
               'keggFile', 'b', 2, "character",
-              'taxonomy_file', 't', 2, "character"), byrow=T, ncol=4)
+              'taxonomy_file', 't', 2, "character",
+              'metadata_file', 'd', 2, "character",
+              'metadata_var', 'v', 2, "character"), byrow=T, ncol=4)
 
 opt = getopt(spec, opt = commandArgs(TRUE))
+
 datasets = read_files(opt$genefile, opt$metfile)
 genes = datasets[[1]]
 mets = datasets[[2]]
@@ -142,3 +146,8 @@ save(all_gene_contribs, file = paste0(file_prefix, "_geneContribs.rda"))
 #   cat(paste0("Running network shuffling test, iteration ", j ,"\n"))
 #   run_shuffle(paste0(file_prefix, "_out.rda"), id_num = j)
 # }
+
+#Summarize results
+
+cat("Generating summary plots and tables...\n")
+rmarkdown::render("summarizeMIMOSAresults.Rmd", rmarkdown::html_document(), params = list(run_prefix = file_prefix, contribs_file = opt$contribs_file, met_file = opt$metfile, metadata_file = opt$metadata_file, metadata_var = opt$metadata_var))

@@ -62,6 +62,8 @@ Other optional arguments:
 - **-f,--degree_filter**: Connectivity threshold filter. Metabolites connected in the community network model to this number of KOs or higher are considered currency metabolites and are filtered from the analysis (default: 30).
 - **-z,--nonzero_filt**: Metabolites found to have a nonzero concentration or nonzero metabolic potential scores in this number of samples or fewer are filtered from the analysis (default: 3)
 - **-t,--taxonomy_file**: File path to taxonomic information for each OTU. Include if you would like to evaluate contributions at the genus level rather than the OTU level. The file must include a column named "OTU" that matches the OTUs in the contributions file. It can also include either a column named "Genus" or a second column that contains a full 7-level taxonomy in the Greengenes format (e.g. "k__Bacteria; p__Bacteroidetes; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Prevotella; s__")
+- **-d, --metadata_file**: File path to sample metadata file (used when generating final summary of MIMOSA results to compare cases-enriched vs control-enriched metabolites). To include this analysis, this final must contain a table with a column named "Sample" containing sample IDs and a column named with the metadata variable (below) specifying cases and controls as 1s and 0s.
+- **-v, --metadata_var**: Variable column name (from metadata file) to use as binary indicator to calculate metabolite enrichment when generating final summary of MIMOSA results
 
 ### Example usage of runMimosa.R
 
@@ -78,11 +80,13 @@ Rscript runMimosa.R --genefile="Dataset2_picrust_musicc.txt" -m "Dataset2_mets.t
 **You can test that the package is installed and working using the test data.** 
 
 ```bash
-Rscript runMimosa.R --genefile="mimosa/tests/testthat/test_genes.txt" --metfile="mimosa/tests/testthat/test_mets.txt" --contribs_file="mimosa/tests/testthat/test_contributions.txt" --mapformula_file="mimosa/tests/testthat/test_mapformula.txt" --file_prefix="test1" --ko_rxn_file="mimosa/tests/testthat/test_ko_reaction.txt" --rxn_annots_file="mimosa/tests/testthat/test_reaction.txt"
+Rscript runMimosa.R --genefile="mimosa/tests/testthat/test_genes.txt" --metfile="mimosa/tests/testthat/test_mets.txt" --contribs_file="mimosa/tests/testthat/test_contributions.txt" --mapformula_file="mimosa/tests/testthat/test_mapformula.txt" --file_prefix="test1" --ko_rxn_file="mimosa/tests/testthat/test_ko_reaction.txt" --rxn_annots_file="mimosa/tests/testthat/test_reaction.txt" --metadata_file="mimosa/tests/testthat/test_metadata.txt" --metadata_var="BV"
 ```
 
 
 ### Output of runMimosa.R
+
+The main MIMOSA results will be summarized in a series of plots and tables in the file **summarizeMIMOSAresults.html**. Other results files with full details are specified below.
 
 Core comparison analysis:
 - **file_prefix_nodes.txt**: A table of all successfully analyzed metabolites, their Mantel correlation between metabolic potential scores and concentrations, and the associated p-values and q-values (FDR corrected).

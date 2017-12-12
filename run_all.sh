@@ -19,7 +19,7 @@ metagenome_contributions.py -i "$DATADIR1/Dataset2_normalized_otus.biom" -o "$DA
 rev Dataset2_metagenome_predictions.txt | cut -d "  " -f 2- | rev > tmp
 mv tmp Dataset2_metagenome_predictions.txt
 
-##2 normalize gene abundances with MUSiCC
+##2 normalize gene abundances with MUSiCC (optional, alternatively can start with rarefied OTU table)
 
 gene_file="$DATADIR1/Dataset2_metagenome_predictions.txt"
 met_file="$DATADIR1/Dataset2_mets.txt"
@@ -27,10 +27,10 @@ met_file="$DATADIR1/Dataset2_mets.txt"
 run_musicc.py "$gene_file" -o "$DATADIR1/Dataset2_picrust_musicc.txt" -n -v
 
 #Using KEGGREST to build KEGG community network, can be slow
-Rscript runMimosa.R --genefile="Dataset2_picrust_musicc.txt" -m "Dataset2_mets.txt" --contribs_file="Dataset2_metagenome_contributions.txt" --file_prefix="Dataset2_bv" --mapformula_file="keggPath/reaction_mapformula.lst" --nonzero_filt=4 
+Rscript runMimosa.R --genefile="Dataset2_picrust_musicc.txt" -m "Dataset2_mets.txt" --contribs_file="Dataset2_metagenome_contributions.txt" --file_prefix="Dataset2_bv" --mapformula_file="keggPath/reaction_mapformula.lst" --nonzero_filt=4
 
 #OR Using downloaded KEGG files to build community network
-Rscript runMimosa.R --genefile="Dataset2_picrust_musicc.txt" --metfile="Dataset2_mets.txt" --contribs_file="Dataset2_metagenome_contributions.txt" --file_prefix="Dataset2_bv" --mapformula_file="keggPath/reaction_mapformula.lst" --ko_rxn_file="keggPath/ko_reaction.list" --rxn_annots_file="keggPath/reaction" --nonzero_filt=4 
+Rscript runMimosa.R --genefile="Dataset2_picrust_musicc.txt" --metfile="Dataset2_mets.txt" --contribs_file="Dataset2_metagenome_contributions.txt" --file_prefix="Dataset2_bv" --mapformula_file="keggPath/reaction_mapformula.lst" --ko_rxn_file="keggPath/ko_reaction.list" --rxn_annots_file="keggPath/reaction" --nonzero_filt=4
 
 
 ### Options for runMimosa.R:
@@ -51,3 +51,7 @@ Rscript runMimosa.R --genefile="Dataset2_picrust_musicc.txt" --metfile="Dataset2
 # -i,--met_id_file File of putative KEGG compound IDs associated with metabolite peak masses for unidentified metabolomics data, output of MetaboSearch
 # -w,--write_net whether to save the dataset-specific community metabolic network model as part of the output
 # -n,--net_method method to generate community metabolic network model: either loadNet or KeggTemplate
+# -t,--taxonomy_file File path to taxonomy information (for genus-level taxonomic contributor analysis)
+# -d, --metadata_file File path to sample metadata file (for generating final summary of MIMOSA results)
+# -v, --metadata_var Variable column name (from metadata file) to use as binary indicator to calculate metabolite enrichment when generating final summary of MIMOSA results
+

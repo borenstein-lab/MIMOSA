@@ -24,6 +24,13 @@ test_that("File reading results in no NAs and consistent naming", {
 all_kegg = get_kegg_reaction_info(test_ko_rxn_file, test_rxns_file, save_out = F, kolist = datasets[[1]][,KO])
 rxn_table = generate_network_template_kegg(test_mapformula_file, all_kegg, write_out = F)
 
+test_that("Network generation correctly removed generic pathway reactions", {
+  expect_equal(nrow(rxn_table[Path==" 01100"]), 0)
+  expect_equal(nrow(rxn_table[Path=="01100"]), 0)
+  expect_equal(nrow(rxn_table[Path==1100]), 0)
+  expect_equal(nrow(rxn_table[grepl("01100", Path), 0)
+})
+
 test_that("Network data looks normal", {
   #expect_gt(nrow(get_kegg_reaction_info("KEGGREST", kolist = datasets[[1]][,KO])),1)
   expect_equal(names(all_kegg), c("KOs", "Reactions", "Reaction_info", "kos_to_rxns"))
