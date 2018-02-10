@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // timesTwo
 NumericVector timesTwo(NumericVector x);
-RcppExport SEXP mimosa_timesTwo(SEXP xSEXP) {
+RcppExport SEXP _mimosa_timesTwo(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -18,7 +18,7 @@ END_RCPP
 }
 // randomShuffle
 Rcpp::NumericVector randomShuffle(Rcpp::NumericVector a);
-RcppExport SEXP mimosa_randomShuffle(SEXP aSEXP) {
+RcppExport SEXP _mimosa_randomShuffle(SEXP aSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -29,7 +29,7 @@ END_RCPP
 }
 // make_perm_mat
 NumericMatrix make_perm_mat(double nSamples, double nPerm);
-RcppExport SEXP mimosa_make_perm_mat(SEXP nSamplesSEXP, SEXP nPermSEXP) {
+RcppExport SEXP _mimosa_make_perm_mat(SEXP nSamplesSEXP, SEXP nPermSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -38,4 +38,16 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(make_perm_mat(nSamples, nPerm));
     return rcpp_result_gen;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_mimosa_timesTwo", (DL_FUNC) &_mimosa_timesTwo, 1},
+    {"_mimosa_randomShuffle", (DL_FUNC) &_mimosa_randomShuffle, 1},
+    {"_mimosa_make_perm_mat", (DL_FUNC) &_mimosa_make_perm_mat, 2},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_mimosa(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }
