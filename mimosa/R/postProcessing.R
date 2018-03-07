@@ -222,7 +222,7 @@ taxonomic_contributor_heatmap_plot_grid = function(node_data, node_data_spec, pr
   spec_data_counts[,GenusShort:=factor(GenusShort, levels = spec_order)]
   spec_grid = ggplot(spec_data_counts, aes(y=Metabolite, x = GenusShort, fill = value)) + geom_tile(col="grey") + scale_fill_gradient(low = "white", high = brewer.pal(9, "Blues")[9]) + theme(axis.ticks= element_blank(), axis.title = element_blank(), axis.text.x = element_text(angle = 90, hjust=1, size=7), axis.text.y = element_text(size=7), plot.background = element_rect(color = "grey"), panel.grid = element_line(color="gray"), panel.ontop = T) + scale_y_discrete(drop = T) + scale_x_discrete(drop = T) + guides(fill = guide_legend(title = "Share of Contributing OTUs")) #  facet_wrap(~Dataset+PredictionType2, scales = "free_x")
 
-  plot_obj = plot_grid(plot_grid(pred_grid1, ggplot()+geom_blank(), ncol = 1, rel_heights = c(3.62,1)), spec_grid, rel_widths = c(1,9))
+  plot_obj = plot_grid(pred_grid1, spec_grid, nrow=1, rel_widths = c(1,9), align = "h", axis="tb")
   return(plot_obj)
 }
 
