@@ -42,7 +42,11 @@ get_kegg_reaction_info = function(kos_to_rxns_method, reaction_info_file = "", s
   } else {
   ##### Option 2: Read reaction info and KO links from KEGG database file
     kos_to_rxns = fread(kos_to_rxns_method, header=F)
-    setnames(kos_to_rxns, c("KO", "Rxn"))
+    if(any(grepl("rn", kos_to_rxns[,V1]))){ #some KEGG versions have rxn 1st
+      setnames(kos_to_rxns, c("Rxn", "KO"))
+    } else {
+      setnames(kos_to_rxns, c("KO", "Rxn"))
+    }
     kos_to_rxns[,KO:=gsub("ko:","",KO)]
     kos_to_rxns[,Rxn:=gsub("rn:","", Rxn)]
     all_kegg = list(KOs = kos_to_rxns[,sort(unique(KO))], Reactions = kos_to_rxns[order(Rxn)][,unique(Rxn)])
