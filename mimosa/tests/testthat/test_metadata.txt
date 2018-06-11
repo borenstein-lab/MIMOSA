@@ -1,0 +1,10 @@
+Sample	BV
+p6z2tr4	0
+p6z1tr67	0
+p6z1tr12	0
+j26tr26	0
+j31tr33	0
+j22tr26	1
+p6z1tr24	0
+p6z2tr63	1
+j56tr73	1
