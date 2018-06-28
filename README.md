@@ -14,6 +14,8 @@ You can install **mimosa** using the `devtools` package in R:
 devtools::install_github("borenstein-lab/MIMOSA/mimosa")
 ```
 
+If the above command produces an error related to installing dependencies, it most likely indicates that you need to install the **qvalue** or **KEGGREST** from [Bioconductor](https://bioconductor.org/packages/release/bioc/html/qvalue.html), as these are not available from CRAN.
+
 - **runMimosa.R**: Script used to run main MIMOSA analyses from the command line (see "Using MIMOSA").
 
 - **run_all.sh**: example usage of `runMimosa.R` to regenerate results from one of the datasets described in Noecker et al, 2016. You can download these files from [here](http://elbo.gs.washington.edu/download.html). This script uses the Python modules [`picrust`](http://picrust.github.io/picrust/)(Langille et al, 2013) and [`MUSiCC`](http://elbo.gs.washington.edu/software_musicc.html)(Manor and Borenstein, 2015) to process and prepare the datasets. 
