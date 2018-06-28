@@ -42,6 +42,7 @@ get_kegg_reaction_info = function(kos_to_rxns_method, reaction_info_file = "", s
   } else {
   ##### Option 2: Read reaction info and KO links from KEGG database file
     kos_to_rxns = fread(kos_to_rxns_method, header=F)
+    if(ncol(kos_to_rxns) != 2) stop("KO-reaction linking file should only have 2 columns!")
     if(any(grepl("rn", kos_to_rxns[,V1]))){ #some KEGG versions have rxn 1st
       setnames(kos_to_rxns, c("Rxn", "KO"))
     } else {
@@ -126,17 +127,19 @@ generate_network_template_kegg = function(mapformula_file, all_kegg, write_out =
   setkey(mapformula, NULL)
   rxn_table = unique(mapformula)
   rxn_table_sub = unique(rxn_table[,list(Rxn,KO,Reac,Prod)])
+  ## Exclude information that is not consistent with reaction annotation file
   rxn_id_check = sapply(1:length(rxn_table_sub[,Rxn]), function(x){
     ind = which(all_kegg$Reactions==rxn_table_sub[x,Rxn])
     if(length(ind) < 1){ return("noMatch")
-    } else if(!(rxn_table_sub[x,KO] %in% names(all_kegg$Reaction_info[[ind]]$ORTHOLOGY)|rxn_table_sub[x,KO] %in% all_kegg$Reaction_info[[ind]]$ORTHOLOGY)){
+    } else if(!(rxn_table_sub[x,KO] %in% names(all_kegg$Reaction_info[[ind]]$ORTHOLOGY)|rxn_table_sub[x,KO] %in% all_kegg$Reaction_info[[ind]]$ORTHOLOGY | rxn_table_sub[x,KO] %in% gsub("KO: ", "", all_kegg$Reaction_info[[ind]]$ORTHOLOGY))){
       return("noKOmatch")
     }
-    else if(!(grepl(rxn_table_sub[x,Reac], all_kegg$Reaction_info[[ind]]$EQUATION) & grepl(rxn_table_sub[x,Prod], all_kegg$Reaction_info[[ind]]$EQUATION))){
+    else if(!(any(grepl(rxn_table_sub[x,Reac], all_kegg$Reaction_info[[ind]]$EQUATION)) & any(grepl(rxn_table_sub[x,Prod], all_kegg$Reaction_info[[ind]]$EQUATION)))){
       return("noCmpdmatch")
     }
     else return("good")
   })
+  if(nrow(rxn_table_sub[rxn_id_check=="good"])==0) stop("Problem with reaction table formatting")
   rxn_table_sub = rxn_table_sub[rxn_id_check=="good"]
   rxn_table = merge(rxn_table, rxn_table_sub, by=c("Rxn","KO","Reac","Prod"), all.x=F)
 
