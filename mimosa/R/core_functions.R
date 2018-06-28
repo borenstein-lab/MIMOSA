@@ -82,7 +82,7 @@ get_kegg_reaction_info = function(kos_to_rxns_method, reaction_info_file = "", s
 #' generate_network_template_kegg("KEGG/ligand/reaction/reaction_mapformula.lst", all_kegg)
 #' @export
 generate_network_template_kegg = function(mapformula_file, all_kegg, write_out = T){
-  mapformula = fread(mapformula_file, colClasses = "character") #get mapformula pathway annotations of reactions
+  mapformula = fread(mapformula_file, colClasses = "character", sep = ":") #get mapformula pathway annotations of reactions
   setnames(mapformula, c("Rxn","Path","ReacProd"))
   #Process Reacs and Prods, flip reversible reactions, etc
   mapformula[,Reac:=lapply(ReacProd,function(x){ return(unlist(strsplit(x,"="))[1])})]
