@@ -17,8 +17,7 @@ Imports:
     reshape2,
     permute,
     devtools,
-    Rcpp
-Suggests:
+    Rcpp,
     KEGGREST,
     ggplot2,
     network,
