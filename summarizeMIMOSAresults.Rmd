@@ -142,7 +142,8 @@ taxonomic_contributor_heatmap_plot_grid(node_data, node_data_spec)
 ## Metabolic network of major gene/reaction contributors
 
 ```{r, echo=F, message=F, warning=F, fig.height = 5, fig.width=8}
-node_attrs = c("Correlation", "Metabolite", "PredictionType2", "SuperPath", "Status")
+node_attrs = c("Correlation", "Metabolite", "PredictionType2", "SuperPath")
+if(!is.null(metadata_var)) node_attrs = c(node_attrs, "Status")
 edge_attrs = c("KO", "Cor", "stoichReac", "stoichProd")
 
 if(nrow(geneContribs[Contrib > 0]) > 1){
