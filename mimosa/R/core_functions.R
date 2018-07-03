@@ -250,15 +250,17 @@ generate_genomic_network = function(kos, keggSource = "KeggTemplate", degree_fil
       if(is.na(stoich_mat[foo1,fooko])) stoich_mat[foo1,fooko] = -1*rxn_table[j,stoichReac] else stoich_mat[foo1,fooko] = stoich_mat[foo1, fooko] - rxn_table[j,stoichReac]
       if(is.na(stoich_mat[foo2,fooko])) stoich_mat[foo2,fooko] = 1*rxn_table[j,stoichProd] else stoich_mat[foo2,fooko] = stoich_mat[foo2, fooko] + rxn_table[j,stoichProd] ##Luckily this doesn't affect anything
     }
-      negsums = apply(network_mat, 1, function(x){ sum(x[x < 0])})
-      possums = apply(network_mat, 1, function(x){ sum(x[x > 0])})
-      metlen = dim(network_mat)[1]
-      for(j in 1:metlen){
-        negkos = which(network_mat[j,] < 0)
-        poskos = which(network_mat[j,] > 0)
-        if(length(negkos) > 0) network_mat[j,negkos] = network_mat[j,][negkos]/abs(negsums[j])
-        if(length(poskos) > 0) network_mat[j,poskos] = network_mat[j,][poskos]/possums[j]
-      }
+      if(normalize){
+        negsums = apply(network_mat, 1, function(x){ sum(x[x < 0])})
+        possums = apply(network_mat, 1, function(x){ sum(x[x > 0])})
+        metlen = dim(network_mat)[1]
+        for(j in 1:metlen){
+          negkos = which(network_mat[j,] < 0)
+          poskos = which(network_mat[j,] > 0)
+          if(length(negkos) > 0) network_mat[j,negkos] = network_mat[j,][negkos]/abs(negsums[j])
+          if(length(poskos) > 0) network_mat[j,poskos] = network_mat[j,][poskos]/possums[j]
+        }
+       }
     network_mat = data.frame(network_mat)
     names(network_mat) = goodkos
     row.names(network_mat) = cmpds
