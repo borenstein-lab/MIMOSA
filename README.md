@@ -7,7 +7,7 @@ A pipeline for joint metabolic model-based analysis of metabolomics measurements
 
 - **mimosa**: An R package to generate community-specific metabolic network model, use the model to make metabolite predictions and identify consistent and contrasting metabolite variation, 
 identify potential taxonomic and gene contributors to metabolite variation, and shuffle the community metabolic network for comparison of results with a null model. 
-The core analysis uses the file `reaction_mapformula.lst` from the KEGG database (Kanehisa and Goto, 2000) to link genes to reactions. If you do not have access to this file, you can email `elbo [at] uw.edu` for access to an older version. 
+The core analysis uses the file `reaction_mapformula.lst` from the KEGG database (Kanehisa and Goto, 2000) to link genes to reactions.
 
 You can install **mimosa** using the `devtools` package in R:
 ```R
