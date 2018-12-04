@@ -23,10 +23,10 @@ read_files = function(genefile, metfile){
     cat("Only using sample IDs found for both genes and metabolites\n")
   }
   genes = genes[,c("KO", subjects), with=F]
-  if("KEGG" %in% names(mets)) mets = mets[,c(subjects,"KEGG"), with=F]
-  else mets = mets[,c("Mass", subjects), with=F]
-  #Set NAs to 0
-  for(j in names(mets)){
+  if("KEGG" %in% names(mets)) mets = mets[,c(subjects,"KEGG"), with=F] else mets = mets[,c("Mass", subjects), with=F]
+  #Set characters to NAs, NAs to 0
+  mets = mets[,lapply(.SD, as.numeric), .SDcols = subjects]
+  for(j in names(mets)[!names(mets) %in% c("KEGG", "Mass")]){
     set(mets,which(is.na(mets[[j]])),j,0)
   }
   return(list(genes, mets))
