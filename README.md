@@ -42,7 +42,9 @@ The analysis consists of the following main steps:
 
 ### Input data for runMimosa.R
 
-MIMOSA currently requires input data that is specified using KEGG Orthology and Compound IDs. Gene abundances and species-specific gene contributions can be produced using [PICRUSt](https://picrust.github.io/picrust/) from a 16S rRNA table of Greengenes OTUs. Shotgun metagenomic data can be used for a full MIMOSA analysis by running [HUMAnN2](https://bitbucket.org/biobakery/humann2/wiki/Home) and using the `humann2_regroup_table` utility to map the UniRef output to KEGG Orthology groups. The unstratified gene family abundances can then be used as the gene abundance table for MIMOSA, and the stratified gene family abundances can then be reformatted into the style of a PICRUSt contribution table, with the required columns "OTU", "Gene", "Sample", and "CountContributedByOTU".
+MIMOSA currently requires input data that is specified using KEGG Orthology and Compound IDs. 
+
+Gene abundances and species-specific gene contributions can be produced using [PICRUSt](https://picrust.github.io/picrust/) from a 16S rRNA table of Greengenes OTUs. Shotgun metagenomic data can be used for a full MIMOSA analysis by running [HUMAnN2](https://bitbucket.org/biobakery/humann2/wiki/Home) and using the `humann2_regroup_table` utility to map the UniRef output to KEGG Orthology groups. The unstratified gene family abundances can then be used as the gene abundance table for MIMOSA, and the stratified gene family abundances can then be reformatted into the style of a PICRUSt contribution table, with the required columns "OTU", "Gene", "Sample", and "CountContributedByOTU". The function `humann2_format_contributions()` in the development version of MIMOSA can perform this reformatting.
 
 ### Required arguments for runMimosa.R
 
