@@ -99,3 +99,9 @@ test_that("Species contributions work", {
   expect_gt(nrow(spec_contribs2), 0)
   expect_gt(nrow(spec_contribs2[!is.na(Cor)]), 0)
 })
+
+contrib_dat2 = humann2_format_contributions("test_humann2.txt")
+test_that("Humann2 formatting", {
+  expect_gt(nrow(contrib_dat2), 0)
+  expect_equal(names(contrib_dat2), c("OTU", "Gene", "Sample", "CountContributedByOTU"))
+})

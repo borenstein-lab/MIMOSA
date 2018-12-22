@@ -4,8 +4,8 @@
 \alias{mantel_2sided}
 \title{Modification of vegan mantel test to test 2-sided or significantly less than}
 \usage{
-mantel_2sided(xdis, ydis, method = "pearson", permutations = 999, strata,
-  na.rm = FALSE, direction = "pos")
+mantel_2sided(xdis, ydis, method = "pearson", permutations = 999,
+  strata, na.rm = FALSE, direction = "pos")
 }
 \arguments{
 \item{xdis}{A distance matrix}

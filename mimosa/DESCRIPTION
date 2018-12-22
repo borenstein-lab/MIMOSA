@@ -25,5 +25,5 @@ Imports:
     cowplot,
     readr,
     testthat
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 LinkingTo: Rcpp

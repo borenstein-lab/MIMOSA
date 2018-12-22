@@ -4,11 +4,11 @@
 \alias{run_all_metabolites}
 \title{Runall function to do complete predictions and comparison for all shared metabolites}
 \usage{
-run_all_metabolites(genes, mets, file_prefix = "net1", correction = "fdr",
-  cutoff = 0.1, net_method = "load", rxn_table_source = "", id_met = F,
-  met_id_file = "", degree_filter = 0, minpath_file = "",
-  cor_method = "spearman", net_file = "", nperm = 20000,
-  nonzero_filter = 3, norm = T)
+run_all_metabolites(genes, mets, file_prefix = "net1",
+  correction = "fdr", cutoff = 0.1, net_method = "load",
+  rxn_table_source = "", id_met = F, met_id_file = "",
+  degree_filter = 0, minpath_file = "", cor_method = "spearman",
+  net_file = "", nperm = 20000, nonzero_filter = 3, norm = T)
 }
 \arguments{
 \item{genes}{Gene abundances}

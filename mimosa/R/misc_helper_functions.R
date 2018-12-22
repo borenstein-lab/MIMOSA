@@ -288,6 +288,7 @@ humann2_format_contributions = function(path_to_humann_file){
   gene_contribs_good = melt(gene_contribs, id.vars = c("ID", "Taxon", "KO"), variable.name = "Sample")
   setnames(gene_contribs_good, c("Taxon", "KO", "value"), c("OTU", "Gene", "CountContributedByOTU"))
   gene_contribs_good[,ID:=NULL]
+  gene_contribs_good = gene_contribs_good[OTU != Gene]
   return(gene_contribs_good)
 }
 

@@ -2,7 +2,6 @@
 % Please edit documentation in R/misc_helper_functions.R, R/shuffle_network.R
 \name{make_network_matrix}
 \alias{make_network_matrix}
-\alias{make_network_matrix}
 \title{Convert edge list network format to matrix format, including row normalization.}
 \usage{
 make_network_matrix(rxn_table)

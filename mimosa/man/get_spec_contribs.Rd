@@ -6,7 +6,8 @@
 \usage{
 get_spec_contribs(contrib_file, data_dir, results_file, out_prefix,
   otu_id = "all", otu_file, valueVar = "singleMusicc", sum_to_genus,
-  write_out = T, comparison = "cmps", met_data = "", taxonomy_file = "")
+  write_out = T, comparison = "cmps", met_data = "",
+  taxonomy_file = "")
 }
 \arguments{
 \item{contrib_file}{File where metagenome_contributions PICRUSt output is located}

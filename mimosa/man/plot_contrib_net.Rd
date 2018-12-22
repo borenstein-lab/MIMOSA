@@ -4,8 +4,8 @@
 \alias{plot_contrib_net}
 \title{Use ggnetwork to make a network visualization of metabolite outcomes and primary gene/reaction contributors}
 \usage{
-plot_contrib_net(net_obj, col_attr, node_size_attr, edge_size_attr, node_lab,
-  edge_lab)
+plot_contrib_net(net_obj, col_attr, node_size_attr, edge_size_attr,
+  node_lab, edge_lab)
 }
 \arguments{
 \item{gene_contribs}{output of gene_contributions}

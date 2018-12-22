@@ -5,8 +5,8 @@
 \title{Create a community metabolic network model using a few different methods.}
 \usage{
 generate_genomic_network(kos, keggSource = "KeggTemplate",
-  degree_filter = 0, minpath_file = "", normalize = T, rxn_table = "",
-  networkFile = "")
+  degree_filter = 0, minpath_file = "", normalize = T,
+  rxn_table = "", networkFile = "")
 }
 \arguments{
 \item{kos}{Genes to include in network (KEGG Orthology IDs)}

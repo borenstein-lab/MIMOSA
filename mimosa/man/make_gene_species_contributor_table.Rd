@@ -4,7 +4,8 @@
 \alias{make_gene_species_contributor_table}
 \title{Make table of species-specific gene and reaction contributors identified by MIMOSA}
 \usage{
-make_gene_species_contributor_table(geneContribs, species_ref, node_data_spec)
+make_gene_species_contributor_table(geneContribs, species_ref,
+  node_data_spec)
 }
 \arguments{
 \item{geneContribs}{Table from MIMOSA gene/rxn contributor analysis ("_geneContribAnalysis.txt")}

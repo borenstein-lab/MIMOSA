@@ -2,7 +2,6 @@
 % Please edit documentation in R/core_functions.R, R/shuffle_network.R
 \name{randomize_net}
 \alias{randomize_net}
-\alias{randomize_net}
 \title{Randomize a metabolic network edge list by randomly sampling 2 edges and if it works, switching products}
 \usage{
 randomize_net(netw, n_reps)
@@ -24,8 +23,6 @@ Network edge list in the same format with the same compounds and degree distribu
 randomized edge list
 }
 \description{
-Randomize a metabolic network edge list by randomly sampling 2 edges and if it works, switching products
-
 Randomly sample 2 edges and if it works, switch products
 }
 \examples{

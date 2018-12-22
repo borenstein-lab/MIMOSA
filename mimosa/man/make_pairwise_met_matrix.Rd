@@ -4,7 +4,8 @@
 \alias{make_pairwise_met_matrix}
 \title{Make a data vector into a pairwise difference matrix (can be used for either cmp scores or metabolite concentrations)}
 \usage{
-make_pairwise_met_matrix(metabolite, met_mat, diff_function = "difference")
+make_pairwise_met_matrix(metabolite, met_mat,
+  diff_function = "difference")
 }
 \arguments{
 \item{metabolite}{metabolite ID}

@@ -4,10 +4,11 @@
 \alias{run_all_metabolites2}
 \title{Runall function to do complete predictions and evaluate classification of metabolites as high or low abundance}
 \usage{
-run_all_metabolites2(genes, mets, file_prefix = "net1", correction = "fdr",
-  cutoff = 0.1, net_method = "load", rxn_table_source = "", id_met = F,
-  met_id_file = "", degree_filter = 0, minpath_file = "", net_file = "",
-  quant = 0.5, plot_rank = F, plot_continuous = F, nonzero_filter = 3,
+run_all_metabolites2(genes, mets, file_prefix = "net1",
+  correction = "fdr", cutoff = 0.1, net_method = "load",
+  rxn_table_source = "", id_met = F, met_id_file = "",
+  degree_filter = 0, minpath_file = "", net_file = "", quant = 0.5,
+  plot_rank = F, plot_continuous = F, nonzero_filter = 3,
   rel_abund_mets = F)
 }
 \arguments{

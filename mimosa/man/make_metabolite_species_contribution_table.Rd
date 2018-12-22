@@ -4,8 +4,8 @@
 \alias{make_metabolite_species_contribution_table}
 \title{Make table summarizing species contributions for each analyzed metabolite}
 \usage{
-make_metabolite_species_contribution_table(species_data, node_data, tax_ref,
-  path_key)
+make_metabolite_species_contribution_table(species_data, node_data,
+  tax_ref, path_key)
 }
 \arguments{
 \item{species_data}{Table from MIMOSA species contributor analysis ("_specContrib.txt")}
