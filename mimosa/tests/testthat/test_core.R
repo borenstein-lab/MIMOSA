@@ -28,7 +28,7 @@ test_that("Network generation correctly removed generic pathway reactions", {
   expect_equal(nrow(rxn_table[Path==" 01100"]), 0)
   expect_equal(nrow(rxn_table[Path=="01100"]), 0)
   expect_equal(nrow(rxn_table[Path==1100]), 0)
-  expect_equal(nrow(rxn_table[grepl("01100", Path), 0)
+  expect_equal(nrow(rxn_table[grepl("01100", Path)]), 0)
 })
 
 test_that("Network data looks normal", {
@@ -66,8 +66,8 @@ test_that("CMP scores can be calculated from network", {
 shared_mets = intersect(datasets[[2]][,KEGG], cmp_scores[,compound])
 met_mat = make_pairwise_met_matrix(metabolite = shared_mets[1], met_mat = datasets[[2]])
 met_mat2 = make_pairwise_met_matrix(shared_mets[1], cmp_scores)
-met_mat_a = make_pairwise_met_matrix(shared_mets[4], datasets[[2]])
-met_mat_2a = make_pairwise_met_matrix(shared_mets[4], cmp_scores)
+met_mat_a = make_pairwise_met_matrix(shared_mets[2], datasets[[2]])
+met_mat_2a = make_pairwise_met_matrix(shared_mets[2], cmp_scores)
 
 test_that("Cmp scores can be compared with mets", {
   expect_gt(nrow(met_mat), 0)
