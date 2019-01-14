@@ -42,7 +42,9 @@ The analysis consists of the following main steps:
 
 ### Input data for runMimosa.R
 
-MIMOSA currently requires input data that is specified using KEGG Orthology and Compound IDs. Gene abundances and species-specific gene contributions can be produced using [PICRUSt](https://picrust.github.io/picrust/) from a 16S rRNA table of Greengenes OTUs. Shotgun metagenomic data can be used for a full MIMOSA analysis by running [HUMAnN2](https://bitbucket.org/biobakery/humann2/wiki/Home) and using the `humann2_regroup_table` utility to map the UniRef output to KEGG Orthology groups. The unstratified gene family abundances can then be used as the gene abundance table for MIMOSA, and the stratified gene family abundances can then be reformatted into the style of a PICRUSt contribution table, with the required columns "OTU", "Gene", "Sample", and "CountContributedByOTU".
+MIMOSA currently requires input data that is specified using KEGG Orthology and Compound IDs. Gene abundances and species-specific gene contributions can be produced using [PICRUSt](https://picrust.github.io/picrust/) from a 16S rRNA table of Greengenes OTUs. 
+
+Shotgun metagenomic data can be used for a full MIMOSA analysis by running [HUMAnN2](https://bitbucket.org/biobakery/humann2/wiki/Home) and using the `humann2_regroup_table` utility to map the UniRef output to KEGG Orthology groups. The unstratified gene family abundances can then be used as the gene abundance table for MIMOSA, and the stratified gene family abundances can then be reformatted into the style of a PICRUSt contribution table, with the required columns "OTU", "Gene", "Sample", and "CountContributedByOTU". To use this table with the runMimosa.R script, you need to provide a "-y" flag to specify that it does not have copy number information for each gene in each species.
 
 ### Required arguments for runMimosa.R
 
@@ -69,6 +71,7 @@ Other optional arguments:
 - **-t,--taxonomy_file**: File path to taxonomic information for each OTU. Include if you would like to evaluate contributions at the genus level rather than the OTU level. The file must include a column named "OTU" that matches the OTUs in the contributions file. It can also include either a column named "Genus" or a second column that contains a full 7-level taxonomy in the Greengenes format (e.g. "k__Bacteria; p__Bacteroidetes; c__Bacteroidia; o__Bacteroidales; f__Prevotellaceae; g__Prevotella; s__")
 - **-d, --metadata_file**: File path to sample metadata file (used when generating final summary of MIMOSA results to compare cases-enriched vs control-enriched metabolites). To include this analysis, this final must contain a table with a column named "Sample" containing sample IDs and a column named with the metadata variable (below) specifying cases and controls as 1s and 0s.
 - **-v, --metadata_var**: Variable column name (from metadata file) to use as binary indicator to calculate metabolite enrichment when generating final summary of MIMOSA results
+- **-y, --contrib_no_copy_num**: Logical flag to specify that the species-specific gene abundance contribution table does not include copy number information (MIMOSA will therefore use a relative abundance normalization instead of a copy number-based normalization)
 
 ### Example usage of runMimosa.R
 
