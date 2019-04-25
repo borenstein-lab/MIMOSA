@@ -120,20 +120,19 @@ cmp_species_contributions_picrust = function(j, cmps_sub_good, all_rxns, subject
 
 
 
-#' Get contributors for every metabolite and save
+#' Ensure contribution table abundances are relative otu abundance * copy number
 #'
 #' @param contribs data.table of OTU, genes, samples and abundances
 #' @return contribs with abundances normalized to copy number
 #' @export
 single_spec_musicc = function(contribs){
-  ##Get OTU abundances from single-copy contribs for consistency
-  otus = contribs[GeneCountPerGenome == 1, list(OTU, Sample, CountContributedByOTU)]
-  setkey(otus, NULL)
-  otus = unique(otus)
-  otus[,OTURelAbund:=CountContributedByOTU/sum(CountContributedByOTU), by = Sample]
-  otus[,CountContributedByOTU:=NULL]
-  all_samps = unique(contribs[,Sample])
-  contribs = merge(contribs, otus, by=c("OTU", "Sample"), all.x=T)
+  ##Get OTU abundances from contribs for consistency
+  contribs[,OTUAbund:=CountContributedByOTU/GeneCountPerGenome]
+  otu_abunds = contribs[,list(Sample, OTU, OTUAbund)]
+  #Get single line per OTU-sample
+  otu_abunds = otu_abunds[,mean(OTUAbund), by=list(Sample, OTU)]
+  otu_abunds[,OTURelAbund:=V1/sum(V1), by=Sample] #this is now back to original if that's what's provided
+  contribs = merge(contribs, otus[,list(Sample, OTU, OTURelAbund)], by=c("OTU", "Sample"), all.x=T)
   all_otus = sort(unique(contribs[,OTU]))
   #cat(all_otus)
   all_koAbunds_byOTU = vector("list", length(all_otus))
