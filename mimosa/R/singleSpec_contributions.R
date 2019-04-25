@@ -132,7 +132,7 @@ single_spec_musicc = function(contribs){
   #Get single line per OTU-sample
   otu_abunds = otu_abunds[,mean(OTUAbund), by=list(Sample, OTU)]
   otu_abunds[,OTURelAbund:=V1/sum(V1), by=Sample] #this is now back to original if that's what's provided
-  contribs = merge(contribs, otus[,list(Sample, OTU, OTURelAbund)], by=c("OTU", "Sample"), all.x=T)
+  contribs = merge(contribs, otu_abunds[,list(Sample, OTU, OTURelAbund)], by=c("OTU", "Sample"), all.x=T)
   all_otus = sort(unique(contribs[,OTU]))
   #cat(all_otus)
   all_koAbunds_byOTU = vector("list", length(all_otus))
