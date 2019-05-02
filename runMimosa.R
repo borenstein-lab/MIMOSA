@@ -109,11 +109,11 @@ if(!is.null(opt$taxonomy_file)){
 
 cat("Running main MIMOSA analysis\n")
 if(!runmet2){
-  run_all_metabolites(genes, mets, file_prefix = file_prefix, id_met = !is.null(opt$met_id_file), met_id_file = met_id_file,
+  results1 = run_all_metabolites(genes, mets, file_prefix = file_prefix, id_met = !is.null(opt$met_id_file), met_id_file = met_id_file,
                     net_method = net_method, net_file = net_file, rxn_table_source = rxn_table,
                     correction = "fdr", degree_filter = degree_filter, minpath_file = minpath_file, cor_method = cor_method, nperm = num_permute, nonzero_filter = nonzero_filt)
 } else {
-  run_all_metabolites2(genes, mets, file_prefix = file_prefix, id_met = !is.null(opt$met_id_file), met_id_file = met_id_file,
+  results1 = run_all_metabolites2(genes, mets, file_prefix = file_prefix, id_met = !is.null(opt$met_id_file), met_id_file = met_id_file,
                        net_method = net_method, net_file = net_file,  rxn_table_source = rxn_table,
                        correction = "fdr", degree_filter = degree_filter, minpath_file = minpath_file, quant = quant, nonzero_filter = nonzero_filt)
 
@@ -137,7 +137,7 @@ good_mets = node_data[,compound]
 subjects = names(mets)[names(mets) != "KEGG"]
 cmps = get_cmp_scores(ko_net[[1]], norm_kos)
 cmps_sub_good = cmps[compound %in% good_mets]
-all_rxns = lapply(good_mets, function(x){ return(get_non_rev_rxns(ko_net[[3]][Reac==x | Prod==x]))})
+all_rxns = lapply(good_mets, function(x){ return(get_non_rev_rxns(ko_net[[3]][Reac==x | Prod==x], by_species = F))})
 all_gene_contribs = lapply(1:length(good_mets), gene_contributions, cmps_sub_good = cmps_sub_good, all_rxns = all_rxns,
        subjects=subjects, norm_kos = norm_kos, ko_net = ko_net)
 all_ko_cors = rbindlist(lapply(all_gene_contribs, function(x){ return(x[[1]])}))

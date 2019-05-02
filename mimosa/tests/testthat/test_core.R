@@ -44,13 +44,13 @@ ko_net2 = generate_genomic_network(datasets[[1]][,KO], keggSource = "KeggTemplat
 
 test_that("Networks generated successfully", {
   expect_length(ko_net, 3)
-  expect_equal(names(ko_net[[3]]), c("KO", "Reac", "Prod", "stoichReac", "stoichProd"))
-  expect_equal(sort(unique(names(ko_net[[1]]))), sort(unique(ko_net[[3]][,KO])))
-  expect_equal(sort(unique(row.names(ko_net[[1]]))), sort(unique(c(ko_net[[3]][,Prod], ko_net[[3]][,Reac]))))
+  expect_equal(names(ko_net[[3]]), c("KO", "Reac", "Prod", "stoichReac", "stoichProd", "Reversible"))
+  expect_equal(sort(unique(names(ko_net[[1]]))), sort(unique(ko_net[[3]][Reversible==0,KO])))
+  expect_equal(sort(unique(row.names(ko_net[[1]]))), sort(unique(c(ko_net[[3]][Reversible==0,Prod], ko_net[[3]][Reversible==0,Reac]))))
   expect_length(ko_net2, 3)
-  expect_equal(names(ko_net2[[3]]), c("KO", "Reac", "Prod", "stoichReac", "stoichProd"))
-  expect_equal(sort(unique(names(ko_net2[[1]]))), sort(unique(ko_net2[[3]][,KO])))
-  expect_equal(sort(unique(row.names(ko_net2[[1]]))), sort(unique(c(ko_net2[[3]][,Prod], ko_net2[[3]][,Reac]))))
+  expect_equal(names(ko_net2[[3]]), c("KO", "Reac", "Prod", "stoichReac", "stoichProd", "Reversible"))
+  expect_equal(sort(unique(names(ko_net2[[1]]))), sort(unique(ko_net2[[3]][Reversible==0,KO])))
+  expect_equal(sort(unique(row.names(ko_net2[[1]]))), sort(unique(c(ko_net2[[3]][Reversible==0,Prod], ko_net2[[3]][Reversible==0,Reac]))))
 })
 
 cmp_scores = get_cmp_scores(ko_net[[1]], datasets[[1]])
@@ -74,11 +74,11 @@ test_that("Cmp scores can be compared with mets", {
   expect_equal(nrow(met_mat), ncol(met_mat))
   expect_equal(nrow(met_mat2), ncol(met_mat2))
   expect_equal(nrow(met_mat), nrow(met_mat2))
-  expect_error(mantel_2sided(met_mat, met_mat2, permutations = 500, direction = "pos", method = "spearman"))
-  expect_silent(mantel_2sided(met_mat_a, met_mat_2a, permutations = 500, direction = "pos", method = "spearman"))
+  expect_silent(mantel_2sided(met_mat, met_mat2, permutations = 500, direction = "pos", method = "spearman"))
+  expect_error(mantel_2sided(met_mat_a, met_mat_2a, permutations = 500, direction = "pos", method = "spearman"))
 })
 
-run_all_metabolites(datasets[[1]], datasets[[2]], file_prefix = "test", id_met = F,
+test_out = run_all_metabolites(datasets[[1]], datasets[[2]], file_prefix = "test", id_met = F,
                     net_method = "KeggTemplate", net_file = net_file, rxn_table_source = rxn_table,
                     correction = "fdr", degree_filter = 30, cor_method = "spearman", nperm = 200, nonzero_filter = 4)
 load("test_out.rda")

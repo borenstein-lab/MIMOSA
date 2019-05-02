@@ -61,24 +61,53 @@ get_net_dist = function(c1, c2, allnet, max_dist = 20){
 #' Get non-reverible reactions of network.
 #'
 #' @import data.table
-#' @param pvals Vector of p-values
-#' @param method Must be either "fdr" or "bonferroni"
-#' @return Vector of corrected values
+#' @param rxn_table Edge list
+#' @param all_rxns Whether to return all reactions or only 1/2 of each reversible reaction since info is redundant
+#' @param by_species Whether this is a species-specific network
+#' @return Network with reversibility informatio
 #' @examples
 #' get_non_rev_rxns(rxn_table)
 #' @export
-get_non_rev_rxns = function(rxn_table, all_rxns=T){ #whether to return all reactions or only 1/2 of each reversible reaction since info is redundant
+get_non_rev_rxns = function(rxn_table, all_rxns=T, by_species = T){ #
   if(dim(rxn_table)[1]>0){
-    all_sorted= data.table(t(apply(rxn_table[,list(KO,Reac,Prod,stoichReac,stoichProd)],1,function(y){ sort(unlist(y))})))
-    all_sorted[,Count:=.N,by=names(all_sorted)]
-    all_sorted[,Reversible:=ifelse(Count==2,1,0)]
-    rxn_table[,Reversible:=ifelse(all_sorted[,Count]==2,1,0)] #order is the same
-    if("V1" %in% names(all_sorted)){
-      all_sorted = unique(all_sorted)
-      all_sorted = all_sorted[,list(V5, V4, V3, V2, V1, Reversible)]
-      setnames(all_sorted, c("KO","Reac", "Prod", "stoichReac", "stoichProd", "Reversible"))
+  if(by_species){
+    if(!"OTU" %in% names(rxn_table)) stop("Network must have OTU column")
+    all_otus = rxn_table[,unique(OTU)]
+    #Deal with NAs messing with apply return
+    if(any(rxn_table[,is.na(Prod)])|any(rxn_table[,is.na(Reac)])){
+      newTab = copy(rxn_table)
+      newTab[is.na(Prod), Prod:="NA"]
+      newTab[is.na(Reac), Reac:="NA"]
+    } else {
+      newTab = rxn_table
     }
-    if(all_rxns) return(rxn_table) else return(all_sorted)
+    for(j in 1:length(all_otus)){
+      all_sorted = data.table(t(apply(newTab[OTU==all_otus[j],list(KO,Reac,Prod,stoichReac,stoichProd)],1,function(y){ sort(unlist(y))})))
+      all_sorted[,Count:=.N,by=names(all_sorted)]
+      #all_sorted[,Reversible:=ifelse(Count==2,1,0)]
+      rxn_table[OTU==all_otus[j],Reversible:=ifelse(all_sorted[,Count]==2,1,0)] #order is the same
+    }
+    return(rxn_table)
+  } else {
+      #Deal with NAs messing with apply return
+      if(any(rxn_table[,is.na(Prod)])|any(rxn_table[,is.na(Reac)])){
+        newTab = copy(rxn_table)
+        newTab[is.na(Prod), Prod:="NA"]
+        newTab[is.na(Reac), Reac:="NA"]
+      } else {
+        newTab = rxn_table
+      }
+      all_sorted= data.table(t(apply(rxn_table[,list(KO,Reac,Prod,stoichReac,stoichProd)],1,function(y){ sort(unlist(y))})))
+      all_sorted[,Count:=.N,by=names(all_sorted)]
+      all_sorted[,Reversible:=ifelse(Count==2,1,0)]
+      rxn_table[,Reversible:=ifelse(all_sorted[,Count]==2,1,0)] #order is the same
+      if("V1" %in% names(all_sorted)){
+        all_sorted = unique(all_sorted)
+        all_sorted = all_sorted[,list(V5, V4, V3, V2, V1, Reversible)]
+        setnames(all_sorted, c("KO","Reac", "Prod", "stoichReac", "stoichProd", "Reversible"))
+      }
+      if(all_rxns) return(rxn_table) else return(all_sorted)
+  }
   } else return(NULL)
 }
 
