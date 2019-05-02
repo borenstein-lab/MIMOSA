@@ -91,7 +91,7 @@ cmp_species_contributions_picrust = function(j, cmps_sub_good, all_rxns, subject
       if(comparison == "cmps"){
         species_cmp_cors = sapply(1:length(all_taxa), function(x){
           if(nrow(cmps_sub_good[compound]) > 1){stop("Duplicate metabolite IDs, please fix")}
-          if(!is.na(single_spec_cmps[[x]])){
+          if(!identical(single_spec_cmps[[x]], NA)){
             if(compound %in% single_spec_cmps[[x]][,compound]){
                 return(try(cor(as.vector(unlist(cmps_sub_good[compound,subjects,with=F])),as.vector(unlist(single_spec_cmps[[x]][compound,subjects,with=F])), method="pearson", use = "complete.obs")))
             } else {
@@ -120,18 +120,18 @@ cmp_species_contributions_picrust = function(j, cmps_sub_good, all_rxns, subject
 
 
 
-#' Get contributors for every metabolite and save
+#' Ensure contribution table abundances are relative otu abundance * copy number
 #'
 #' @param contribs data.table of OTU, genes, samples and abundances
 #' @return contribs with abundances normalized to copy number
 #' @export
 single_spec_musicc = function(contribs){
-  ##Get OTU abundances back
+  ##Get OTU abundances from contribs for consistency
   contribs[,OTUAbund:=CountContributedByOTU/GeneCountPerGenome]
   otu_abunds = contribs[,list(Sample, OTU, OTUAbund)]
   #Get single line per OTU-sample
   otu_abunds = otu_abunds[,mean(OTUAbund), by=list(Sample, OTU)]
-  otu_abunds[,OTURelAbund:=V1/sum(V1), by=Sample] #Ok, now this is back to original if that's what's provided
+  otu_abunds[,OTURelAbund:=V1/sum(V1), by=Sample] #this is now back to original if that's what's provided
   contribs = merge(contribs, otu_abunds[,list(Sample, OTU, OTURelAbund)], by=c("OTU", "Sample"), all.x=T)
   all_otus = sort(unique(contribs[,OTU]))
   #cat(all_otus)
