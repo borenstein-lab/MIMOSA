@@ -1,5 +1,5 @@
 ---
-title: "Generic MIMOSA Summary"
+title: "MIMOSA Summary"
 author: 
 date: 
 output:
