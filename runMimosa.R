@@ -35,6 +35,7 @@ spec = matrix(c('genefile','g',1,"character",
               'metadata_file', 'd', 2, "character",
               'metadata_var', 'v', 2, "character",
               'contrib_no_copy_num', 'y', 2, "logical",
+              'spec_method', 'sm', 2 ,"character",
               'summary_doc_dir', 'sd', 2, "character" ), byrow=T, ncol=4)
 
 opt = getopt(spec, opt = commandArgs(TRUE))
@@ -100,6 +101,12 @@ if(!is.null(opt$taxonomy_file)){
   tax_file = ""
   sum_to_genus = F
 }
+if(!is.null(opt$spec_method)){
+  spec_method = opt$spec_method
+} else {
+  spec_method = "cmps"
+}
+cat(paste("Identifying species contributors by comparing with ", spec_method, "\n"))
 
 cat("Running main MIMOSA analysis\n")
 if(!runmet2){
@@ -118,9 +125,9 @@ if(!runmet2){
 if(!is.null(opt$contribs_file)){
   cat("Getting potential species contributors to metabolite variation\n")
   if(!is.null(opt$contrib_no_copy_num)){
-    spec_contribs = get_spec_contribs(opt$contribs_file, data_dir = getwd(), results_file = paste0(file_prefix, "_out.rda"), out_prefix = file_prefix, otu_id = "all", valueVar = "RelAbundSample", sum_to_genus = sum_to_genus, write_out = T, taxonomy_file = tax_file, comparison = "cmps") #will also save to file
+    spec_contribs = get_spec_contribs(opt$contribs_file, data_dir = getwd(), results_file = paste0(file_prefix, "_out.rda"), out_prefix = file_prefix, otu_id = "all", valueVar = "RelAbundSample", sum_to_genus = sum_to_genus, write_out = T, taxonomy_file = tax_file, comparison = spec_method) #will also save to file
   } else {
-    spec_contribs = get_spec_contribs(opt$contribs_file, data_dir = getwd(), results_file = paste0(file_prefix, "_out.rda"), out_prefix = file_prefix, otu_id = "all", valueVar = "singleMusicc", sum_to_genus = sum_to_genus, write_out = T, taxonomy_file = tax_file, comparison = "cmps") #will also save to file
+    spec_contribs = get_spec_contribs(opt$contribs_file, data_dir = getwd(), results_file = paste0(file_prefix, "_out.rda"), out_prefix = file_prefix, otu_id = "all", valueVar = "singleMusicc", sum_to_genus = sum_to_genus, write_out = T, taxonomy_file = tax_file, comparison = spec_method) #will also save to file
   }
 }
 
@@ -155,10 +162,15 @@ if(!is.null(opt$summary_doc_dir)){
   doc_path = ""
 }
 
+#Allow for summarize running in a different directory
 out_dir = dirname(normalizePath(paste0(file_prefix, "_nodes.txt")))
 file_prefix = basename(file_prefix)
 
-rmarkdown::render(paste0(doc_path, "summarizeMIMOSAresults.Rmd"), rmarkdown::html_document(), params = list(run_prefix = paste0(out_dir, "/", file_prefix), contribs_file = normalizePath(opt$contribs_file), met_file = normalizePath(opt$metfile), metadata_file = normalizePath(opt$metadata_file), metadata_var = opt$metadata_var))
+contribs_file = normalizePath(opt$contribs_file)
+met_file = normalizePath(opt$metfile)
+metadata_file = normalizePath(opt$metadata_file)
+print(normalizePath(opt$metadata_file))
+rmarkdown::render(paste0(doc_path, "summarizeMIMOSAresults.Rmd"), rmarkdown::html_document(), params = list(run_prefix = paste0(out_dir, "/", file_prefix), contribs_file = contribs_file, met_file = met_file, metadata_file = metadata_file, metadata_var = opt$metadata_var))
 
 file.rename(paste0(doc_path, "summarizeMIMOSAresults.html"), paste0(out_dir, "/", file_prefix, "_summary.html"))
 
