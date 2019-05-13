@@ -209,7 +209,7 @@ print_taxa_contributor_table = function(node_data_spec){
 #' @return Plot object showing overall MIMOSA correlation and individual taxonomic contributors for each metabolite
 #' @export
 taxonomic_contributor_heatmap_plot_grid = function(node_data, node_data_spec, prediction_colors = c("#1B9E77","lightgrey","#F46D43")){
-  pred_grid1 = ggplot(node_data, aes(x=1, y = Metabolite, fill = Correlation)) + geom_tile(col="black") + theme(axis.line=element_blank(), axis.title=element_blank(), axis.ticks=element_blank(), legend.position="bottom", panel.border=element_blank(), axis.text=element_blank()) +scale_fill_gradientn(colours=rev(prediction_colors), limits = c(-0.6,0.6))+ scale_x_discrete( expand = c(0, 0)) + guides(size=F, col=F, fill = guide_colourbar(title="Prediction Level", title.position="top")) #+ facet_wrap(~Dataset, nrow = 2)
+  pred_grid1 = ggplot(node_data, aes(x=1, y = Metabolite, fill = Correlation)) + geom_tile(col="black") + theme(axis.line=element_blank(), axis.title=element_blank(), axis.ticks=element_blank(), legend.position="bottom", panel.border=element_blank(), axis.text=element_blank()) +scale_fill_gradientn(colours=rev(prediction_colors), limits = c(-1*max(abs(node_data[,Correlation]), na.rm = T),max(abs(node_data[,Correlation]), na.rm = T)))+ scale_x_discrete( expand = c(0, 0)) + guides(size=F, col=F, fill = guide_colourbar(title="Prediction Level", title.position="top")) #+ facet_wrap(~Dataset, nrow = 2)
   spec_order = node_data_spec[,length(Metabolite), by=GenusShort][order(V1, decreasing=T)][,GenusShort]
 
   #Count number of passing species

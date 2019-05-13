@@ -17,7 +17,14 @@ params:
   metadata_var: ""
 ---
 
+```{r setup, include=FALSE}
+#Optional, use to generate plots as pdfs instead of pngs
+#knitr::opts_chunk$set(dev = 'pdf')
+
+```
+
 ```{r, echo=F, message=F, warning=F, results = "hide"}
+
 options(stringsAsFactors = F, scipen = 20)
 
 library(data.table)
@@ -75,15 +82,15 @@ geneContribs = process_gene_contribs(geneContribs, node_data)
 gene_species = make_gene_species_contributor_table(geneContribs, species_ref, node_data_spec)
 
 #Add Dataset column for plotting
-node_data[,Dataset:=run_prefix]
-node_data_spec[,Dataset:=run_prefix]
+node_data[,Dataset:=basename(run_prefix)]
+node_data_spec[,Dataset:=basename(run_prefix)]
 
 
 
 
 ```
 
-## Plot of metabolites
+## Plot of metabolite concentrations across samples
 
 ```{r, echo=F, message=F, warning=F, fig.height = 5}
 

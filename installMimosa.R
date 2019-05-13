@@ -1,6 +1,6 @@
 ## Install dependencies from CRAN and Bioconductor
 
-cran_packages = c("devtools", "data.table", "Rcpp", "BiocManager")
+cran_packages = c("devtools", "data.table", "Rcpp", "getopt", "RColorBrewer", "rmarkdown", "BiocManager")
 for (package in cran_packages){
  if(!requireNamespace(package, quietly = T)){
    install.packages(package)

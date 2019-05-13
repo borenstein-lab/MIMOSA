@@ -4,12 +4,9 @@
 library(KEGGREST)
 library(data.table)
 library(RColorBrewer)
-library(vegan)
-library(stringr)
 library(qvalue)
 library(getopt)
 library(ggplot2)
-library(reshape2)
 library(mimosa)
 library(rmarkdown)
 options(stringsAsFactors=F, curl_interrupt = F)
@@ -37,7 +34,8 @@ spec = matrix(c('genefile','g',1,"character",
               'taxonomy_file', 't', 2, "character",
               'metadata_file', 'd', 2, "character",
               'metadata_var', 'v', 2, "character",
-              'contrib_no_copy_num', 'y', 2, "logical"), byrow=T, ncol=4)
+              'contrib_no_copy_num', 'y', 2, "logical",
+              'summary_doc_dir', 'sd', 2, "character" ), byrow=T, ncol=4)
 
 opt = getopt(spec, opt = commandArgs(TRUE))
 
@@ -49,16 +47,12 @@ write_net = T
 # cat(paste("Write_net is ",write_net,"\n"))
 if(!is.null(opt$file_prefix)) file_prefix = opt$file_prefix else file_prefix = 'net1'
 cat(paste("File prefix is ", file_prefix,"\n"))
-#if(!is.null(opt$dir_method)) dir_method = opt$dir_method else dir_method = 'standard' #standard or minpath
-#cat(paste("Dir method is ", dir_method,"\n"))
+
 if(!is.null(opt$net_method)) net_method = opt$net_method else net_method = 'KeggTemplate' #loadNet or KeggTemplate
 cat(paste("Net method is ", net_method,"\n"))
 if(!is.null(opt$degree_filter)) degree_filter = opt$degree_filter else degree_filter = 30
 cat(paste("Degree filter is", degree_filter,"\n"))
-#if(!is.null(opt$met_id_file)) met_id_file = opt$met_id_file else met_id_file = ''
-#cat(paste("Met id file is ", met_id_file,"\n"))
-#if(!is.null(opt$minpath_file)) minpath_file = opt$minpath_file else minpath_file = ''
-#cat(paste("Minpath file is ", minpath_file,"\n"))
+
 met_id_file = ""
 minpath_file = ''
 
@@ -155,4 +149,16 @@ save(all_gene_contribs, file = paste0(file_prefix, "_geneContribs.rda"))
 #Summarize results
 
 cat("Generating summary plots and tables...\n")
-rmarkdown::render("summarizeMIMOSAresults.Rmd", rmarkdown::html_document(), params = list(run_prefix = file_prefix, contribs_file = opt$contribs_file, met_file = opt$metfile, metadata_file = opt$metadata_file, metadata_var = opt$metadata_var))
+if(!is.null(opt$summary_doc_dir)){
+  doc_path = opt$summary_doc_dir
+} else {
+  doc_path = ""
+}
+
+out_dir = dirname(normalizePath(paste0(file_prefix, "_nodes.txt")))
+file_prefix = basename(file_prefix)
+
+rmarkdown::render(paste0(doc_path, "summarizeMIMOSAresults.Rmd"), rmarkdown::html_document(), params = list(run_prefix = paste0(out_dir, "/", file_prefix), contribs_file = normalizePath(opt$contribs_file), met_file = normalizePath(opt$metfile), metadata_file = normalizePath(opt$metadata_file), metadata_var = opt$metadata_var))
+
+file.rename(paste0(doc_path, "summarizeMIMOSAresults.html"), paste0(out_dir, "/", file_prefix, "_summary.html"))
+
