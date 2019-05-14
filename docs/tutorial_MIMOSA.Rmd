@@ -24,7 +24,7 @@ cd MIMOSA
 Rscript installMimosa.R
 ```
 
-2) Download the example data by clicking and unzipping [this zip file](https://cnoecker.github.io/TAUMicrobiomeWorkshop2019/MimosaData.zip). See below for more details on this dataset.
+2) Download the example data by clicking and unzipping [this zip file](https://cnoecker.github.io/TAUMicrobiomeWorkshop2019/data/MimosaData.zip). See below for more details on this dataset.
 
 3) From within the MIMOSA directory, perform a full MIMOSA analysis by running the following command in a shell window. You may need to adjust the paths to each data file, depending on how you saved the files above. This command assumes you have placed the MIMOSA code and MIMOSA_data directories in the same folder, and that you are running this command from within the MIMOSA directory.
 
@@ -79,7 +79,7 @@ This dataset is from the following publication:
 
 Srinivasan, S., Morgan, M.T., Fiedler, T.L., Djukovic, D., Hoffman, N.G., Raftery, D., Marrazzo, J.M., and Fredricks, D.N. (2015). Metabolic Signatures of Bacterial Vaginosis. MBio 6, e00204-15.
 
-Download the example data by clicking and unzipping [this zip file](https://cnoecker.github.io/TAUMicrobiomeWorkshop2019/MimosaData.zip). 
+Download the example data by clicking and unzipping [this zip file](https://cnoecker.github.io/TAUMicrobiomeWorkshop2019/data/MimosaData.zip). 
 
 The example data provided includes the following files, describing the vaginal microbiome of 70 women with and without Bacterial Vaginosis (BV):
 
