@@ -317,15 +317,16 @@ $(document).ready(function () {
 <div id="quick-start" class="section level2">
 <h2>Quick Start</h2>
 <p>Follow these steps to quickly run a MIMOSA analysis and view a summary of the results.</p>
-<ol style="list-style-type: decimal">
-<li>Run the following commands in a shell window in order to clone the MIMOSA GitHub repository and install the MIMOSA package.</li>
+<ol start="0" style="list-style-type: decimal">
+<li><p>If you do not have R installed, follow the instructions to do so described in the R section <a href="https://carpentries.github.io/workshop-template/#python">here</a>.</p></li>
+<li><p>First, download the MIMOSA GitHub repository and install the MIMOSA package. You can do so by clicking <strong><a href="https://github.com/borenstein-lab/MIMOSA/archive/master.zip">here</a></strong> and unzipping the resulting file. Alternatively, you can use git to do so from a commmand line by running the following command:</p></li>
 </ol>
-<pre class="bash"><code>git clone https://github.com/borenstein-lab/MIMOSA.git
-cd MIMOSA
-Rscript installMimosa.R</code></pre>
+<pre class="bash"><code>git clone https://github.com/borenstein-lab/MIMOSA.git</code></pre>
+<p>To install the package, open a command line window (if you haven’t yet done so), navigate into the directory called either MIMOSA-master or MIMOSA (depending on how you downloaded it), and run the <strong>installMimosa.R</strong> script.</p>
+<pre class="bash"><code>Rscript installMimosa.R</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li><p>Download the example data by clicking and unzipping <a href="https://cnoecker.github.io/TAUMicrobiomeWorkshop2019/data/MimosaData.zip">this zip file</a>. See below for more details on this dataset.</p></li>
-<li><p>From within the MIMOSA directory, perform a full MIMOSA analysis by running the following command in a shell window. You may need to adjust the paths to each data file, depending on how you saved the files above. This command assumes you have placed the MIMOSA code and MIMOSA_data directories in the same folder, and that you are running this command from within the MIMOSA directory.</p></li>
+<li><p>Perform a full MIMOSA analysis by running the following command in a shell window. You may need to adjust the paths to each data file, depending on how you saved the files above. This command assumes you have placed the MIMOSA code and MIMOSA_data directories in the same folder, and that you are running this command from within the MIMOSA directory.</p></li>
 </ol>
 <pre class="bash"><code>Rscript runMimosa.R --genefile=&quot;../MIMOSA_data/bv_gg_picrust_genes.txt&quot; --metfile=&quot;../MIMOSA_data/bv_metabolites.txt&quot; --contribs_file=&quot;../MIMOSA_data/bv_gg_picrust_contributions.txt&quot; --mapformula_file=&quot;../MIMOSA_data/KEGG2010/reaction_mapformula.lst&quot; --file_prefix=&quot;../MIMOSA_data/mimosa_out&quot; --ko_rxn_file=&quot;../MIMOSA_data/KEGG2010/ko_reaction.list&quot; --rxn_annots_file=&quot;../MIMOSA_data/KEGG2010/reaction&quot; --metadata_file=&quot;../MIMOSA_data/bv_metadata.txt&quot; --metadata_var=&quot;BV&quot; --summary_doc_dir=&quot;&quot; --num_permute=1000
 </code></pre>

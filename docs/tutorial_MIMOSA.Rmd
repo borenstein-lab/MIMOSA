@@ -16,17 +16,23 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Follow these steps to quickly run a MIMOSA analysis and view a summary of the results.
 
-1) Run the following commands in a shell window in order to clone the MIMOSA GitHub repository and install the MIMOSA package.
+0) If you do not have R installed, follow the instructions to do so described in the R section [here](https://carpentries.github.io/workshop-template/#python).
+
+1) First, download the MIMOSA GitHub repository and install the MIMOSA package. You can do so by clicking **[here](https://github.com/borenstein-lab/MIMOSA/archive/master.zip)** and unzipping the resulting file. Alternatively, you can use git to do so from a commmand line by running the following command:
 
 ```{bash, eval= F}
 git clone https://github.com/borenstein-lab/MIMOSA.git
-cd MIMOSA
+```
+
+To install the package, open a command line window (if you haven't yet done so), navigate into the directory called either MIMOSA-master or MIMOSA (depending on how you downloaded it), and run the **installMimosa.R** script.
+
+```{bash, eval= F}
 Rscript installMimosa.R
 ```
 
 2) Download the example data by clicking and unzipping [this zip file](https://cnoecker.github.io/TAUMicrobiomeWorkshop2019/data/MimosaData.zip). See below for more details on this dataset.
 
-3) From within the MIMOSA directory, perform a full MIMOSA analysis by running the following command in a shell window. You may need to adjust the paths to each data file, depending on how you saved the files above. This command assumes you have placed the MIMOSA code and MIMOSA_data directories in the same folder, and that you are running this command from within the MIMOSA directory.
+3) Perform a full MIMOSA analysis by running the following command in a shell window. You may need to adjust the paths to each data file, depending on how you saved the files above. This command assumes you have placed the MIMOSA code and MIMOSA_data directories in the same folder, and that you are running this command from within the MIMOSA directory.
 
 ```{bash, eval = F}
 Rscript runMimosa.R --genefile="../MIMOSA_data/bv_gg_picrust_genes.txt" --metfile="../MIMOSA_data/bv_metabolites.txt" --contribs_file="../MIMOSA_data/bv_gg_picrust_contributions.txt" --mapformula_file="../MIMOSA_data/KEGG2010/reaction_mapformula.lst" --file_prefix="../MIMOSA_data/mimosa_out" --ko_rxn_file="../MIMOSA_data/KEGG2010/ko_reaction.list" --rxn_annots_file="../MIMOSA_data/KEGG2010/reaction" --metadata_file="../MIMOSA_data/bv_metadata.txt" --metadata_var="BV" --summary_doc_dir="" --num_permute=1000
