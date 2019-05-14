@@ -90,7 +90,7 @@ node_data_spec[,Dataset:=basename(run_prefix)]
 
 ```
 
-## Plot of metabolite concentrations across samples
+## Metabolite concentrations across samples
 
 ```{r, echo=F, message=F, warning=F, fig.height = 6.5}
 
