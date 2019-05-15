@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Follow these steps to quickly run a MIMOSA analysis and view a summary of the results.
 
-0) If you do not have R installed, follow the instructions to do so described in the R section [here](https://carpentries.github.io/workshop-template/#python).
+0) If you do not have R and RStudio installed, follow the instructions to do so described in the R section [here](https://carpentries.github.io/workshop-template/#python).
 
 1) First, download the MIMOSA GitHub repository and install the MIMOSA package. You can do so by clicking **[here](https://github.com/borenstein-lab/MIMOSA/archive/master.zip)** and unzipping the resulting file. Alternatively, you can use git to do so from a commmand line by running the following command:
 
@@ -24,20 +24,22 @@ Follow these steps to quickly run a MIMOSA analysis and view a summary of the re
 git clone https://github.com/borenstein-lab/MIMOSA.git
 ```
 
-To install the package, open a command line window (if you haven't yet done so), navigate into the directory called either MIMOSA-master or MIMOSA (depending on how you downloaded it), and run the **installMimosa.R** script.
+2) To install the package, open a command line window (if you haven't yet done so), navigate into the directory called either MIMOSA-master or MIMOSA (depending on how you downloaded it), and run the **installMimosa.R** script.
 
 ```{bash, eval= F}
 Rscript installMimosa.R
 ```
 
-2) Download the example data by clicking and unzipping [this zip file](https://cnoecker.github.io/TAUMicrobiomeWorkshop2019/data/MimosaData.zip). See below for more details on this dataset.
+3) Download the example data by clicking and unzipping [this zip file](https://cnoecker.github.io/TAUMicrobiomeWorkshop2019/data/MimosaData.zip). See below for more details on this dataset.
 
-3) Perform a full MIMOSA analysis by running the following command in a shell window. You may need to adjust the paths to each data file, depending on how you saved the files above. This command assumes you have placed the MIMOSA code and MIMOSA_data directories in the same folder, and that you are running this command from within the MIMOSA directory.
+4) Perform a full MIMOSA analysis by running the following command in a shell window. You may need to adjust the paths to each data file, depending on how you saved the files above. This command assumes you have placed the MIMOSA data inside the MIMOSA code directory, and that you are also running this command from within the MIMOSA directory.
 
 ```{bash, eval = F}
-Rscript runMimosa.R --genefile="../MIMOSA_data/bv_gg_picrust_genes.txt" --metfile="../MIMOSA_data/bv_metabolites.txt" --contribs_file="../MIMOSA_data/bv_gg_picrust_contributions.txt" --mapformula_file="../MIMOSA_data/KEGG2010/reaction_mapformula.lst" --file_prefix="../MIMOSA_data/mimosa_out" --ko_rxn_file="../MIMOSA_data/KEGG2010/ko_reaction.list" --rxn_annots_file="../MIMOSA_data/KEGG2010/reaction" --metadata_file="../MIMOSA_data/bv_metadata.txt" --metadata_var="BV" --summary_doc_dir="" --num_permute=1000
+Rscript runMimosa.R --genefile="MIMOSA_data/bv_gg_picrust_genes.txt" --metfile="MIMOSA_data/bv_metabolites.txt" --contribs_file="MIMOSA_data/bv_gg_picrust_contributions.txt" --mapformula_file="MIMOSA_data/KEGG2010/reaction_mapformula.lst" --file_prefix="MIMOSA_data/mimosa_out" --ko_rxn_file="MIMOSA_data/KEGG2010/ko_reaction.list" --rxn_annots_file="MIMOSA_data/KEGG2010/reaction" --metadata_file="MIMOSA_data/bv_metadata.txt" --metadata_var="BV" --summary_doc_dir="" --num_permute=1000
 
 ```
+
+If MIMOSA runs successfully but produces an error referring to pandoc and fails to generate the summary document, you have a couple options to fix this issue. You can open the file **summarizeMimosaResults.Rmd** in RStudio, press "Knit", and then "Knit With Parameters", and then provide the text printed by the runMimosa.R script to generate the document. Alternatively, you can follow the instructions in [this post](https://stackoverflow.com/questions/28432607/pandoc-version-1-12-3-or-higher-is-required-and-was-not-found-r-shiny) to set an environment variable and then re-run the script.
 
 4) You should now have several output files named "mimosa_out" in the same directory. Open the file *mimosa_out_summary.html** to view a compilation of MIMOSA results. A complete explanation of each plot is included in the "Output" section below.
 
@@ -57,10 +59,9 @@ A MIMOSA analysis consists of the following steps:
 3) Identify potential gene, reaction, and species contributors for each metabolite.
 
 
-```{r pressure, echo=FALSE, fig.cap="Overview of the MIMOSA framework", out.width = '70%'}
+```{r pressure, echo=FALSE, fig.cap="An overview of the MIMOSA framework", out.width = '70%'}
 knitr::include_graphics("mimosa.png")
 ```
-
 
 In this tutorial, you will:
 
@@ -70,18 +71,20 @@ In this tutorial, you will:
 
 ### Installation
 
-To install and use MIMOSA, we recommend first downloading the full GitHub repository, using either "git clone" or by visiting https://github.com/borenstein-lab/MIMOSA/ and clicking the green "Clone or download" button. MIMOSA also requires several dependency packages that can be obtained from the CRAN and Bioconductor repositories (instructions for installing several of these were provided in the pre-workshop instructions, but the "installMimosa.R" script will also try to re-install those if needed). Running the following commands in a shell window will complete all of these steps:
+First, if you do not have R and RStudio installed, follow the instructions to do so described in the R section [here](https://carpentries.github.io/workshop-template/#python).
+
+To install and use MIMOSA, we recommend first downloading the full GitHub repository, using either "git clone" or by clicking **[here](https://github.com/borenstein-lab/MIMOSA/archive/master.zip)** and unzipping the resulting file. MIMOSA requires several dependency packages that can be obtained from the CRAN and Bioconductor repositories (instructions for installing several of these were provided in the pre-workshop instructions, but the "installMimosa.R" script will also try to re-install those if needed). Running the following commands in a shell window will complete all of these steps:
 
 ```{bash, eval= F}
 git clone https://github.com/borenstein-lab/MIMOSA.git
-cd MIMOSA
-Rscript installMimosa.R
+cd MIMOSA #Navigate into the downloaded directory
+Rscript installMimosa.R #Run the installation script
 ```
 
 ### Input Data
-If you have a dataset pairing gene and/or OTU abundance data with measurements of identified metabolites, you may be able to use it for this analysis. Otherwise, we will use an example dataset describing the vaginal microbiome. 
+If you have a dataset pairing gene and/or OTU abundance data with measurements of identified metabolites, you may be able to use it for this analysis. You can see examples of the required file formats in the example dataset as well as in the mimosa/tests/testthat directory in the downloaded code. 
 
-This dataset is from the following publication:
+Otherwise, we will use an example dataset describing the vaginal microbiome. This dataset is from the following publication:
 
 Srinivasan, S., Morgan, M.T., Fiedler, T.L., Djukovic, D., Hoffman, N.G., Raftery, D., Marrazzo, J.M., and Fredricks, D.N. (2015). Metabolic Signatures of Bacterial Vaginosis. MBio 6, e00204-15.
 
@@ -94,7 +97,7 @@ The example data provided includes the following files, describing the vaginal m
 - **bv_metabolites.txt**: A table of metabolite concentrations across samples, generated using a combination of GC-MS and LC-MS assays, with metabolites specified in terms of KEGG compound IDs. 
 - **bv_metadata.txt**: A table specifying which samples are from women with BV vs controls.
 
-The example data also includes 3 reference files from the KEGG database, in the "KEGG" directory. Because access to the KEGG database requires a license, these are from the last version of the database that was publicly available, in 2010. Newer versions contain information on more genes and reactions, but most core metabolism is largely unchanged. The reference files required by MIMOSA are: 
+The example data also includes 3 reference files from the KEGG database, in the "KEGG2010" directory. Because access to the KEGG database requires a license, these are from the last version of the database that was publicly available, in 2010. Newer versions contain information on more genes and reactions, but most core metabolism is largely unchanged. The reference files required by MIMOSA are: 
 
 - **reaction_mapformula.lst**: A file describing reactions annotated in KEGG pathway maps.
 - **reaction**: A file describing additional reference information for each KEGG reaction ID. MIMOSA uses this file to obtain accurate stoichiometric coefficients for each reaction.
@@ -104,7 +107,7 @@ In the near future, a new version of MIMOSA will not require KEGG access.
 
 #### Other Input Data Options
 
-Generally, MIMOSA requires a table of KO abundances by sample, a table of identified metabolite abundances by sample, and a table of species-specific KO abundances by sample. These can generally be generated using any platform or processing. For example, the stratified and unstratified tables from a Humann2 analysis of metagenomic data can be used instead of PICRUSt output (with KEGG annotations). The MIMOSA R package includes a function **format_humann2_contributions** that will fully re-format the stratified table for this purpose. It is also possible to not provide a taxon-specific contribution table and skip the analysis of taxonomic contributors to metabolic potential.
+Generally, MIMOSA requires a table of KO abundances by sample, a table of identified metabolite abundances by sample, and a table of species-specific KO abundances by sample. These can generally be generated using any platform or processing. For example, the stratified and unstratified tables from a Humann2 analysis of metagenomic data can be used instead of PICRUSt output (with KEGG annotations). The MIMOSA R package includes a function **format_humann2_contributions** that will fully re-format the stratified table for this purpose. You can also run subsets of the MIMOSA analysis (using a custom R script) without a taxon-specific contribution table.
 
 ### Running MIMOSA
 
@@ -115,13 +118,14 @@ The most straightforward way to run a full MIMOSA analysis is to use the runMimo
 3) Calculate taxonomic contributors to CMP scores for each metabolite
 4) Summarize and visualize all results in a summary document.
 
-From within the MIMOSA directory, run the following command in a shell window. You may need to adjust the paths to each data file, depending on your file structure.
+From within the MIMOSA directory, run the following command in a shell window. You may need to adjust the paths to each data file, depending on your file structure. This command assumes you have placed the MIMOSA data inside the MIMOSA code directory, and that you are also running this command from within the MIMOSA directory.
 
 ```{bash, eval = F}
-Rscript runMimosa.R --genefile="../MIMOSA_data/bv_gg_picrust_genes.txt" --metfile="../MIMOSA_data/bv_metabolites.txt" --contribs_file="../MIMOSA_data/bv_gg_picrust_contributions.txt" --mapformula_file="../MIMOSA_data/KEGG2010/reaction_mapformula.lst" --file_prefix="mimosa_out" --ko_rxn_file="../MIMOSA_data/KEGG2010/ko_reaction.list" --rxn_annots_file="../MIMOSA_data/KEGG2010/reaction" --metadata_file="../MIMOSA_data/bv_metadata.txt" --metadata_var="BV" --summary_doc_dir="" --num_permute=1000
+Rscript runMimosa.R --genefile="MIMOSA_data/bv_gg_picrust_genes.txt" --metfile="MIMOSA_data/bv_metabolites.txt" --contribs_file="MIMOSA_data/bv_gg_picrust_contributions.txt" --mapformula_file="MIMOSA_data/KEGG2010/reaction_mapformula.lst" --file_prefix="MIMOSA_data/mimosa_out" --ko_rxn_file="MIMOSA_data/KEGG2010/ko_reaction.list" --rxn_annots_file="MIMOSA_data/KEGG2010/reaction" --metadata_file="MIMOSA_data/bv_metadata.txt" --metadata_var="BV" --summary_doc_dir="" --num_permute=1000
 
 ```
 
+If MIMOSA runs successfully but produces an error referring to pandoc and fails to generate the summary document, you have a couple options to fix this issue. You can open the file **summarizeMimosaResults.Rmd** in RStudio, press "Knit", and then "Knit With Parameters", and then provide the text printed by the runMimosa.R script to generate the document. Alternatively, you can follow the instructions in [this post](https://stackoverflow.com/questions/28432607/pandoc-version-1-12-3-or-higher-is-required-and-was-not-found-r-shiny) to set an environment variable and then re-run the script.
 
 ### Output
 
@@ -133,7 +137,7 @@ The runMimosa.R script will produce several output files. The most interesting o
 
 You can adjust and customize the display of these plots by opening and editing the code in the *summarizeMIMOSAResults.Rmd** document, and then re-compiling it to html.
 
-The other files describe the other results files in more detail. A full description of their contents can be found in the Readme for the MIMOSA GitHub repository. 
+The other files describe the other results files in more detail. A full description of their contents can be found in the Readme for the [MIMOSA GitHub repository](https://github.com/borenstein-lab/MIMOSA). 
 
 ### Limitations to keep in mind
 
@@ -141,4 +145,4 @@ The other files describe the other results files in more detail. A full descript
 
 - MIMOSA's model is also incomplete, as many reactions are missing or mis-annotated in KEGG. Many metabolites cannot be successfully analyzed by MIMOSA because they are not linked to any reactions and/or genes in the KEGG database.
 
-- The potential taxonomic contributors identified by MIMOSA are simply those taxa whose own estimated metabolic potential is correlated with the whole-community scores. This means that these taxa may help explain the association with metabolite scores. While this was our original approach, MIMOSA can alternatively identify taxa whose metabolic potential is most correlated directly with the metabolite concentrations, which we have found may be more informative. You can switch to this option by adding the flag *--spec_method="mets"* to your runMimosa.R command. 
+- The potential taxonomic contributors identified by MIMOSA are simply those taxa whose own estimated metabolic potential is correlated with the whole-community scores. This means that these taxa may help explain the association with metabolite scores. While this was the approach used in published MIMOSA analyses, MIMOSA can alternatively identify taxa whose metabolic potential is most correlated directly with the metabolite concentrations, which we have found may be more informative. You can switch to this option by adding the flag *--spec_method="mets"* to your runMimosa.R command. 
