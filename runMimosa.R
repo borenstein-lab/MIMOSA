@@ -169,8 +169,17 @@ file_prefix = basename(file_prefix)
 contribs_file = normalizePath(opt$contribs_file)
 met_file = normalizePath(opt$metfile)
 metadata_file = normalizePath(opt$metadata_file)
-print(normalizePath(opt$metadata_file))
-rmarkdown::render(paste0(doc_path, "summarizeMIMOSAresults.Rmd"), rmarkdown::html_document(), params = list(run_prefix = paste0(out_dir, "/", file_prefix), contribs_file = contribs_file, met_file = met_file, metadata_file = metadata_file, metadata_var = opt$metadata_var))
 
+## Make sure pandoc is available in order to generate the summary document
+if(rmarkdown::pandoc_available()){
+  rmarkdown::render(paste0(doc_path, "summarizeMIMOSAresults.Rmd"), rmarkdown::html_document(), params = list(run_prefix = paste0(out_dir, "/", file_prefix), contribs_file = contribs_file, met_file = met_file, metadata_file = metadata_file, metadata_var = opt$metadata_var))
 file.rename(paste0(doc_path, "summarizeMIMOSAresults.html"), paste0(out_dir, "/", file_prefix, "_summary.html"))
-
+} else {
+  cat(paste("Pandoc not found, summary document could not be generated. Generate it in RStudio by opening summarizeMimosaResults.Rmd, selecting Knit With Parameters, and providing the following parameters:\n",
+    "run_prefix:", paste0(out_dir, "/", file_prefix), "\n",
+    "contribs_file:", contribs_file, "\n",
+    "met_file:", met_file, "\n",
+    "metadata_file:", metadata_file, "\n",
+    "metadata_var:", opt$metadata_var, "\n",
+    sep="\t"))
+}
