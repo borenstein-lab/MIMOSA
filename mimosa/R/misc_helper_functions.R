@@ -442,8 +442,7 @@ simpleCap <- function(x) {
         sep = "", collapse = " ")
 }
 
-#' Defaults for NULL values
-#' @export
+
 `%||%` <- function(a, b) if (is.null(a)) b else a
 
 
