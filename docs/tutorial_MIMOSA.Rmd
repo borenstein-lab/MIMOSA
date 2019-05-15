@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 **Publication:** Noecker, C., Eng, A., Srinivasan, S., Theriot, C.M., Young, V.B., Jansson, J.K., Fredricks, D.N., and Borenstein, E. (2016). Metabolic Model-Based Integration of Microbiome Taxonomic and Metabolomic Profiles Elucidates Mechanistic Links between Ecological and Metabolic Variation. MSystems 1, e00013-15.
 
-## Quick Start
+## Quick Start Summary
 
 Follow these steps to quickly run a MIMOSA analysis and view a summary of the results.
 
