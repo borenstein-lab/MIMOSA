@@ -1,9 +1,14 @@
 ## Install dependencies from CRAN and Bioconductor
-
-cran_packages = c("devtools", "data.table", "Rcpp", "getopt", "RColorBrewer", "rmarkdown", "BiocManager")
+if(!requireNamespace("devtools", quietly = T)){
+ install.packages("devtools", repos = "https://cloud.r-project.org/")
+}
+cran_packages = c("devtools", "data.table", "Rcpp", "getopt", "RColorBrewer", "rmarkdown", "BiocManager", "vegan", "permute", "network", "ggnetwork", "cowplot", "readr", "testthat", "pandoc")
 for (package in cran_packages){
  if(!requireNamespace(package, quietly = T)){
-   install.packages(package)
+   if(package=="vegan"){ #Vegan not currently working with devtools for unknown reason
+     install.packages("vegan", repos = "https://cloud.r-project.org/")
+   }
+   devtools::install(package)
  }
 }
 
@@ -15,4 +20,4 @@ for (package in bioc_packages){
 }
 
 ## Install MIMOSA
-install.packages("mimosa/", repos=NULL, type = "source")
+devtools::install_local("mimosa/", force = T, dependencies = F)
