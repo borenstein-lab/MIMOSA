@@ -2,7 +2,7 @@
 % Please edit documentation in R/core_functions.R
 \name{generate_network_template_kegg}
 \alias{generate_network_template_kegg}
-\title{Generate community metabolic network template from the KEGG database, using reaction_mapformula.lst and}
+\title{Generate community metabolic network template from the KEGG database, using reaction_mapformula.lst and other reaction annotations}
 \usage{
 generate_network_template_kegg(mapformula_file, all_kegg, write_out = T)
 }
@@ -17,7 +17,7 @@ generate_network_template_kegg(mapformula_file, all_kegg, write_out = T)
 A table specifying a community metabolic network based on KEGG pathways with the following columns: Rxn (reaction ID),	KO (Gene ID),	Reac (Reactant ID),	Prod (Product ID),	Path (Pathway ID),	ReacProd (Original reaction specification),	stoichReac (Reactant stoichiometry coefficient),	stoichProd (Product stoichiometry coefficient)
 }
 \description{
-Generate community metabolic network template from the KEGG database, using reaction_mapformula.lst and
+Generate community metabolic network template from the KEGG database, using reaction_mapformula.lst and other reaction annotations
 }
 \examples{
 generate_network_template_kegg("KEGG/ligand/reaction/reaction_mapformula.lst", all_kegg)

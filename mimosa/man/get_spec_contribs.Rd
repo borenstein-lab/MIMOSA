@@ -7,7 +7,7 @@
 get_spec_contribs(contrib_file, data_dir, results_file, out_prefix,
   otu_id = "all", otu_file, valueVar = "singleMusicc", sum_to_genus,
   write_out = T, comparison = "cmps", met_data = "",
-  taxonomy_file = "")
+  taxonomy_file = "", alreadyNormalized = F)
 }
 \arguments{
 \item{contrib_file}{File where metagenome_contributions PICRUSt output is located}
@@ -29,6 +29,8 @@ get_spec_contribs(contrib_file, data_dir, results_file, out_prefix,
 \item{comparison}{"mets" or "cmps"; whether to compare with community CMPs or metabolites themselves}
 
 \item{met_data}{Optional, metabolite concentration table if comparison = "mets"}
+
+\item{alreadyNormalized}{Don't re-normalize contribution table at all}
 }
 \value{
 table of species, metabolites, whether that species is a contributor for that metabolite and the correlation strength

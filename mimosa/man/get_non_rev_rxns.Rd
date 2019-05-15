@@ -4,15 +4,17 @@
 \alias{get_non_rev_rxns}
 \title{Get non-reverible reactions of network.}
 \usage{
-get_non_rev_rxns(rxn_table, all_rxns = T)
+get_non_rev_rxns(rxn_table, all_rxns = T, by_species = T)
 }
 \arguments{
-\item{pvals}{Vector of p-values}
+\item{rxn_table}{Edge list}
 
-\item{method}{Must be either "fdr" or "bonferroni"}
+\item{all_rxns}{Whether to return all reactions or only 1/2 of each reversible reaction since info is redundant}
+
+\item{by_species}{Whether this is a species-specific network}
 }
 \value{
-Vector of corrected values
+Network with reversibility informatio
 }
 \description{
 Get non-reverible reactions of network.

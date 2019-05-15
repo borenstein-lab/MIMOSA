@@ -2,7 +2,7 @@
 % Please edit documentation in R/singleSpec_contributions.R
 \name{single_spec_musicc}
 \alias{single_spec_musicc}
-\title{Get contributors for every metabolite and save}
+\title{Ensure contribution table abundances are relative otu abundance * copy number}
 \usage{
 single_spec_musicc(contribs)
 }
@@ -13,5 +13,5 @@ single_spec_musicc(contribs)
 contribs with abundances normalized to copy number
 }
 \description{
-Get contributors for every metabolite and save
+Ensure contribution table abundances are relative otu abundance * copy number
 }
