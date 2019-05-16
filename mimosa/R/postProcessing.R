@@ -87,8 +87,15 @@ add_metadata_to_metabolite_summary = function(node_data, mets, metadata, metadat
   bad_mets = mets[!is.na(value), length(Sample),by=c("KEGG",metadata_var)]
   missing_mets = bad_mets[,length(unique(get(metadata_var))), by=KEGG]
   bad_mets = c(bad_mets[V1 < 3, unique(KEGG)], missing_mets[V1 < 2, KEGG])
-  mets_summary = mets[!is.na(value) & !KEGG %in% bad_mets,list(mean(value[get(metadata_var)==1])-mean(value[get(metadata_var)==0]),wilcox.test(value[get(metadata_var)==1],value[get(metadata_var)==0])$p.value),by=KEGG]
-  setnames(mets_summary, c("V1", "V2"), c("MetDiff", "MetPVal"))
+  good_mets = sapply(mets[,unique(KEGG)], function(x){
+   test1 = try(wilcox.test(mets[KEGG==x & get(metadata_var)==0, value], mets[KEGG==x & get(metadata_var)==1, value]))
+   if(class(test1) != "try-error"){ return(x) } else { return(NA) }
+  })
+  good_mets = good_mets[!is.na(good_mets)]
+  wil_tests = mets[KEGG %in% good_mets, wilcox.test(value[get(metadata_var)==1],value[get(metadata_var)==0])$p.value, by = KEGG]
+  mets_summary = mets[!is.na(value) & !KEGG %in% bad_mets,list(mean(value[get(metadata_var)==1], na.rm=T)-mean(value[get(metadata_var)==0], na.rm=T)),by=KEGG]
+  mets_summary = merge(mets_summary, wil_tests, by = "KEGG", all = T)
+  setnames(mets_summary, c("V1.x", "V1.y"), c("MetDiff", "MetPVal"))
   node_data = merge(node_data, mets_summary, by.x = "compound", by.y = "KEGG", all.x = T, all.y = F)
   node_data[,Enriched:=ifelse(MetDiff > 0 & MetPVal < 0.1,1,0)]
   node_data[,Depleted:=ifelse(MetDiff < 0 & MetPVal < 0.1,1,0)]

@@ -67,8 +67,10 @@ mets = melt(fread(met_file), variable.name = "Sample")
 
 ###Identify metabolites that are enriched or depleted in different groups based on selected metadata variable (using Wilcoxon rank-sum test)
 if(!is.null(metadata_file) & !is.null(metadata_var)){
+ if(metadata_file != "" & metadata_var != ""){
   metadata = fread(metadata_file)
   node_data = add_metadata_to_metabolite_summary(node_data, mets, metadata, metadata_var)
+}
 }
 
 #Species contribution results
@@ -116,7 +118,7 @@ plot_metabolite_counts(node_data, variable = "SuperPath", threshold = "low")
 
 ### Metabolite Predictions by Disease Association (Wilcoxon rank test p < 0.1)
 ```{r, echo=F, message=F, warning=F}
-if(!is.null(metadata_var)){
+if("Status" %in% names(node_data)){
   plot_metabolite_counts(node_data, variable = "Status", threshold = "low")
 }
 ```
@@ -150,7 +152,7 @@ taxonomic_contributor_heatmap_plot_grid(node_data, node_data_spec)
 
 ```{r, echo=F, message=F, warning=F, fig.height = 5, fig.width=8}
 node_attrs = c("Correlation", "Metabolite", "PredictionType2", "SuperPath")
-if(!is.null(metadata_var)) node_attrs = c(node_attrs, "Status")
+if("Status" %in% names(node_data)) node_attrs = c(node_attrs, "Status")
 edge_attrs = c("KO", "Cor", "stoichReac", "stoichProd")
 
 if(nrow(geneContribs[Contrib > 0]) > 1){
