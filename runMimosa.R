@@ -125,9 +125,9 @@ if(!runmet2){
 if(!is.null(opt$contribs_file)){
   cat("Getting potential species contributors to metabolite variation\n")
   if(!is.null(opt$contrib_no_copy_num)){
-    spec_contribs = get_spec_contribs(opt$contribs_file, data_dir = getwd(), results_file = paste0(file_prefix, "_out.rda"), out_prefix = file_prefix, otu_id = "all", valueVar = "RelAbundSample", sum_to_genus = sum_to_genus, write_out = T, taxonomy_file = tax_file, comparison = spec_method) #will also save to file
+    spec_contribs = get_spec_contribs(opt$contribs_file, data_dir = getwd(), results_file = paste0(file_prefix, "_out.rda"), out_prefix = file_prefix, otu_id = "all", valueVar = "RelAbundSample", sum_to_genus = sum_to_genus, write_out = T, taxonomy_file = tax_file, comparison = spec_method, met_data = mets) #will also save to file
   } else {
-    spec_contribs = get_spec_contribs(opt$contribs_file, data_dir = getwd(), results_file = paste0(file_prefix, "_out.rda"), out_prefix = file_prefix, otu_id = "all", valueVar = "singleMusicc", sum_to_genus = sum_to_genus, write_out = T, taxonomy_file = tax_file, comparison = spec_method) #will also save to file
+    spec_contribs = get_spec_contribs(opt$contribs_file, data_dir = getwd(), results_file = paste0(file_prefix, "_out.rda"), out_prefix = file_prefix, otu_id = "all", valueVar = "singleMusicc", sum_to_genus = sum_to_genus, write_out = T, taxonomy_file = tax_file, comparison = spec_method, met_data = mets) #will also save to file
   }
 }
 
