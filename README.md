@@ -89,6 +89,8 @@ Rscript runMimosa.R --genefile="Dataset2_picrust_musicc.txt" -m "Dataset2_mets.t
 
 **You can test that the package is installed and working using the test data.** 
 
+if this code runs with no errors (warnings are OK) and generates results for a single metabolite, then MIMOSA is installed and working.
+
 ```bash
 Rscript runMimosa.R --genefile="mimosa/tests/testthat/test_genes.txt" --metfile="mimosa/tests/testthat/test_mets.txt" --contribs_file="mimosa/tests/testthat/test_contributions.txt" --mapformula_file="mimosa/tests/testthat/test_mapformula.txt" --file_prefix="test1" --ko_rxn_file="mimosa/tests/testthat/test_ko_reaction.txt" --rxn_annots_file="mimosa/tests/testthat/test_reaction.txt" --metadata_file="mimosa/tests/testthat/test_metadata.txt" --metadata_var="BV"
 ```
