@@ -297,7 +297,7 @@ generate_genomic_network = function(kos, keggSource = "KeggTemplate", degree_fil
     #cat("Done with network!\n")
     return(list(network_mat, stoich_mat, rxn_table))
     } else {
-    	return(NULL, NULL, rxn_table)
+    	return(list(NULL, NULL, rxn_table))
     }
   } else if(keggSource == "metacyc"){
     #Get KEGG reaction IDs for these KOs
