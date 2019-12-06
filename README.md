@@ -3,6 +3,9 @@ Model-based Integration of Metabolite Observations and Species Abundances
 
 A pipeline for joint metabolic model-based analysis of metabolomics measurements and taxonomic composition from microbial communities. Includes an R package that implements the core integrative analysis functions as well as example pre-processing and analysis scripts. MIMOSA is under active development, but version 1.0.0 is a general implementation of the methods described and used in (Noecker et al, mSystems 2016). See http://elbo.gs.washington.edu/download.html for a previous version of the code initially used to produce the results in that work.
 
+**Update fall 2019**: A new version of MIMOSA is now available, [MIMOSA2](http://borensteinlab.com/software_MIMOSA2.html)! MIMOSA2 has improved analysis, reference, and input options. It can be run either from a web server at http://elbo-spice.gs.washington.edu/MIMOSA2shiny/, or as an R package installable from http://github.com/borenstein-lab/mimosa2 .
+
+
 ## Contents
 
 - **mimosa**: An R package to generate community-specific metabolic network model, use the model to make metabolite predictions and identify consistent and contrasting metabolite variation, 
